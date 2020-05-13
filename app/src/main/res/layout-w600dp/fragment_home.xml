@@ -1,0 +1,35 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorWhite"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="horizontal">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollHomePage"
+        android:layout_width="@dimen/home_category_width"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+        <include
+            android:id="@+id/id_ads_slider"
+            layout="@layout/ads_sliders"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ads_slider_height" />
+
+        <include
+            layout="@layout/home_category_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/id_ads_slider"
+            android:layout_marginTop="-5dp" />
+</RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include layout="@layout/group_product_list" />
+</LinearLayout>

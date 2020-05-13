@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorWhite">
+    <ImageView
+        android:id="@+id/id_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/like"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="72dp" />
+
+    <TextView
+        android:id="@+id/confirmation_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/confirmation_text"
+        android:layout_below="@id/id_like"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="24sp"/>
+    <TextView
+        android:id="@+id/id_confirmation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm_message_text"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/confirmation_title"
+        android:layout_marginTop="24dp"/>
+    <Button
+        android:id="@+id/id_back_to"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="wrap_content"
+        android:text="@string/back_to_text"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@id/id_confirmation"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ripple_effect_with_border"/>
+</RelativeLayout>
