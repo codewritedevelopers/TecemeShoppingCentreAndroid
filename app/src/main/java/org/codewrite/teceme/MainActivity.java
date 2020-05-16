@@ -1,10 +1,7 @@
 package org.codewrite.teceme;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +10,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home)
                 .build();
@@ -42,16 +41,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (getResources().getConfiguration().screenWidthDp < 600) {
-            nestedScrollView = findViewById(R.id.nestedScrollHomePage);
-            nestedScrollView.setSmoothScrollingEnabled(true);
+        nestedScrollView = findViewById(R.id.nestedScrollHomePage);
+        nestedScrollView.setSmoothScrollingEnabled(true);
+        if (getResources().getConfiguration().screenWidthDp > 600) {
+           nestedScrollView.setScrollY(0);
         }
-    }
+        else{
+            FloatingActionButton fab = findViewById(R.id.id_fab_back_to_top);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    nestedScrollView.setScrollY(0);
+                }
+            });
 
-    public void backToTop(View view) {
-        if (getResources().getConfiguration().screenWidthDp < 600) {
-            nestedScrollView.setScrollY(0);
         }
     }
 }

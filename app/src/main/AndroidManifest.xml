@@ -14,14 +14,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
-        <activity android:name=".CategorySearchable"
+        <activity
+            android:name=".ui.category.CategorySearchable"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -32,7 +32,8 @@
                 android:resource="@xml/category_searchable" />
         </activity>
 
-        <activity android:name=".StoreSearchable"
+        <activity
+            android:name=".ui.store.StoreSearchable"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -42,7 +43,8 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/store_searchable" />
         </activity>
-        <activity android:name=".ProductSearchable"
+        <activity
+            android:name=".ui.product.ProductSearchable"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -54,7 +56,7 @@
         </activity>
 
         <service
-            android:name=".MyService"
+            android:name=".service.MyService"
             android:enabled="true"
             android:exported="true" />
         <!--
@@ -70,62 +72,63 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".StoresMapActivity"
+            android:name=".ui.store.StoresMapActivity"
             android:label="@string/title_activity_stores_map" />
-        <activity android:name=".HelpAndSupportActivity" />
-        <activity android:name=".ConfirmationActivity" />
+        <activity android:name=".ui.others.HelpAndSupportActivity" />
+        <activity android:name=".ui.others.ConfirmationActivity" />
         <activity
-            android:name=".ui.login.ProfileActivity"
+            android:name=".ui.profile.ProfileActivity"
             android:label="@string/title_activity_profile" />
-        <activity android:name=".CheckoutActivity" />
-        <activity android:name=".CreateWalletActivity" />
-        <activity android:name=".PaymentMethodActivity" />
+        <activity android:name=".ui.checkout.CheckoutActivity" />
+        <activity android:name=".ui.wallet.CreateWalletActivity" />
+        <activity android:name=".ui.payment.PaymentMethodActivity" />
         <activity
-            android:name=".CartActivity"
+            android:name=".ui.cart.CartActivity"
             android:label="@string/title_activity_cart"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".StoreListActivity"
+            android:name=".ui.store.StoreListActivity"
             android:label="@string/title_store_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".StoreDetailActivity"
+            android:name=".ui.store.StoreDetailActivity"
             android:label="@string/title_store_detail"
-            android:parentActivityName=".StoreListActivity"
+            android:parentActivityName=".ui.store.StoreListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.codewrite.teceme.StoreListActivity" />
+                android:value="org.codewrite.teceme.ui.store.StoreListActivity" />
         </activity>
         <activity
-            android:name=".CategoryListActivity"
+            android:name=".ui.category.CategoryListActivity"
             android:label="@string/title_category_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".CategoryDetailActivity"
+            android:name=".ui.category.CategoryDetailActivity"
             android:label="@string/title_category_detail"
-            android:parentActivityName=".CategoryListActivity"
+            android:parentActivityName=".ui.category.CategoryListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.codewrite.teceme.CategoryListActivity" />
+                android:value="org.codewrite.teceme.ui.category.CategoryListActivity" />
         </activity>
         <activity
-            android:name=".ProductListActivity"
+            android:name=".ui.product.ProductListActivity"
             android:label="@string/title_product_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ProductDetailActivity"
+            android:name=".ui.product.ProductDetailActivity"
             android:label="@string/title_product_detail"
-            android:parentActivityName=".ProductListActivity"
+            android:parentActivityName=".ui.product.ProductListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.codewrite.teceme.ProductListActivity" />
+                android:value="org.codewrite.teceme.ui.product.ProductListActivity" />
         </activity>
+
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_login"
+            android:name=".ui.others.SplashActivity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -134,9 +137,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.login.LoginActivity"
-            android:label="@string/app_name" />
+            android:label="@string/login_text"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:label="@string/welcome"
+            android:name=".ui.others.WelcomeActivity" />
     </application>
 
 </manifest>

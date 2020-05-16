@@ -16,10 +16,10 @@
             android:layout_height="@dimen/ads_slider_height" />
 
         <include
-            layout="@layout/home_category_list"
+            layout="@layout/category_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <include layout="@layout/group_product_list" />
+        <include layout="@layout/category_product_list" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

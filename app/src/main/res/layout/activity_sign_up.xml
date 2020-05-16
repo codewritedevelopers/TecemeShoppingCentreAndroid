@@ -17,7 +17,7 @@
             android:background="@color/colorWhite"
             android:orientation="vertical"
             android:theme="@style/AppTheme.NoActionBar"
-            tools:context=".ui.login.LoginActivity">
+            tools:activityContext=".ui.login.LoginActivity">
 
             <TextView
                 android:layout_width="wrap_content"

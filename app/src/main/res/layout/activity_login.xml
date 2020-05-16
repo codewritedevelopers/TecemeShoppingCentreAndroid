@@ -16,7 +16,7 @@
             android:background="@color/colorWhite"
             android:orientation="vertical"
             android:theme="@style/AppTheme.NoActionBar"
-            tools:context=".ui.login.LoginActivity">
+            tools:activityContext=".ui.login.LoginActivity">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/login"
+                android:id="@+id/action_login"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -71,6 +71,7 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="16sp"
                 android:elevation="8dp"
+                android:enabled="false"
                 android:background="@drawable/ripple_effect_with_border" />
 
             <LinearLayout
