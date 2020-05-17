@@ -27,6 +27,6 @@ public class CategoryDataSource extends ItemKeyedDataSource<Integer, CategoryEnt
     @NonNull
     @Override
     public Integer getKey(@NonNull CategoryEntity item) {
-        return item.getId();
+        return item.getCategory_id();
     }
 }

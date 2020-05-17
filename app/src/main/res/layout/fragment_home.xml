@@ -16,7 +16,7 @@
             android:layout_height="@dimen/ads_slider_height" />
 
         <include
-            layout="@layout/category_list"
+            layout="@layout/home_category_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

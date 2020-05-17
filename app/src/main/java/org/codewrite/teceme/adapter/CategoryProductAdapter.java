@@ -20,20 +20,19 @@ import org.codewrite.teceme.model.room.CategoryEntity;
 public class CategoryProductAdapter extends
         ListAdapter<CategoryEntity, CategoryProductAdapter.CategoryProductViewHolder> {
 
-
     // static constant
     private static final DiffUtil.ItemCallback<CategoryEntity>
             DIFF_CALLBACK = new DiffUtil.ItemCallback<CategoryEntity>() {
         @Override
         public boolean areItemsTheSame(@NonNull CategoryEntity oldItem,
                                        @NonNull CategoryEntity newItem) {
-            return oldItem.getId().equals(newItem.getId());
+            return oldItem.getCategory_id().equals(newItem.getCategory_id());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull CategoryEntity oldItem,
                                           @NonNull CategoryEntity newItem) {
-            return oldItem.getCategoryName().equals(newItem.getCategoryName());
+            return oldItem.getCategory_name().equals(newItem.getCategory_name());
         }
     };
 
@@ -69,7 +68,7 @@ public class CategoryProductAdapter extends
 
         // set group product name
         if (holder.categoryName != null)
-            holder.categoryName.setText(entity.getId());
+            holder.categoryName.setText(entity.getCategory_name());
 
 
     }

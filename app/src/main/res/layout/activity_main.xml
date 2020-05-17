@@ -26,9 +26,8 @@
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="70dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_anchorGravity="end|bottom"
         app:layout_behavior="org.codewrite.teceme.utils.BackToTopFabBehavior"
         app:srcCompat="@drawable/ic_dashboard_black_24dp" />
 

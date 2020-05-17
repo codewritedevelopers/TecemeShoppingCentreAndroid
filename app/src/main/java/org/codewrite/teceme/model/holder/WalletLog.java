@@ -1,10 +1,11 @@
 package org.codewrite.teceme.model.holder;
 
-import androidx.room.Entity;
+import androidx.annotation.NonNull;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "wallet_log_table")
+
 public class WalletLog {
+    @NonNull
     @PrimaryKey
     private Integer wallet_log_id;
     private Integer wallet_log_owner;
@@ -14,11 +15,12 @@ public class WalletLog {
     private Boolean wallet_log_access;
     private String wallet_log_date_created;
 
+    @NonNull
     public Integer getWallet_log_id() {
         return wallet_log_id;
     }
 
-    public void setWallet_log_id(Integer wallet_log_id) {
+    public void setWallet_log_id(@NonNull Integer wallet_log_id) {
         this.wallet_log_id = wallet_log_id;
     }
 

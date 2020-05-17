@@ -1,4 +1,6 @@
 package org.codewrite.teceme.model.rest;
 
-public class WishlistJson {
+import org.codewrite.teceme.model.holder.WishList;
+
+public class WishlistJson extends WishList {
 }

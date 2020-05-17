@@ -1,10 +1,10 @@
 package org.codewrite.teceme.model.holder;
 
-import androidx.room.Entity;
+import androidx.annotation.NonNull;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "product_table")
 public class Product {
+    @NonNull
     @PrimaryKey
     private Integer product_id;
     private String product_name;
@@ -18,11 +18,12 @@ public class Product {
     private Boolean product_access;
     private String product_img_uri;
 
+    @NonNull
     public Integer getProduct_id() {
         return product_id;
     }
 
-    public void setProduct_id(Integer product_id) {
+    public void setProduct_id(@NonNull Integer product_id) {
         this.product_id = product_id;
     }
 

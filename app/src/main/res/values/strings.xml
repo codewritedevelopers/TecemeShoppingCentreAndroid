@@ -194,4 +194,20 @@
     <string name="store_search_hint">Search Store</string>
     <string name="category_search_hint">Search Your Category</string>
     <string name="title_search">Search</string>
+    <string name="search_your_store_text">Search Your Store</string>
+    <string name="viewed_hint_text">0 viewed</string>
+    <string name="store_location_hint">store location</string>
+    <string name="store_category_hint">store category</string>
+    <string name="Orders">Orders</string>
+    <string name="related_products_text">Related Products</string>
+    <string name="related_store_text">Related Stores</string>
+    <string name="add_to_cart_text">Add To Cart</string>
+    <string name="buy_now_text">Buy Now</string>
+    <string name="add_to_cart_text">Add To Cart</string>
+    <string name="size_s_text">S</string>
+    <string name="size_xl_text">XL</string>
+    <string name="size_l_text">L</string>
+    <string name="size_m_text">M</string>
+    <string name="weight_text">50KG</string>
+    <string name="store_desc_text">Description of store</string>
 </resources>

@@ -1,20 +1,23 @@
 package org.codewrite.teceme.model.holder;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "access_token_table")
+
 public class AccessToken {
+    @NonNull
     @PrimaryKey
     private Integer id;
     private String token;
     private String date_created;
 
+    @NonNull
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(@NonNull Integer id) {
         this.id = id;
     }
 

@@ -1,11 +1,12 @@
 package org.codewrite.teceme.model.holder;
 
-import androidx.room.Entity;
+import androidx.annotation.NonNull;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "wallet_table")
+
 public class Wallet {
 
+    @NonNull
     @PrimaryKey
     private String wallet_owner;
     private Long wallet_balance;
@@ -15,11 +16,12 @@ public class Wallet {
     private Boolean wallet_access;
     private String wallet_date_created;
 
+    @NonNull
     public String getWallet_owner() {
         return wallet_owner;
     }
 
-    public void setWallet_owner(String wallet_owner) {
+    public void setWallet_owner(@NonNull String wallet_owner) {
         this.wallet_owner = wallet_owner;
     }
 

@@ -1,11 +1,13 @@
 package org.codewrite.teceme.model.holder;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "store_table")
+
 public class Store {
 
+    @NonNull
     @PrimaryKey
     private Integer store_id;
     private String store_name;
@@ -18,11 +20,12 @@ public class Store {
     private String store_email;
     private String store_phone;
 
+    @NonNull
     public Integer getStore_id() {
         return store_id;
     }
 
-    public void setStore_id(Integer store_id) {
+    public void setStore_id(@NonNull Integer store_id) {
         this.store_id = store_id;
     }
 

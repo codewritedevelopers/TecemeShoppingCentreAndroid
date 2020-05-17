@@ -4,13 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/id_rv_category_list"
-        android:layout_width="match_parent"
+        android:id="@+id/id_rv_category_level_0_list"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_weight="3"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/home_category_list_content" />
+        tools:listitem="@layout/category_list_content" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/id_rv_category_level_1_list"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/category_list_content" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/id_rv_category_level_2_list"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:visibility="visible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/category_list_content" />
 </LinearLayout>

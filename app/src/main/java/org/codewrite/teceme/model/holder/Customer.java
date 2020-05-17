@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "customer_table")
+
 public class Customer {
 
+    @NonNull
     @PrimaryKey
     private String customer_id;
     private String customer_username;
@@ -21,11 +22,12 @@ public class Customer {
     private String customer_date_created;
 
 
+    @NonNull
     public String getCustomer_id() {
         return customer_id;
     }
 
-    public void setCustomer_id(String customer_id) {
+    public void setCustomer_id(@NonNull String customer_id) {
         this.customer_id = customer_id;
     }
 

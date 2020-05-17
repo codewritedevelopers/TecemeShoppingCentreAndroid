@@ -1,11 +1,13 @@
 package org.codewrite.teceme.model.holder;
 
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "category_table")
+
 public class Category {
+    @NonNull
     @PrimaryKey
     private Integer category_id;
     private String category_name;
@@ -14,11 +16,12 @@ public class Category {
     private Boolean category_access;
     private String category_date_created;
 
+    @NonNull
     public Integer getCategory_id() {
         return category_id;
     }
 
-    public void setCategory_id(Integer category_id) {
+    public void setCategory_id(@NonNull Integer category_id) {
         this.category_id = category_id;
     }
 

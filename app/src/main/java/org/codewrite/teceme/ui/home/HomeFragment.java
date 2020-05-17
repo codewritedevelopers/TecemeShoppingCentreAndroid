@@ -38,8 +38,8 @@ public class HomeFragment extends Fragment {
     private PagerAdapter mSliderPagerAdapter;
     private TabLayout mSliderIndicator;
     private static final int NUM_PAGES = 5;
-    RecyclerView mCategoryRv;
-    RecyclerView mGroupProductRv;
+    private RecyclerView mCategoryRv;
+    private RecyclerView mGroupProductRv;
 
     private FloatingActionButton fab;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,14 +65,18 @@ public class HomeFragment extends Fragment {
         mSliderPagerAdapter = new AdsSliderAdapter(getActivity().getSupportFragmentManager());
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mPager.setAdapter(mSliderPagerAdapter);
+        
         mSliderIndicator.setupWithViewPager(mPager, true);
 
+        // slider timing
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new SliderTimer(getActivity(),mPager,NUM_PAGES), 3000, 4000);
 
+        // setup floating action button for back to top
+        fab = getActivity().findViewById(R.id.id_fab_back_to_top);
+        setupFab(fab);
 
-            fab = getActivity().findViewById(R.id.id_fab_back_to_top);
-            setupFab(fab);
+        // return view
         return root;
     }
 
@@ -90,13 +94,11 @@ public class HomeFragment extends Fragment {
                     mGroupProductRv.scrollToPosition(0);
                 }
             });
-
     }
 
     private void setupCategoryProductRv(@NonNull RecyclerView recyclerView) {
         CategoryProductAdapter categoryProductAdapter = new CategoryProductAdapter(getActivity());
         recyclerView.setAdapter(categoryProductAdapter);
-
         CategoryDataSource dataSource = new CategoryDataSource();
         dataSource.map(new Function<CategoryEntity, Object>() {
             @Override

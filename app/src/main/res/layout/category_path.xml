@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhiteGrey"
+        android:layout_width="wrap_content">
+
+        <TextView
+            android:id="@+id/id_category_level_2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/category_path_height"
+            android:layout_marginEnd="2dp"
+            android:layout_toEndOf="@+id/id_category_level_1"
+            android:background="@drawable/category_path_background"
+            android:gravity="center"
+            android:hint="@string/category_item_text"
+            android:paddingStart="25dp"
+            android:paddingEnd="10dp"
+            android:ellipsize="marquee"
+            android:freezesText="true"
+            android:textColorHint="@color/colorBlack"
+            android:textSize="@dimen/text_size_x_small" />
+
+        <TextView
+            android:id="@+id/id_category_level_1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/category_path_height"
+            android:layout_marginEnd="-20dp"
+            android:layout_toEndOf="@+id/id_category_level_0"
+            android:background="@drawable/category_path_background"
+            android:gravity="center"
+            android:hint="@string/category_item_text"
+            android:paddingStart="25dp"
+            android:paddingEnd="10dp"
+            android:ellipsize="marquee"
+            android:freezesText="true"
+            android:textColorHint="@color/colorBlack"
+            android:textSize="@dimen/text_size_x_small" />
+
+        <TextView
+            android:id="@+id/id_category_level_0"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/category_path_height"
+            android:layout_marginEnd="-20dp"
+            android:background="@drawable/category_path_background"
+            android:gravity="center"
+            android:hint="@string/category_item_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="10dp"
+            android:ellipsize="marquee"
+            android:freezesText="true"
+            android:textColorHint="@color/colorBlack"
+            android:textSize="@dimen/text_size_x_small" />
+
+    </RelativeLayout>
+
+</HorizontalScrollView>

@@ -1,24 +1,29 @@
 package org.codewrite.teceme.model.holder;
 
-import androidx.room.Entity;
+import androidx.annotation.NonNull;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "order_table")
+
 public class Order {
+    @NonNull
     @PrimaryKey
     private Integer order_id;
     private String order_owner;
     private Integer order_quantity;
     private Integer order_product_id;
+    private String product_color;
+    private String product_weight;
+    private String product_size;
     private Boolean order_access;
     private String order_date_created;
 
 
+    @NonNull
     public Integer getOrder_id() {
         return order_id;
     }
 
-    public void setOrder_id(Integer order_id) {
+    public void setOrder_id(@NonNull Integer order_id) {
         this.order_id = order_id;
     }
 
@@ -60,5 +65,29 @@ public class Order {
 
     public void setOrder_date_created(String order_date_created) {
         this.order_date_created = order_date_created;
+    }
+
+    public String getProduct_color() {
+        return product_color;
+    }
+
+    public void setProduct_color(String product_color) {
+        this.product_color = product_color;
+    }
+
+    public String getProduct_weight() {
+        return product_weight;
+    }
+
+    public void setProduct_weight(String product_weight) {
+        this.product_weight = product_weight;
+    }
+
+    public String getProduct_size() {
+        return product_size;
+    }
+
+    public void setProduct_size(String product_size) {
+        this.product_size = product_size;
     }
 }

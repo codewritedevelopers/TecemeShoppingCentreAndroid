@@ -9,6 +9,11 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/navigation_category"
+        android:icon="@drawable/icons8_categorize_120px"
+        android:title="@string/title_categories"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/navigation_stores"
         android:icon="@drawable/icons8_online_store_120px_1"
         android:title="@string/title_stores"
@@ -20,11 +25,6 @@
         android:title="@string/title_cart"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/icons8_bell"
-        android:title="@string/title_notifications"
-        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/navigation_account"
         android:icon="@drawable/icons8_gender_neutral_user_120px"

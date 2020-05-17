@@ -1,11 +1,13 @@
 package org.codewrite.teceme.model.holder;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "wish_list_table")
+
 public class WishList {
 
+    @NonNull
     @PrimaryKey
     private Integer wishlist_id;
     private Integer wishlist_product_id;
@@ -13,11 +15,12 @@ public class WishList {
    private String wishlist_date_created;
     private Boolean wishlist_access;
 
+    @NonNull
     public Integer getWishlist_id() {
         return wishlist_id;
     }
 
-    public void setWishlist_id(Integer wishlist_id) {
+    public void setWishlist_id(@NonNull Integer wishlist_id) {
         this.wishlist_id = wishlist_id;
     }
 

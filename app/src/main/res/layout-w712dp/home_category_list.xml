@@ -16,5 +16,5 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/category_list_content" />
+        tools:listitem="@layout/home_category_list_content" />
 </LinearLayout>
