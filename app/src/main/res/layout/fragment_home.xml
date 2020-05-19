@@ -1,25 +1,29 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/nestedScrollHomePage"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:overScrollMode="never"
-    android:scrollbars="none">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollHomePage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <include
-            layout="@layout/ads_sliders"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ads_slider_height" />
+            <include
+                layout="@layout/ads_sliders"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ads_slider_height" />
 
-        <include
-            layout="@layout/home_category_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <include
+                layout="@layout/home_category_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <include layout="@layout/category_product_list" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+            <include layout="@layout/category_product_list" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

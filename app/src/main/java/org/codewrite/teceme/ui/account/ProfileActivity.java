@@ -1,4 +1,4 @@
-package org.codewrite.teceme.ui.profile;
+package org.codewrite.teceme.ui.account;
 
 import android.os.Bundle;
 

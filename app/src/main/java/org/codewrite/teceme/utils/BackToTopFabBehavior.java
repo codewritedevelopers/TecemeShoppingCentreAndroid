@@ -16,24 +16,6 @@ public class BackToTopFabBehavior extends FloatingActionButton.Behavior {
         super();
     }
 
-
-    @Override
-    public void onNestedScroll(@NonNull final CoordinatorLayout coordinatorLayout,
-                               @NonNull final FloatingActionButton child,
-                               @NonNull final View target,
-                               final int dxConsumed, final int dyConsumed,
-                               final int dxUnconsumed, final int dyUnconsumed) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-
-        Log.d("BackToTopFabBehavior", "onNestedScroll dyUnconsumed: " + dyUnconsumed);
-        Log.d("BackToTopFabBehavior", "onNestedScroll dyConsumed: " + dyConsumed);
-        if (dyConsumed > 3 || dyConsumed < 0) {
-            child.show();
-        } else if (dyConsumed == 0 && child.getVisibility() == View.VISIBLE && dyUnconsumed < -3) {
-            child.setVisibility(View.INVISIBLE);
-        }
-    }
-
     @Override
     public boolean onStartNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
                                        @NonNull FloatingActionButton child,
@@ -44,5 +26,23 @@ public class BackToTopFabBehavior extends FloatingActionButton.Behavior {
                 || super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target, axes, type);
     }
 
+    @Override
+    public void onNestedScroll(@NonNull CoordinatorLayout coordinatorLayout,
+                               @NonNull FloatingActionButton child,
+                               @NonNull View target, int dxConsumed, int dyConsumed,
+                               int dxUnconsumed, int dyUnconsumed, int type,
+                               @NonNull int[] consumed) {
 
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed,
+                dyConsumed, dxUnconsumed, dyUnconsumed, type, consumed);
+
+        Log.d("BackToTopFabBehavior", "onNestedScroll dyConsumed : " + dyConsumed);
+        Log.d("BackToTopFabBehavior", "onNestedScroll dyUnconsumed: " + dyUnconsumed);
+//        if ((dyConsumed > 10 || dyConsumed < -10) && child.getVisibility() == View.INVISIBLE) {
+//            child.show();
+//        } else if (dyUnconsumed > 10 && child.getVisibility() == View.VISIBLE) {
+//            child.setVisibility(View.INVISIBLE);
+//        }
+
+    }
 }

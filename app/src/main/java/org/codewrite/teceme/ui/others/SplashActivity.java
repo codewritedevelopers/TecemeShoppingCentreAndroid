@@ -10,9 +10,7 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.ui.login.LoginActivity;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -49,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+                Intent i = new Intent(SplashActivity.this, WelcomeActivity.class);
                 startActivity(i);
                 SplashActivity.this.finish();
             }

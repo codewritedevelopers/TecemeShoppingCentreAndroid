@@ -7,14 +7,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.ProductEntity;
 
-public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.ProductViewHolder> {
+public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapter.ProductViewHolder> {
 
     private static final DiffUtil.ItemCallback<ProductEntity>
             DIFF_CALLBACK = new DiffUtil.ItemCallback<ProductEntity>() {
@@ -46,7 +46,7 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.category_list_content, parent, false);
+                    .inflate(R.layout.product_list_content, parent, false);
         return new ProductViewHolder(view);
     }
 
@@ -57,20 +57,20 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
         assert entity != null;
 
         // set group product name
-        if (holder.categoryName != null)
-            holder.categoryName.setText(entity.getProduct_id());
+        if (holder.productName != null)
+            holder.productName.setText(entity.getProduct_name());
     }
 
     class ProductViewHolder extends RecyclerView.ViewHolder {
-        private TextView categoryName;
+        private TextView productName;
 
         ProductViewHolder(@NonNull View itemView) {
             super(itemView);
-            categoryName = itemView.findViewById(R.id.id_category_name);
+            productName = itemView.findViewById(R.id.id_product_name);
         }
     }
 
     public interface ProductViewListener {
-        void onViewAllClicked(View v, ProductEntity entity);
+        void onProdutClicked(View v, int position);
     }
 }

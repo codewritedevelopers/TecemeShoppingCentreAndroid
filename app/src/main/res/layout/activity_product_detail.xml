@@ -76,6 +76,7 @@
             android:text="@string/add_to_cart_text"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/text_size_small"
+            android:textAllCaps="true"
             android:textStyle="bold" />
 
         <TextView
@@ -88,6 +89,7 @@
             android:text="@string/buy_now_text"
             android:textColor="@color/colorWhite"
             android:textSize="@dimen/text_size_small"
+            android:textAllCaps="true"
             android:textStyle="bold" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

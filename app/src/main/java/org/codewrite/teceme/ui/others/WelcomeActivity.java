@@ -1,6 +1,7 @@
 package org.codewrite.teceme.ui.others;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +20,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
+import org.codewrite.teceme.ui.account.LoginActivity;
+import org.codewrite.teceme.ui.account.SignupActivity;
 import org.codewrite.teceme.utils.PrefManager;
 
 /**
@@ -32,7 +36,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private int[] layouts;
-    private Button btnSkip, btnNext;
+    private Button btnNext, btnToSignIn, btnToSignUp;
+    TextView actionSkip;
     private PrefManager prefManager;
 
     @Override
@@ -57,7 +62,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
 //        viewPager = findViewById(R.id.view_pager);
 //        dotsLayout = findViewById(R.id.layoutDots);
-//        btnSkip = findViewById(R.id.btn_skip);
+        actionSkip = findViewById(R.id.id_skip_welcome);
+        btnToSignIn = findViewById(R.id.id_login_from_welcome);
+        btnToSignUp = findViewById(R.id.id_sign_up_from_welcome);
 //        btnNext = findViewById(R.id.btn_next);
 //
 
@@ -70,43 +77,44 @@ public class WelcomeActivity extends AppCompatActivity {
 //                R.layout.welcome_slide4};
 
         // adding bottom dots
-        addBottomDots(0);
+        //  addBottomDots(0);
 
         // making notification bar transparent
         changeStatusBarColor();
 
-        myViewPagerAdapter = new MyViewPagerAdapter();
-        viewPager.setAdapter(myViewPagerAdapter);
-        viewPager.addOnPageChangeListener(viewPagerPageChangeListener);
+        actionSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchMainActivity();
+            }
+        });
 
-        btnSkip.setOnClickListener(new View.OnClickListener() {
+        btnToSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAccountSignUp();
+            }
+        });
+
+        btnToSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchAccountLogin();
             }
         });
+    }
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // checking for last page
-                // if last page home screen will be launched
-                int current = getItem(+1);
-                if (current < layouts.length) {
-                    // move to next screen
-                    viewPager.setCurrentItem(current);
-                } else {
-                    launchMainActivity();
-                }
-            }
-        });
+    private void launchAccountSignUp() {
+        prefManager.setFirstTimeLaunch(false);
+        startActivity(new Intent(WelcomeActivity.this, SignupActivity.class));
+        finish();
     }
 
     private void launchAccountLogin() {
         prefManager.setFirstTimeLaunch(false);
         Bundle bundle = new Bundle();
-        bundle.putString("LAUNCHED_FIRST_TIME", "TRUE");
-//        startActivity(new Intent(Welcome.this, Account.class), bundle);
+        bundle.putBoolean("LAUNCHED_FIRST_TIME", true);
+        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class), bundle);
         finish();
     }
 
@@ -135,7 +143,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void launchMainActivity() {
         prefManager.setFirstTimeLaunch(false);
-//        startActivity(new Intent(Welcome.this, Main.class));
+      startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
         finish();
     }
 
@@ -151,11 +159,11 @@ public class WelcomeActivity extends AppCompatActivity {
             if (position == layouts.length - 1) {
                 // last page. make button text to GOT IT
 //                btnNext.setText(getString(R.string.start_text));
-                btnSkip.setVisibility(View.GONE);
+                actionSkip.setVisibility(View.GONE);
             } else {
                 // still pages are left
 //                btnNext.setText(getString(R.string.next_text));
-                btnSkip.setVisibility(View.VISIBLE);
+                actionSkip.setVisibility(View.VISIBLE);
             }
         }
 

@@ -9,6 +9,7 @@
         android:id="@+id/ads_view_flipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scrollbars="none"
         android:background="@color/colorWhiteGrey" />
 
     <com.google.android.material.tabs.TabLayout

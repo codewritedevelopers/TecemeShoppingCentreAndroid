@@ -25,7 +25,7 @@
                 android:layout_height="@dimen/image_height"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:src="@color/colorWhiteGrey" />
+                android:src="@drawable/product1" />
 
             <TextView
                 android:id="@+id/id_discount"
@@ -52,7 +52,7 @@
                 android:layout_margin="@dimen/wl_indicator_margin"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/heart"
-                android:tint="@color/colorWhite" />
+                android:tint="@color/colorWhiteGrey"/>
         </RelativeLayout>
 
         <RelativeLayout

@@ -2,7 +2,8 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -11,9 +12,9 @@
 
         <LinearLayout
             android:id="@+id/container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
+            android:layout_gravity="center_horizontal"
             android:orientation="vertical"
             android:theme="@style/AppTheme.NoActionBar"
             tools:activityContext=".ui.login.LoginActivity">
@@ -31,48 +32,47 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="72dp"
-                android:layout_marginEnd="24dp">
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_email"
-                android:inputType="textEmailAddress"
-                android:selectAllOnFocus="true" />
+                android:layout_margin="@dimen/input_layout_margin">
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_email"
+                    android:inputType="textEmailAddress"
+                    android:selectAllOnFocus="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-           <com.google.android.material.textfield.TextInputLayout
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:layout_marginStart="24dp"
-               android:layout_marginTop="36dp"
-               android:layout_marginEnd="24dp">
-            <EditText
-                android:id="@+id/password"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_password"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword"
-                android:selectAllOnFocus="true" />
-           </com.google.android.material.textfield.TextInputLayout>
+                android:layout_margin="@dimen/input_layout_margin">
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_password"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/action_login"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/button_margin"
                 android:layout_marginTop="48dp"
+                android:background="@drawable/ripple_effect_with_border"
+                android:elevation="8dp"
+                android:enabled="false"
                 android:text="@string/action_login"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
-                android:textSize="16sp"
-                android:elevation="8dp"
-                android:enabled="false"
-                android:background="@drawable/ripple_effect_with_border" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -84,16 +84,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/no_account_text"
-                    />
+                    android:text="@string/no_account_text" />
 
                 <TextView
-                    android:id="@+id/sign_up_from_login"
+                    android:id="@+id/id_sign_up_from_login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="@string/sign_up_text"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

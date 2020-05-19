@@ -18,6 +18,24 @@ public class Product {
     private Boolean product_access;
     private String product_img_uri;
 
+    public Product(@NonNull Integer product_id, String product_name, String product_color,
+                   String product_weight, String product_size, String product_code,
+                   String product_desc, Integer product_category_id, String product_date_created,
+                   Boolean product_access, String product_img_uri) {
+
+        this.product_id = product_id;
+        this.product_name = product_name;
+        this.product_color = product_color;
+        this.product_weight = product_weight;
+        this.product_size = product_size;
+        this.product_code = product_code;
+        this.product_desc = product_desc;
+        this.product_category_id = product_category_id;
+        this.product_date_created = product_date_created;
+        this.product_access = product_access;
+        this.product_img_uri = product_img_uri;
+    }
+
     @NonNull
     public Integer getProduct_id() {
         return product_id;

@@ -1,6 +1,8 @@
 package org.codewrite.teceme.adapter;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +34,11 @@ public class CategoryProductAdapter extends
         @Override
         public boolean areContentsTheSame(@NonNull CategoryEntity oldItem,
                                           @NonNull CategoryEntity newItem) {
-            return oldItem.getCategory_name().equals(newItem.getCategory_name());
+            return oldItem.getCategory_name().equals(newItem.getCategory_name())
+                    && oldItem.getCategory_access().equals(newItem.getCategory_access())
+                    && oldItem.getCategory_date_created().equals(newItem.getCategory_date_created())
+                    && oldItem.getCategory_level().equals(newItem.getCategory_level())
+                    && oldItem.getCategory_parent_id().equals(newItem.getCategory_parent_id());
         }
     };
 
@@ -54,6 +60,7 @@ public class CategoryProductAdapter extends
     public CategoryProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.category_product_list_content, parent, false);
+
         return new CategoryProductViewHolder(view);
     }
 
@@ -61,48 +68,36 @@ public class CategoryProductAdapter extends
     public void onBindViewHolder(@NonNull final CategoryProductViewHolder holder, int position) {
         // get a category product from list
         CategoryEntity entity = getItem(position);
-        assert entity != null;
-
-        // handle fetch product into the sub recycler view
-        handleProductFetch(holder, position);
+        // if entity null don't bind view
+        if (entity == null) {
+            return;
+        }
 
         // set group product name
-        if (holder.categoryName != null)
+        if (holder.categoryName != null) {
             holder.categoryName.setText(entity.getCategory_name());
+        }
 
-
+        // handle fetching of products into view
+       handleProductFetch(holder, position);
     }
 
-    private void handleProductFetch(final CategoryProductViewHolder holder, int position) {
-
-        final CategoryEntity entity = getItem(position);
+    /**
+     * Handling fetching of products into each recycler view
+     *
+     * @param holder   view holder for CategoryProductAdapter
+     * @param position position or index of each item in CategoryProduct, needed for loading
+     *                 products into recycler view
+     */
+    private void handleProductFetch(CategoryProductViewHolder holder, int position) {
 
         // check if productRvLoader is attached to page list adapter
         if (productRvLoader == null) {
             return;
         }
         // loadData products into product recycler view & observe if loaded
-        productRvLoader.loadData(entity)
-                .observe((LifecycleOwner) activityContext, new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(Boolean aBoolean) {
-                        if (aBoolean == null) {
-                            return;
-                        }
-                        if (aBoolean.equals(true) && holder.viewAll != null) {
-                            holder.viewAll.setVisibility(View.VISIBLE);
-                            holder.viewAll.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (categoryProductViewListener != null)
-                                        categoryProductViewListener.onViewAllClicked(v, entity);
-                                }
-                            });
-                        } else if (holder.viewAll != null) {
-                            holder.viewAll.setVisibility(View.VISIBLE);
-                        }
-                    }
-                });
+        productRvLoader.loadData(position, holder.itemView);
+        Log.d("CategoryProductAdapter", "handleProductFetch: "+position);
     }
 
     public void setProductRvLoader(ProductRecyclerViewLoader productRvLoader) {
@@ -125,12 +120,12 @@ public class CategoryProductAdapter extends
         }
     }
 
-    interface ProductRecyclerViewLoader {
-        LiveData<Boolean> loadData(CategoryEntity id);
+    public interface ProductRecyclerViewLoader {
+       void loadData(int position, View itemView);
 
         void invalidate();
 
-        boolean stop(Integer id);
+        boolean stop(int position);
     }
 
     public interface CategoryProductViewListener {

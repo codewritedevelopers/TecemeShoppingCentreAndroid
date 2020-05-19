@@ -2,18 +2,20 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:maxWidth="@dimen/activity_max_width">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:background="@color/colorWhite">
+        android:background="@color/colorWhite"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:background="@color/colorWhite"
             android:orientation="vertical"
             android:theme="@style/AppTheme.NoActionBar"
@@ -23,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="72dp"
+                android:layout_marginTop="48dp"
                 android:layout_marginEnd="24dp"
                 android:text="@string/signup_text"
                 android:textColor="@color/colorBlack"
@@ -32,9 +34,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="36dp"
-                android:layout_marginEnd="24dp">
+                android:layout_margin="@dimen/input_layout_margin">
 
                 <EditText
                     android:id="@+id/name"
@@ -48,9 +48,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="36dp"
-                android:layout_marginEnd="24dp">
+                android:layout_margin="@dimen/input_layout_margin">
 
                 <EditText
                     android:id="@+id/username"
@@ -80,9 +78,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="36dp"
-                android:layout_marginEnd="24dp">
+                android:layout_margin="@dimen/input_layout_margin">
 
                 <EditText
                     android:id="@+id/confirm_password"
@@ -97,16 +93,17 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/sign_up"
+                android:id="@+id/action_sign_up"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/input_layout_margin"
                 android:layout_marginTop="36dp"
+                android:background="@drawable/ripple_effect_with_border"
+                android:enabled="false"
                 android:text="@string/sign_up_text"
                 android:textAllCaps="false"
-                android:textColor="@color/colorWhite"
-                android:background="@drawable/ripple_effect_with_border"
-                android:enabled="false" />
+                android:textColor="@color/colorWhite" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -122,13 +119,13 @@
                     android:text="@string/have_account_text" />
 
                 <TextView
-                    android:id="@+id/sign_up_from_login"
+                    android:id="@+id/id_login_from_sign_up"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/sign_in_text"
-                    android:textColor="@color/colorBlack"
                     android:background="?android:selectableItemBackground"
+                    android:text="@string/sign_in_text"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

@@ -1,5 +1,6 @@
-package org.codewrite.teceme.ui.login;
+package org.codewrite.teceme.ui.account;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,13 +20,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.LoginFormState;
-import org.codewrite.teceme.model.holder.Customer;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.viewmodel.CustomerViewModel;
 
 public class LoginActivity extends AppCompatActivity {
 
     private CustomerViewModel customerViewModel;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.action_login);
+        TextView toSignup = findViewById(R.id.id_sign_up_from_login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
         customerViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -102,6 +104,14 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 customerViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
+            }
+        });
+
+        toSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+                finish();
             }
         });
     }

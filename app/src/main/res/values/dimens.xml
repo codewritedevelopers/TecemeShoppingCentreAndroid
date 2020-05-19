@@ -10,11 +10,14 @@
     <dimen name="product_card_margin">5dp</dimen>
     <dimen name="group_product_card_margin">2dp</dimen>
     <dimen name="home_category_margin">2dp</dimen>
+    <dimen name="button_margin">36dp</dimen>
+    <dimen name="input_layout_margin">12dp</dimen>
+    <dimen name="product_detail_fab_margin_top">225dp</dimen>
 
     <!-- width and height -->
     <dimen name="toolbar_width">250dp</dimen>
-    <dimen name="toolbar_height">?actionBarSize</dimen>
-    <dimen name="product_detail_app_bar_height">300dp</dimen>
+    <dimen name="toolbar_height">45dp</dimen>
+    <dimen name="product_detail_app_bar_height">250dp</dimen>
     <dimen name="item_width">200dp</dimen>
     <dimen name="ads_slider_height">150dp</dimen>
     <dimen name="home_category_width">300dp</dimen>
@@ -25,7 +28,8 @@
     <dimen name="discount_tag_width">48dp</dimen>
     <dimen name="discount_tag_height">24dp</dimen>
     <dimen name="group_product_card_height">300dp</dimen>
-    <dimen name="search_toolbar_height">?actionBarSize</dimen>
+    <dimen name="category_path_height">30dp</dimen>
+    <dimen name="activity_max_width">320dp</dimen>
 
     <!-- card or solid radius -->
     <dimen name="product_card_radius">5dp</dimen>
@@ -45,10 +49,9 @@
     <dimen name="text_size_medium">20sp</dimen>
 
     <!-- view elevation -->
-    <dimen name="search_box_card_elevation">4dp</dimen>
+    <dimen name="search_box_card_elevation">30dp</dimen>
 
     <!-- padding -->
     <dimen name="group_product_section_padding">5dp</dimen>
-    <dimen name="category_path_height">30dp</dimen>
     <dimen name="product_size_padding">10dp</dimen>
 </resources>

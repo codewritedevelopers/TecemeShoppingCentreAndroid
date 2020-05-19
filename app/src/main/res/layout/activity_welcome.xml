@@ -1,38 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:theme="@style/AppTheme.NoActionBar"
-    android:background="@color/colorWhite">
+    android:background="@color/colorWhite"
+    android:fitsSystemWindows="true">
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/welcome_title"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="72dp"/>
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="48dp"
+        android:scrollbars="none"
+        android:layout_above="@+id/skip_welcome_layout">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/welcome_shopping_icon"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="72dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/login_from_welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:background="@drawable/login_btn"
-        android:layout_gravity="center_horizontal"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/welcome_title" />
 
-    <Button
-        android:id="@+id/sign_up_from_welcome"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/sign_up_btn_light"/>
-</LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/input_layout_margin"
+                android:src="@drawable/welcome_shopping_icon" />
+
+            <Button
+                android:id="@+id/id_login_from_welcome"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="72dp"
+                android:background="@drawable/ripple_effect_with_border"
+                android:elevation="30dp"
+                android:text="@string/sign_in_text"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:id="@+id/id_sign_up_from_welcome"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/ripple_effect_with_border_grey"
+                android:text="@string/sign_up_text"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryDark" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/skip_welcome_layout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorWhite"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/id_skip_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginBottom="0dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
+            android:text="@string/skip_text"
+            android:textAllCaps="true"
+            android:textSize="@dimen/text_size_small" />
+    </LinearLayout>
+</RelativeLayout>

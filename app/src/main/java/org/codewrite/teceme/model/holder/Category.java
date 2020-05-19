@@ -16,6 +16,16 @@ public class Category {
     private Boolean category_access;
     private String category_date_created;
 
+    public Category(@NonNull Integer category_id, String category_name, Integer category_level,
+                    Integer category_parent_id, Boolean category_access, String category_date_created) {
+        this.category_id = category_id;
+        this.category_name = category_name;
+        this.category_level = category_level;
+        this.category_parent_id = category_parent_id;
+        this.category_access = category_access;
+        this.category_date_created = category_date_created;
+    }
+
     @NonNull
     public Integer getCategory_id() {
         return category_id;

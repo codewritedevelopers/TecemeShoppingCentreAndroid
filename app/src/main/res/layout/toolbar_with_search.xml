@@ -3,27 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorWhite"
+    android:paddingEnd="5dp"
+    android:paddingStart="5dp"
     android:elevation="@dimen/search_box_card_elevation"
     app:cardCornerRadius="@dimen/toolbar_card_radius">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/search_toolbar_height"
-        android:padding="0dp"
+        android:layout_height="@dimen/toolbar_height"
         android:layout_margin="0dp"
-     android:background="@color/colorWhite">
-        <EditText
-            android:id="@+id/id_search_box_edit"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:layout_margin="0dp"
-            android:drawableStart="@drawable/search_bar_icon"
-            android:drawablePadding="3dp"
-            android:padding="0dp"
-            android:textSize="@dimen/text_size_small"
-            android:background="@color/colorWhite"
-            android:hint="@string/search_your_product_text"/>
+        android:background="@color/colorWhite"
+        android:padding="0dp">
+    <EditText
+        android:id="@+id/id_search_box_edit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:background="@color/colorWhite"
+        android:drawableStart="@drawable/search_bar_icon"
+        android:drawablePadding="3dp"
+        android:hint="@string/search_your_product_text"
+        android:padding="5dp"
+        android:focusable="false"
+        android:textSize="@dimen/text_size_small" />
     </androidx.appcompat.widget.Toolbar>
-
 </androidx.cardview.widget.CardView>
