@@ -47,6 +47,5 @@
         android:tint="@color/colorWhite"
         android:visibility="invisible"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_behavior="org.codewrite.teceme.utils.BackToTopFabBehavior"
-        app:srcCompat="@drawable/ic_dashboard_black_24dp" />
+        app:srcCompat="@android:drawable/arrow_up_float" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

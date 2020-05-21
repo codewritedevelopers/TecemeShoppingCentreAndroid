@@ -1,23 +1,21 @@
 package org.codewrite.teceme.ui.home;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.arch.core.util.Function;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,18 +25,18 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-import org.codewrite.teceme.adapter.CategoryProductAdapter;
-import org.codewrite.teceme.adapter.HomeCategoryAdapter;
-import org.codewrite.teceme.adapter.ProductAdapter;
-import org.codewrite.teceme.datasource.CategoryDataSource;
-import org.codewrite.teceme.datasource.ProductDataSource;
-import org.codewrite.teceme.model.holder.Product;
-import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.AdsSliderAdapter;
+import org.codewrite.teceme.adapter.CategoryProductAdapter;
+import org.codewrite.teceme.adapter.HomeCategoryAdapter;
+import org.codewrite.teceme.adapter.HomeProductAdapter;
+import org.codewrite.teceme.adapter.ProductAdapter;
+import org.codewrite.teceme.datasource.ProductDataSource;
+import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
-import org.codewrite.teceme.utils.ZoomOutPageTransformer;
+import org.codewrite.teceme.utils.BackToTopFabBehavior;
 import org.codewrite.teceme.utils.SliderTimer;
+import org.codewrite.teceme.utils.ZoomOutPageTransformer;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
 
 import java.util.ArrayList;
@@ -61,8 +59,7 @@ public class HomeFragment extends Fragment {
     private View root;
     private RecyclerView mCategoryRv, mGroupProductRv;
     private ViewPager mPager;
-    private Toolbar mToolbar;
-    private  NestedScrollView nestedScrollView;
+    private NestedScrollView nestedScrollView;
     private FloatingActionButton fab;
 
     // view models
@@ -110,10 +107,6 @@ public class HomeFragment extends Fragment {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new SliderTimer(getActivity(), mPager, NUM_PAGES), 3000, 4000);
 
-        // setup floating action button for back to top
-        FloatingActionButton backToTopFab = mActivity.findViewById(R.id.id_fab_back_to_top);
-        setupFab(backToTopFab);
-
         // return root view
         return root;
     }
@@ -128,32 +121,16 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
-
-    private void setupFab(FloatingActionButton fab) {
-        /*
-         * check configuration, we don't want null pointer exception fab
-         * mGroupProductRv scrolls and fab is available for only screen width less than 600
-         */
-        if (mActivity.getResources().getConfiguration().screenWidthDp > 600) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mGroupProductRv.scrollToPosition(0);
-                }
-            });
-        }
-    }
-
-    private void setupNestedScrollView(View view){
-
+    private void setupNestedScrollView(View view) {
         nestedScrollView = view.findViewById(R.id.nestedScrollHomePage);
         if (nestedScrollView != null) {
             nestedScrollView.setSmoothScrollingEnabled(true);
+
+            // set fab for back to top
             fab = mActivity.findViewById(R.id.id_fab_back_to_top);
-            if(fab != null) {
+            if (fab != null) {
                 fab.setVisibility(View.INVISIBLE);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -162,34 +139,19 @@ public class HomeFragment extends Fragment {
                         fab.setVisibility(View.INVISIBLE);
                     }
                 });
-            }
 
+                // add scroll listener for back to top behavior in nested scroll
+                nestedScrollView.setOnScrollChangeListener(new BackToTopFabBehavior(fab));
+            }
         }
     }
 
     private void setupCategoryProductRv(@NonNull final RecyclerView recyclerView) {
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-
-                Log.d("HomeFragment", "onScrolled: "+dy);
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 100) {
-                    fab.show();
-                }else{
-                    fab.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
         // create CategoryProductAdapter
         categoryProductAdapter = new CategoryProductAdapter(mActivity);
 
         // we set recycler view adapter
         recyclerView.setAdapter(categoryProductAdapter);
-
-        ProductAdapter productAdapter = new ProductAdapter(mActivity);
 
         ProductDataSource productDataSource = new ProductDataSource();
 
@@ -237,7 +199,7 @@ public class HomeFragment extends Fragment {
                 // create recycler view for horizontal products
                 RecyclerView groupProductsRv = itemView.findViewById(R.id.id_rv_group_product_list);
                 // create product page adapter
-                ProductAdapter productAdapter = new ProductAdapter(mActivity);
+                HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity);
                 // set adapter for recycler view
                 groupProductsRv.setAdapter(productAdapter);
 

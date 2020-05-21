@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/product_card"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/product_card_width"
     android:layout_height="@dimen/product_card_height"
     android:background="@color/colorWhite"
     android:layout_marginStart="@dimen/product_card_margin"

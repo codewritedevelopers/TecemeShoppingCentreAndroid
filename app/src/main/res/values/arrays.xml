@@ -9,4 +9,12 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <string-array name="search_suggestions">
+        <item>Milo tin</item>
+        <item>Ideal milk powder</item>
+        <item>Sugar cube</item>
+        <item>Phone X</item>
+        <item>Lenovo S456</item>
+    </string-array>
 </resources>

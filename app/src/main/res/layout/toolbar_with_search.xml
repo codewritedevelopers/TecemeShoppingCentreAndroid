@@ -1,31 +1,15 @@
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/colorWhite"
-    android:paddingEnd="5dp"
-    android:paddingStart="5dp"
-    android:elevation="@dimen/search_box_card_elevation"
-    app:cardCornerRadius="@dimen/toolbar_card_radius">
+    android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:layout_margin="0dp"
         android:background="@color/colorWhite"
-        android:padding="0dp">
-    <EditText
-        android:id="@+id/id_search_box_edit"
+        android:visibility="gone" />
+    <com.quinny898.library.persistentsearch.SearchBox
+        android:id="@+id/id_search_box"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="0dp"
-        android:background="@color/colorWhite"
-        android:drawableStart="@drawable/search_bar_icon"
-        android:drawablePadding="3dp"
-        android:hint="@string/search_your_product_text"
-        android:padding="5dp"
-        android:focusable="false"
-        android:textSize="@dimen/text_size_small" />
-    </androidx.appcompat.widget.Toolbar>
-</androidx.cardview.widget.CardView>
+        android:layout_height="wrap_content" />
+</FrameLayout>

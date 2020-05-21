@@ -53,6 +53,6 @@
             android:orientation="horizontal"
             app:layoutManager="LinearLayoutManager"
             tools:activityContext=".ui.product.ProductListActivity"
-            tools:listitem="@layout/product_list_content" />
+            tools:listitem="@layout/home_product_list_content" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

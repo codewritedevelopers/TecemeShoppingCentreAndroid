@@ -23,5 +23,12 @@
             android:layout_height="match_parent"
             android:layout_marginTop="5dp" />
 </LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollHomePage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
     <include layout="@layout/category_product_list" />
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

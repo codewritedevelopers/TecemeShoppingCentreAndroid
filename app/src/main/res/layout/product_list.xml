@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.codewrite.teceme.utils.AutoFitGridRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/id_rv_product_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/group_product_list"
-        android:name="org.codewrite.teceme.ProductListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:activityContext=".ui.product.ProductListActivity"
-        tools:listitem="@layout/product_list_content" />
-</LinearLayout>
+    android:columnWidth="@dimen/product_card_width"
+    android:numColumns="auto_fit"
+    tools:activityContext=".ui.product.ProductListActivity"
+    tools:listitem="@layout/product_list_content" />
