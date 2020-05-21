@@ -23,13 +23,4 @@
     <include android:layout_marginTop="?actionBarSize" layout="@layout/cart_list"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
-<Button
-    android:layout_width="@dimen/button_width"
-    android:layout_height="wrap_content"
-    android:text="@string/buy_now_text"
-    android:textAllCaps="false"
-    android:textColor="@color/colorWhite"
-    android:layout_margin="@dimen/button_margin"
-    android:background="@drawable/ripple_effect_with_border"
-    android:layout_gravity="bottom|center_horizontal" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

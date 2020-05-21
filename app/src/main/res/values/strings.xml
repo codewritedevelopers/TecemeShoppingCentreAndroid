@@ -210,4 +210,6 @@
     <string name="weight_text">50KG</string>
     <string name="store_desc_text">Description of store</string>
     <string name="skip_text">Skip</string>
+    <string name="num_ordered_hint_text">2</string>
+    <string name="order_status_hint">Pending</string>
 </resources>

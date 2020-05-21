@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.codewrite.teceme.utils.AutoFitGridRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/id_rv_cart_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnWidth="300dp"
+    android:numColumns="auto_fit"
+    tools:listitem="@layout/order_list_content"
+    android:layout_marginBottom="70dp"/>

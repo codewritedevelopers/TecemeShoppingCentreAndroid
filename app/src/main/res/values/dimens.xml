@@ -54,4 +54,8 @@
     <!-- padding -->
     <dimen name="group_product_section_padding">5dp</dimen>
     <dimen name="product_size_padding">10dp</dimen>
+    <dimen name="image_height_2">100dp</dimen>
+    <dimen name="text_x_padding">5dp</dimen>
+    <dimen name="text__x_margin">8dp</dimen>
+    <dimen name="card_elevation">30dp</dimen>
 </resources>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/product_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/product_card_margin"
+    android:layout_marginTop="@dimen/product_card_margin"
+    android:background="@color/colorWhiteGrey"
+    card_view:cardCornerRadius="@dimen/product_card_radius">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <RelativeLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/image_height_2"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="4">
+
+            <ImageView
+                android:id="@+id/id_product_image"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/image_height_2"
+                android:layout_alignParentTop="true"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/product1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="6"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/id_product_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_margin="4dp"
+                android:gravity="start|center_vertical"
+                android:hint="@string/product_name_hint"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorBlack"
+                android:textSize="@dimen/product_name_text_size" />
+
+            <TextView
+                android:id="@+id/id_store_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_product_name"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:hint="@string/store_name_hint"
+                android:maxHeight="18dp"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorAccent"
+                android:textSize="@dimen/store_name_text_size" />
+
+
+            <TextView
+                android:id="@+id/id_price_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_store_name"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="4dp"
+                android:hint="@string/price_hint_text"
+                android:maxHeight="18dp"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorBlack"
+                android:textSize="@dimen/product_name_text_size" />
+
+            <TextView
+                android:id="@+id/id_orders_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_price_text"
+                android:layout_alignParentStart="true"
+                android:layout_margin="4dp"
+                android:gravity="end|center_vertical"
+                android:hint="@string/ordered_hint_text"
+                android:textColor="@color/colorAccent"
+                android:textColorHint="@color/colorAccent"
+                android:textSize="@dimen/order_text_size" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/id_num_ordered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_orders_text"
+                android:elevation="@dimen/card_elevation"
+                card_view:cardCornerRadius="@dimen/group_product_card_radius">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/num_ordered_hint_text"
+                    android:maxLength="3"
+                    android:paddingStart="@dimen/text_x_padding"
+                    android:paddingEnd="@dimen/text_x_padding"
+                    android:textColor="@color/colorBlack"
+                    android:background="@color/colorWhiteGrey"
+                    android:textColorHint="@color/colorBlack" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_orders_text"
+                android:layout_toEndOf="@id/id_num_ordered"
+                android:background="@color/colorWhiteGrey"
+                android:elevation="@dimen/card_elevation"
+                card_view:cardCornerRadius="@dimen/group_product_card_radius">
+
+                <TextView
+                    android:id="@+id/id_order_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/text__x_margin"
+                    android:layout_marginEnd="@dimen/text__x_margin"
+                    android:hint="@string/order_status_hint"
+                    android:paddingStart="@dimen/text_x_padding"
+                    android:paddingEnd="@dimen/text_x_padding"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimaryDark"
+                    android:background="@color/colorWhiteGrey"/>
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
