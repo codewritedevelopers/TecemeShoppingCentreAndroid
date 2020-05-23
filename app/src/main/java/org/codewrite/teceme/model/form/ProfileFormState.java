@@ -14,14 +14,18 @@ public class ProfileFormState {
     @Nullable
     private Integer passwordError;
     @Nullable
+    private Integer confirmPasswordError;
+    @Nullable
     private Integer phoneError;
     private boolean isDataValid;
 
     public ProfileFormState(@Nullable Integer nameError, @Nullable Integer phoneError,
-                            @Nullable Integer usernameError, @Nullable Integer passwordError) {
+                            @Nullable Integer usernameError, @Nullable Integer passwordError,
+                            @Nullable Integer confirmPasswordError) {
         this.nameError = nameError;
         this.usernameError = usernameError;
         this.passwordError = passwordError;
+        this.confirmPasswordError = confirmPasswordError;
         this.phoneError = phoneError;
     }
 
@@ -30,6 +34,7 @@ public class ProfileFormState {
         this.phoneError = null;
         this.usernameError = null;
         this.passwordError = null;
+        this.confirmPasswordError = null;
         this.isDataValid = isDataValid;
     }
 
@@ -56,5 +61,10 @@ public class ProfileFormState {
 
     public boolean isDataValid() {
         return isDataValid;
+    }
+
+    @Nullable
+    public Integer getConfirmPasswordError() {
+        return confirmPasswordError;
     }
 }

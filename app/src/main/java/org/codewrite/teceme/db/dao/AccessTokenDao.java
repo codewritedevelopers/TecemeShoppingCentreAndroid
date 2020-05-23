@@ -20,9 +20,6 @@ public interface AccessTokenDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(AccessTokenEntity entity);
 
-    @Update
-    void update(AccessTokenEntity entity);
-
     @Query("DELETE FROM access_token_table WHERE 1")
     void deleteAll();
 }

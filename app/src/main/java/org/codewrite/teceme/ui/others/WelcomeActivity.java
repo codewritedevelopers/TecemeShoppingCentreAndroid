@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.ui.account.LoginActivity;
+import org.codewrite.teceme.ui.account.ProfileActivity;
 import org.codewrite.teceme.ui.account.SignupActivity;
 import org.codewrite.teceme.utils.PrefManager;
 
@@ -105,7 +106,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void launchAccountSignUp() {
-       // prefManager.setFirstTimeLaunch(false);
+        prefManager.setFirstTimeLaunch(false);
         startActivity(new Intent(WelcomeActivity.this, SignupActivity.class));
         finish();
     }
@@ -143,7 +144,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void launchMainActivity() {
         prefManager.setFirstTimeLaunch(false);
-      startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+      startActivity(new Intent(WelcomeActivity.this, ProfileActivity.class));
         finish();
     }
 

@@ -147,10 +147,10 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void launchConfirmationActivity(String email) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ConfirmationActivity.LAUNCH_KEY,"SIGN_UP_CONFIRMATION");
-        bundle.putString("EMAIL",email);
-        startActivity(new Intent(SignupActivity.this, ConfirmationActivity.class));
+        Intent i = new Intent(SignupActivity.this, ConfirmationActivity.class);
+        i.putExtra(ConfirmationActivity.LAUNCH_KEY,"SIGN_UP_CONFIRMATION");
+        i.putExtra(ConfirmationActivity.LAUNCH_EMAIL,email);
+        startActivity(i);
         finish();
     }
 

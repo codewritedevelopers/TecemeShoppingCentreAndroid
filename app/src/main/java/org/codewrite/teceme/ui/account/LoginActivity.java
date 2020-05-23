@@ -45,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         TextView toSignup = findViewById(R.id.id_sign_up_from_login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
+        // logout
+        accountViewModel.logoutCustomer();
 
         passwordEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -105,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
         // observe if login user available
         accountViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
             @Override
@@ -112,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(customerEntity ==null){
                     return;
                 }
+               // Toast.makeText(LoginActivity.this, String.valueOf(customerEntity.getCustomer_access()), Toast.LENGTH_SHORT).show();
                 lunchMainActivity();
             }
         });
@@ -167,9 +171,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void lunchMainActivity() {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("LAUNCHED_FIRST_TIME", true);
-        startActivity(new Intent(LoginActivity.this, MainActivity.class), bundle);
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
         finish();
     }
 

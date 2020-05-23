@@ -23,22 +23,6 @@ public class CustomerEntity extends Result {
     private Boolean customer_access;
     private String customer_date_created;
 
-    public CustomerEntity(){
-
-    }
-    @Ignore
-    public CustomerEntity(String customer_username, String customer_password, String customer_first_name,
-                          String customer_middle_name, String customer_last_name, String customer_phone,
-                          String customer_referred_by) {
-        this.customer_username = customer_username;
-        this.customer_password = customer_password;
-        this.customer_first_name = customer_first_name;
-        this.customer_middle_name = customer_middle_name;
-        this.customer_last_name = customer_last_name;
-        this.customer_phone = customer_phone;
-        this.customer_referred_by = customer_referred_by;
-    }
-
     @NonNull
     public String getCustomer_id() {
         return customer_id;

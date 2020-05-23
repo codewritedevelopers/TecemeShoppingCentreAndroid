@@ -219,4 +219,10 @@
     <string name="action_sign_up">Sign up</string>
     <string name="back_to_login">Back To Login</string>
     <string name="go_back">Go Back</string>
+    <string name="account_confirmation">Account Created Successfully</string>
+    <string name="order_confirmation">Order Created Successfully</string>
+    <string name="wallet_confirmation">Wallet Created Successfully</string>
+    <string name="update_text">Update</string>
+    <string name="loading_text">Loading ...</string>
+    <string name="prompt_current_password">Current password</string>
 </resources>

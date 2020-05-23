@@ -14,6 +14,8 @@ import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 
+import java.util.concurrent.Executor;
+
 import retrofit2.Call;
 
 public class CustomerRepository {
@@ -41,18 +43,22 @@ public class CustomerRepository {
         return accessTokenDao.getAccessToken();
     }
 
-    public void replaceAccessToken(AccessTokenEntity accessTokenEntity){
-        new DeleteAllAccessTokenAsyncTask(accessTokenDao).execute();
-        new InsertAccessTokenAsyncTask(accessTokenDao).execute(accessTokenEntity);
+    public void replaceAccessToken(final AccessTokenEntity accessTokenEntity){
+        new DeleteAllAccessTokenAsyncTask(accessTokenDao, new DeleteAllCallback() {
+            @Override
+            public void finish() {
+                new InsertAccessTokenAsyncTask(accessTokenDao).execute(accessTokenEntity);
+            }
+        }).execute();
     }
 
-    public void updateAccessToken(AccessTokenEntity accessTokenEntity){
-        new InsertAccessTokenAsyncTask(accessTokenDao).execute(accessTokenEntity);
-    }
-
-    public void replaceLoggedInCustomer(CustomerEntity customerEntity) {
-        new DeleteAllCustomerAsyncTask(customerDao).execute();
-        new InsertCustomerAsyncTask(customerDao).execute(customerEntity);
+    public void replaceLoggedInCustomer(final CustomerEntity customerEntity) {
+       new DeleteAllCustomerAsyncTask(customerDao, new DeleteAllCallback() {
+           @Override
+           public void finish() {
+               new InsertCustomerAsyncTask(customerDao).execute(customerEntity);
+           }
+       }).execute();
     }
 
     public Call<CustomerJson> signup(String name, String phone, String username, String password) {
@@ -65,7 +71,41 @@ public class CustomerRepository {
         }else if(parts.length > 1){
             lastName = parts[1];
         }
-        return resetApi.signup(new CustomerJson(username,password,firstName,middleName,lastName, phone,null));
+
+        CustomerJson customerJson = new CustomerJson();
+        customerJson.setCustomer_first_name(firstName);
+        customerJson.setCustomer_middle_name(middleName);
+        customerJson.setCustomer_last_name(lastName);
+        customerJson.setCustomer_username(username);
+        customerJson.setCustomer_phone(phone);
+        customerJson.setCustomer_password(password);
+        return resetApi.signup(customerJson);
+    }
+
+    public void logoutCustomer() {
+        new DeleteAllCustomerAsyncTask(customerDao,null).execute();
+    }
+
+    public Call<CustomerJson> updateCustomer(String name, String phone, String username,
+                               String password, String currentPassword, String id, String accessToken) {
+        String firstName, middleName=null, lastName=null;
+        String [] parts = name.trim().split(" ");
+        firstName = parts[0];
+        if (parts.length > 2) {
+            middleName = parts[1];
+            lastName = parts[2];
+        }else if(parts.length > 1){
+            lastName = parts[1];
+        }
+
+        CustomerJson customerJson = new CustomerJson();
+        customerJson.setCustomer_first_name(firstName);
+        customerJson.setCustomer_middle_name(middleName);
+        customerJson.setCustomer_last_name(lastName);
+        customerJson.setCustomer_username(username);
+        customerJson.setCustomer_phone(phone);
+        customerJson.setCustomer_password(password);
+        return resetApi.updateCustomer(customerJson,id,currentPassword,"Bearer "+accessToken);
     }
 
     private static class InsertAccessTokenAsyncTask extends AsyncTask<AccessTokenEntity, Void, Void> {
@@ -87,9 +127,10 @@ public class CustomerRepository {
 
     private static class DeleteAllAccessTokenAsyncTask extends AsyncTask<Void, Void, Void> {
         private AccessTokenDao accessTokenDao;
-
-        DeleteAllAccessTokenAsyncTask(AccessTokenDao accessTokenDao) {
+        private DeleteAllCallback deleteAllCallback;
+        DeleteAllAccessTokenAsyncTask(AccessTokenDao accessTokenDao, DeleteAllCallback deleteAllCallback) {
             this.accessTokenDao = accessTokenDao;
+            this.deleteAllCallback = deleteAllCallback;
         }
 
         @Override
@@ -100,12 +141,22 @@ public class CustomerRepository {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (deleteAllCallback !=null){
+                deleteAllCallback.finish();
+            }
+        }
     }
 
     private static class DeleteAllCustomerAsyncTask extends AsyncTask<Void, Void, Void>{
         CustomerDao customerDao;
-        public DeleteAllCustomerAsyncTask(CustomerDao customerDao) {
+        DeleteAllCallback deleteAllCallback;
+         DeleteAllCustomerAsyncTask(CustomerDao customerDao, DeleteAllCallback deleteAllCallback) {
             this.customerDao = customerDao;
+            this.deleteAllCallback = deleteAllCallback;
         }
 
         @Override
@@ -114,6 +165,14 @@ public class CustomerRepository {
                 this.customerDao.deleteAll();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (deleteAllCallback !=null) {
+                deleteAllCallback.finish();
+            }
         }
     }
 
@@ -130,5 +189,9 @@ public class CustomerRepository {
             }
             return null;
         }
+    }
+
+    interface DeleteAllCallback{
+        void finish();
     }
 }

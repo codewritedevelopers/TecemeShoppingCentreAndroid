@@ -32,11 +32,11 @@ public class AccountViewModel extends AndroidViewModel {
     private MutableLiveData<ProfileFormState> profileFormState = new MutableLiveData<>();
     private MutableLiveData<CustomerJson> loginResult = new MutableLiveData<>();
     private MutableLiveData<CustomerJson> signupResult = new MutableLiveData<>();
-    private MutableLiveData<CustomerJson> profileUpDateResult = new MutableLiveData<>();
 
     private CustomerRepository customerRepository;
     private LiveData<CustomerEntity> loggedInCustomer;
     private LiveData<AccessTokenEntity> accessToken;
+    private MutableLiveData<CustomerJson> profileResult = new MutableLiveData<>();
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -66,8 +66,8 @@ public class AccountViewModel extends AndroidViewModel {
         return signupResult;
     }
 
-    public LiveData<CustomerJson> getProfileUpdateResult() {
-        return profileUpDateResult;
+    public MutableLiveData<CustomerJson> getProfileResult() {
+        return profileResult;
     }
 
     public LiveData<CustomerEntity> getLoggedInCustomer() {
@@ -82,15 +82,20 @@ public class AccountViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CustomerJson> call,
                                    @NonNull Response<CustomerJson> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     loginResult.postValue(response.body());
-                   String token =  response.headers().get("Token");
-                   replaceWithAccessToken( new AccessTokenEntity(token));
-                }
-                else {
-                    loginResult.postValue(response.body());
+                    String token = response.headers().get("Token");
+                    if (token !=null) {
+                        replaceWithAccessToken(new AccessTokenEntity(token));
+                    }
+                } else {
+                    CustomerJson result = new CustomerJson();
+                    result.setStatus(false);
+                    result.setMessage(response.message());
+                    loginResult.postValue(result);
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<CustomerJson> call, @NonNull Throwable t) {
                 CustomerJson result = new CustomerJson();
@@ -101,11 +106,8 @@ public class AccountViewModel extends AndroidViewModel {
         });
     }
 
-    private void replaceWithAccessToken(AccessTokenEntity accessToken){
+    private void replaceWithAccessToken(AccessTokenEntity accessToken) {
         customerRepository.replaceAccessToken(accessToken);
-    }
-    private void updateAccessToken(AccessTokenEntity accessTokenEntity){
-        customerRepository.updateAccessToken(accessTokenEntity);
     }
 
     public void loginFormDataChanged(String username, String password) {
@@ -118,22 +120,20 @@ public class AccountViewModel extends AndroidViewModel {
         }
     }
 
-    public void signUpFormDataChanged(String name, String phone,String username, String password, String cPassword) {
+    public void signUpFormDataChanged(String name, String phone, String username, String password, String cPassword) {
         if (!isNameValid(name)) {
             signupFormState.setValue(new SignupFormState(R.string.invalid_name,
-                    null,null,null,null));
-        }
-        else if (!isPhoneValid(phone)) {
-            signupFormState.setValue(new SignupFormState(null,R.string.invalid_phone, null,null,null));
-        }
-        else if (isUserNameValid(username)) {
-            signupFormState.setValue(new SignupFormState(null,null,R.string.invalid_username, null,null));
+                    null, null, null, null));
+        } else if (!isPhoneValid(phone)) {
+            signupFormState.setValue(new SignupFormState(null, R.string.invalid_phone, null, null, null));
+        } else if (isUserNameValid(username)) {
+            signupFormState.setValue(new SignupFormState(null, null, R.string.invalid_username, null, null));
         } else if (!isPasswordValid(password)) {
-            signupFormState.setValue(new SignupFormState(null,null,null, R.string.invalid_password,null));
-        }else if (!isConfirmPasswordValid(cPassword)) {
-            signupFormState.setValue(new SignupFormState(null,null,null,null, R.string.invalid_password));
-        }else if (!isConfirmPasswordValid2(password,cPassword)) {
-            signupFormState.setValue(new SignupFormState(null,null,null,null, R.string.password_miss_match));
+            signupFormState.setValue(new SignupFormState(null, null, null, R.string.invalid_password, null));
+        } else if (!isConfirmPasswordValid(cPassword)) {
+            signupFormState.setValue(new SignupFormState(null, null, null, null, R.string.invalid_password));
+        } else if (!isConfirmPasswordValid2(password, cPassword)) {
+            signupFormState.setValue(new SignupFormState(null, null, null, null, R.string.password_miss_match));
         } else {
             signupFormState.setValue(new SignupFormState(true));
         }
@@ -156,19 +156,29 @@ public class AccountViewModel extends AndroidViewModel {
         if (username == null) {
             return true;
         }
-        if (username.contains("@")) {
-            return !Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return username.trim().isEmpty();
-        }
+        return !Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 3;
+        return password != null && password.length() > 3;
+    }
+
+    private boolean isPasswordValidProfile(String password) {
+        if (password.isEmpty()|| password==null) {
+            return true;
+        }
+        return password.length() > 3;
     }
 
     private boolean isConfirmPasswordValid2(String password, String confirmPassword) {
+        return password.equals(confirmPassword);
+    }
+
+    private boolean isConfirmPasswordValidProfile(String password, String confirmPassword) {
+        if (password==null) {
+            return true;
+        }
         return password.equals(confirmPassword);
     }
 
@@ -194,16 +204,83 @@ public class AccountViewModel extends AndroidViewModel {
             @Override
             public void onResponse(@NonNull Call<CustomerJson> call,
                                    @NonNull Response<CustomerJson> response) {
+                if (response.isSuccessful()) {
                     signupResult.postValue(response.body());
+                } else {
+                    CustomerJson result = new CustomerJson();
+                    result.setStatus(false);
+                    result.setMessage(response.message());
+                    loginResult.postValue(result);
+                }
             }
 
             @Override
-            public void onFailure(@NonNull Call<CustomerJson> call,@NonNull Throwable t) {
-                CustomerJson customerJson =new CustomerJson();
+            public void onFailure(@NonNull Call<CustomerJson> call, @NonNull Throwable t) {
+                CustomerJson customerJson = new CustomerJson();
                 customerJson.setStatus(false);
                 customerJson.setMessage(t.getMessage());
                 signupResult.postValue(customerJson);
             }
         });
+    }
+
+    public void logoutCustomer() {
+        customerRepository.logoutCustomer();
+    }
+
+    public void profileFormDataChanged(String name, String phone,
+                                       String username, String password, String cPassword) {
+        if (!isNameValid(name)) {
+            profileFormState.setValue(new ProfileFormState(R.string.invalid_name,
+                    null, null, null, null));
+        } else if (!isPhoneValid(phone)) {
+            profileFormState.setValue(new ProfileFormState(null, R.string.invalid_phone, null, null, null));
+        } else if (isUserNameValid(username)) {
+            profileFormState.setValue(new ProfileFormState(null, null, R.string.invalid_username, null, null));
+        } else if (!isPasswordValidProfile(password)) {
+            profileFormState.setValue(new ProfileFormState(null, null, null, R.string.invalid_password, null));
+        } else if (!isPasswordValidProfile(cPassword)) {
+            profileFormState.setValue(new ProfileFormState(null, null, null, null, R.string.invalid_password));
+        } else if (!isConfirmPasswordValidProfile(password, cPassword)) {
+            profileFormState.setValue(new ProfileFormState(null, null, null, null, R.string.password_miss_match));
+        } else {
+            profileFormState.setValue(new ProfileFormState(true));
+        }
+    }
+
+    public void update(String name, String phone,String username, String password,
+                       String currentPassword, String id, String accessToken) {
+        Call<CustomerJson> customerJsonCall
+                = customerRepository.updateCustomer(name, phone, username, password, currentPassword, id,accessToken);
+        customerJsonCall.enqueue(new Callback<CustomerJson>() {
+            @Override
+            public void onResponse(@NonNull Call<CustomerJson> call,
+                                   @NonNull Response<CustomerJson> response) {
+                if (response.isSuccessful()) {
+                    profileResult.postValue(response.body());
+                    String token = response.headers().get("Token");
+                    if (token !=null) {
+                        updateWithAccessToken(new AccessTokenEntity(token));
+                    }
+                } else {
+                    CustomerJson result = new CustomerJson();
+                    result.setStatus(false);
+                    result.setMessage(response.message());
+                    profileResult.postValue(result);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CustomerJson> call, @NonNull Throwable t) {
+                CustomerJson customerJson = new CustomerJson();
+                customerJson.setStatus(false);
+                customerJson.setMessage(t.getMessage());
+                signupResult.postValue(customerJson);
+            }
+        });
+    }
+
+    private void updateWithAccessToken(AccessTokenEntity accessTokenEntity) {
+        customerRepository.replaceAccessToken(accessTokenEntity);
     }
 }

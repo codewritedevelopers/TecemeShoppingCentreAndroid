@@ -11,10 +11,12 @@ import android.widget.TextView;
 import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.ui.account.LoginActivity;
+import org.w3c.dom.Text;
 
 public class ConfirmationActivity extends AppCompatActivity {
 
     public static final String LAUNCH_KEY = "org.codewrite.teceme.LAUNCH_KEY";
+    public static final String LAUNCH_EMAIL = "org.codewrite.teceme.LAUNCH_EMAIL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,13 +26,14 @@ public class ConfirmationActivity extends AppCompatActivity {
         Button backToLogin = findViewById(R.id.back_to_login);
         Button backToHome = findViewById(R.id.back_to_home);
         Button goBack = findViewById(R.id.go_back);
-
         TextView message = findViewById(R.id.confirmation_message);
+        TextView title = findViewById(R.id.confirmation_title);
 
         if ("SIGN_UP_CONFIRMATION".equals(getIntent().getStringExtra(LAUNCH_KEY))){
+            title.setText(R.string.account_confirmation);;
             backToLogin.setVisibility(View.VISIBLE);
             String text = "Account created successfully. Please check your email (i.e "+
-                    getIntent().getStringExtra("EMAIL")+") to activate your account.";
+                    getIntent().getStringExtra(LAUNCH_EMAIL)+") to activate your account.";
             message.setText(text);
             backToLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -40,8 +43,9 @@ public class ConfirmationActivity extends AppCompatActivity {
                 }
             });
         }else if ("CHECK_OUT_CONFIRMATION".equals(getIntent().getStringExtra(LAUNCH_KEY))){
+            title.setText(R.string.order_confirmation);
             String text = "We have successfully created your order. Please check your email (i.e "+
-                    getIntent().getStringExtra("EMAIL")+") for detail as to how to retrieve" +
+                    getIntent().getStringExtra(LAUNCH_EMAIL)+") for detail as to how to retrieve" +
                     " your order from any of our vendor.";
             message.setText(text);
             backToHome.setVisibility(View.VISIBLE);
@@ -53,8 +57,9 @@ public class ConfirmationActivity extends AppCompatActivity {
                 }
             });
         } else if ("CREATE_WALLET_CONFIRMATION".equals(getIntent().getStringExtra(LAUNCH_KEY))){
+            title.setText(R.string.wallet_confirmation);
             String text = "Wallet created successfully. Please check your email (i.e "+
-                    getIntent().getStringExtra("EMAIL")+") to activate your wallet.";
+                    getIntent().getStringExtra(LAUNCH_EMAIL)+") to activate your wallet.";
             message.setText(text);
             goBack.setVisibility(View.VISIBLE);
             goBack.setOnClickListener(new View.OnClickListener() {

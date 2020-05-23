@@ -14,7 +14,7 @@ public class AccessTokenEntity {
         this.token = token;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
