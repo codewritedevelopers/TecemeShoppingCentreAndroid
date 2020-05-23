@@ -47,5 +47,5 @@
         android:tint="@color/colorWhite"
         android:visibility="invisible"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@android:drawable/arrow_up_float" />
+        app:srcCompat="@drawable/icons8_up" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,27 +8,26 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import org.codewrite.teceme.model.holder.Order;
-import org.codewrite.teceme.model.room.CartEntity;
+import org.codewrite.teceme.model.room.OrderEntity;
 
 import java.util.List;
 
 @Dao
 public interface OrderDao {
     @Query("SELECT * FROM order_table WHERE order_access= 1")
-    LiveData<List<CartEntity>> getOrder();
+    LiveData<List<OrderEntity>> getOrder();
 
     @Query("SELECT * FROM order_table WHERE order_access= 1 AND order_id =:id limit 1")
-    LiveData<Order> getOrder(Integer id);
+    LiveData<OrderEntity> getOrder(Integer id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Order entity);
+    void insert(OrderEntity entity);
 
     @Update
-    void update(Order entity);
+    void update(OrderEntity entity);
 
     @Delete
-    void delete(Order entity);
+    void delete(OrderEntity entity);
 
     @Query("DELETE FROM order_table WHERE 1")
     void deleteAll();

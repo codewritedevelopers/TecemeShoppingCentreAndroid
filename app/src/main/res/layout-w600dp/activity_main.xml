@@ -33,7 +33,7 @@
         android:visibility="visible"
         android:tint="@color/colorWhite"
         app:backgroundTint="@color/colorPrimary"
-         app:srcCompat="@android:drawable/arrow_up_float" />
+         app:srcCompat="@drawable/icons8_up" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"

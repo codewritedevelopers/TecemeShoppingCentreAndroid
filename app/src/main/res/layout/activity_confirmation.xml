@@ -23,7 +23,7 @@
         android:textColor="@color/colorBlack"
         android:textSize="24sp"/>
     <TextView
-        android:id="@+id/id_confirmation"
+        android:id="@+id/confirmation_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/confirm_message_text"
@@ -31,15 +31,45 @@
         android:layout_below="@id/confirmation_title"
         android:layout_marginTop="24dp"/>
     <Button
-        android:id="@+id/id_back_to"
+        android:id="@+id/back_to_home"
         android:layout_width="@dimen/button_width"
         android:layout_height="wrap_content"
         android:text="@string/back_to_text"
         android:textAllCaps="false"
         android:textSize="16sp"
+        android:visibility="gone"
         android:textColor="@color/colorWhite"
-        android:layout_below="@id/id_confirmation"
+        android:layout_below="@id/confirmation_message"
         android:layout_marginTop="24dp"
         android:layout_centerHorizontal="true"
         android:background="@drawable/ripple_effect_with_border"/>
+
+    <Button
+        android:id="@+id/back_to_login"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="wrap_content"
+        android:text="@string/back_to_login"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@id/confirmation_message"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ripple_effect_with_border"/>
+
+    <Button
+        android:id="@+id/go_back"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="wrap_content"
+        android:text="@string/go_back"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@id/confirmation_message"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ripple_effect_with_border"/>
+
 </RelativeLayout>

@@ -32,7 +32,10 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/input_layout_margin">
+                android:layout_marginStart="@dimen/input_layout_margin"
+                android:layout_marginTop="@dimen/input_vertical_margin"
+                android:layout_marginEnd="@dimen/input_layout_margin"
+                android:layout_marginBottom="@dimen/input_layout_margin">
 
                 <EditText
                     android:id="@+id/username"
@@ -52,6 +55,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/icon_eye_close"
                     android:hint="@string/prompt_password"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionDone"
@@ -103,6 +107,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="400dp"
+        android:layout_marginBottom="200dp"
         android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

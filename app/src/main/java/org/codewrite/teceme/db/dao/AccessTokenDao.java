@@ -14,11 +14,8 @@ import java.util.List;
 
 @Dao
 public interface AccessTokenDao {
-    @Query("SELECT * FROM access_token_table")
-    LiveData<List<CartEntity>> getAccessToken();
-
-    @Query("SELECT * FROM access_token_table WHERE id =:id limit 1")
-    LiveData<AccessTokenEntity> getAccessToken(Integer id);
+    @Query("SELECT * FROM access_token_table limit 1")
+    LiveData<AccessTokenEntity> getAccessToken();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(AccessTokenEntity entity);

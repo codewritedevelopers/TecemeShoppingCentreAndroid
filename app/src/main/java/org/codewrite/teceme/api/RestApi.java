@@ -1,6 +1,5 @@
 package org.codewrite.teceme.api;
 
-import org.codewrite.teceme.model.holder.Customer;
 import org.codewrite.teceme.model.rest.CustomerJson;
 
 import retrofit2.Call;
@@ -15,8 +14,8 @@ public interface RestApi {
     /*
      * POST
      */
-    @POST("customer/signup")
-    Call<Customer> signup(@Body Customer customer);
+    @POST("customer/account")
+    Call<CustomerJson> signup(@Body CustomerJson customer);
 
     @FormUrlEncoded
     @POST("customer/login")
@@ -24,6 +23,6 @@ public interface RestApi {
                              @Field("password") String password);
 
     @GET("customer")
-    Call<Customer> getCustomer();
+    Call<CustomerJson> getCustomer();
 
 }

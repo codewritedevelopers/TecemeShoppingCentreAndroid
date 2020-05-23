@@ -17,8 +17,8 @@ public interface WishListDao {
     @Query("SELECT * FROM wish_list_table WHERE wishlist_access=1 AND wishlist_customer_id =:owner")
     LiveData<List<WishListEntity>> getWallet(String owner);
 
-    @Query("SELECT * FROM wish_list_table WHERE wishlist_access=1 AND wishlist_id =:id AND wishlist_customer_id =:owner")
-    LiveData<WishListEntity> getWallet(Integer id, String owner);
+    @Query("SELECT * FROM wish_list_table WHERE wishlist_access=1 AND wishlist_product_id =:productId AND wishlist_customer_id =:owner")
+    LiveData<WishListEntity> getWalletByProduct(String owner, Integer productId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(WishListEntity entity);

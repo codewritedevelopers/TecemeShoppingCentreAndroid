@@ -17,8 +17,8 @@ public interface CustomerDao {
     @Query("SELECT * FROM customer_table WHERE customer_access= 1")
     LiveData<List<CustomerEntity>> getCustomer();
 
-    @Query("SELECT * FROM customer_table WHERE customer_access= 1 AND customer_id =:id limit 1")
-    LiveData<CustomerEntity> getCustomer(Integer id);
+    @Query("SELECT * FROM customer_table WHERE customer_access= 1 limit 1")
+    LiveData<CustomerEntity> getLoggedInCustomer();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CustomerEntity entity);

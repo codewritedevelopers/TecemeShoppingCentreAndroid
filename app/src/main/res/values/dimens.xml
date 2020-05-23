@@ -58,4 +58,5 @@
     <dimen name="text_x_padding">5dp</dimen>
     <dimen name="text__x_margin">8dp</dimen>
     <dimen name="card_elevation">30dp</dimen>
+    <dimen name="input_vertical_margin">48dp</dimen>
 </resources>

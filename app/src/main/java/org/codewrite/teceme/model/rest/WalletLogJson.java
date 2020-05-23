@@ -1,6 +1,6 @@
 package org.codewrite.teceme.model.rest;
 
-import org.codewrite.teceme.model.holder.WalletLog;
+import org.codewrite.teceme.model.room.WalletLogEntity;
 
-public class WalletLogJson extends WalletLog {
+public class WalletLogJson extends WalletLogEntity {
 }

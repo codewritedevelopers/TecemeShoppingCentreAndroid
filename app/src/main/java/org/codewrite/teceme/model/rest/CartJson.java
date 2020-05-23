@@ -1,6 +1,6 @@
 package org.codewrite.teceme.model.rest;
 
-import org.codewrite.teceme.model.holder.Cart;
+import org.codewrite.teceme.model.room.CartEntity;
 
-public class CartJson extends Cart {
+public class CartJson extends CartEntity {
 }

@@ -3,6 +3,5 @@
         <shape>
             <solid android:color="@color/colorWhite" />
         </shape>
-
     </item>
 </selector>

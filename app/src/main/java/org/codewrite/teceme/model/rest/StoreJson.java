@@ -1,6 +1,6 @@
 package org.codewrite.teceme.model.rest;
 
-import org.codewrite.teceme.model.holder.Store;
+import org.codewrite.teceme.model.room.StoreEntity;
 
-public class StoreJson extends Store {
+public class StoreJson extends StoreEntity {
 }

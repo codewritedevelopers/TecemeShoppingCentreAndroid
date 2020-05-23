@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.LoginFormState;
-import org.codewrite.teceme.model.holder.Customer;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.repository.CustomerRepository;
 

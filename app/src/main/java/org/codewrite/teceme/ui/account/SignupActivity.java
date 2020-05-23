@@ -19,50 +19,68 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.model.form.LoginFormState;
+import org.codewrite.teceme.model.form.SignupFormState;
 import org.codewrite.teceme.model.rest.CustomerJson;
-import org.codewrite.teceme.viewmodel.CustomerViewModel;
+import org.codewrite.teceme.ui.others.ConfirmationActivity;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private CustomerViewModel customerViewModel;
+    private AccountViewModel accountViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        customerViewModel = ViewModelProviders.of(SignupActivity.this).get(CustomerViewModel.class);
+        accountViewModel = ViewModelProviders.of(SignupActivity.this).get(AccountViewModel.class);
 
+        final EditText nameEditText = findViewById(R.id.name);
+        final EditText phoneEditText = findViewById(R.id.phone);
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
+        final EditText cPasswordEditText = findViewById(R.id.confirm_password);
         final Button signupButton = findViewById(R.id.action_sign_up);
-        TextView toLogin = findViewById(R.id.id_login_from_sign_up);
+        TextView toLogin = findViewById(R.id.login_from_sign_up);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        customerViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        accountViewModel.getSignupFormState().observe(this, new Observer<SignupFormState>() {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
+            public void onChanged(@Nullable SignupFormState signupFormState) {
+                if (signupFormState == null) {
                     return;
                 }
-                signupButton.setEnabled(loginFormState.isDataValid());
-                if (loginFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(loginFormState.getUsernameError()));
+                signupButton.setEnabled(signupFormState.isDataValid());
+                if (signupFormState.getNameError() != null) {
+                    nameEditText.setError(getString(signupFormState.getNameError()));
                 }
-                if (loginFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(loginFormState.getPasswordError()));
+                if (signupFormState.getPhoneError() != null) {
+                    phoneEditText.setError(getString(signupFormState.getPhoneError()));
+                }
+                if (signupFormState.getUsernameError() != null) {
+                    usernameEditText.setError(getString(signupFormState.getUsernameError()));
+                }
+                if (signupFormState.getPasswordError() != null) {
+                    passwordEditText.setError(getString(signupFormState.getPasswordError()));
+                }
+                if (signupFormState.getConfirmPasswordError() != null) {
+                    cPasswordEditText.setError(getString(signupFormState.getConfirmPasswordError()));
                 }
             }
         });
 
-        customerViewModel.getLoginResult().observe(this, new Observer<CustomerJson>() {
+        accountViewModel.getSignupResult().observe(this, new Observer<CustomerJson>() {
             @Override
-            public void onChanged(@Nullable CustomerJson loginResult) {
-                if (loginResult == null) {
+            public void onChanged(@Nullable CustomerJson signupResult) {
+                if (signupResult == null) {
                     return;
                 }
                 loadingProgressBar.setVisibility(View.GONE);
-                Toast.makeText(SignupActivity.this, loginResult.getCustomer_username(), Toast.LENGTH_SHORT).show();
+                if (signupResult.isStatus() == null
+                        && !signupResult.getCustomer_id().isEmpty()) {
+                   launchConfirmationActivity(signupResult.getCustomer_username());
+                } else if (!signupResult.isStatus()) {
+                    signupErrorAlert(signupResult.getMessage());
+                }
             }
         });
 
@@ -79,20 +97,29 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                customerViewModel.loginFormDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                accountViewModel.signUpFormDataChanged(nameEditText.getText().toString(),
+                        phoneEditText.getText().toString(),
+                        usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        cPasswordEditText.getText().toString());
             }
         };
+        nameEditText.addTextChangedListener(afterTextChangedListener);
+        phoneEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        cPasswordEditText.addTextChangedListener(afterTextChangedListener);
+        cPasswordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loadingProgressBar.setVisibility(View.VISIBLE);
-                    customerViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    accountViewModel.signup(nameEditText.getText().toString(),
+                            phoneEditText.getText().toString(),
+                            usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString(),
+                            cPasswordEditText.getText().toString());
                 }
                 return false;
             }
@@ -102,8 +129,11 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                customerViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                accountViewModel.signup(nameEditText.getText().toString(),
+                        phoneEditText.getText().toString(),
+                        usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        cPasswordEditText.getText().toString());
             }
         });
 
@@ -116,12 +146,15 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void showLoginFailed(String errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    private void launchConfirmationActivity(String email) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ConfirmationActivity.LAUNCH_KEY,"SIGN_UP_CONFIRMATION");
+        bundle.putString("EMAIL",email);
+        startActivity(new Intent(SignupActivity.this, ConfirmationActivity.class));
+        finish();
     }
 
-    public void gotoSignUp(View view) {
-
+    private void signupErrorAlert(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
 }

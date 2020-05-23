@@ -1,4 +1,6 @@
 package org.codewrite.teceme.model.rest;
 
-public class WalletJson {
+import org.codewrite.teceme.model.room.WalletEntity;
+
+public class WalletJson extends WalletEntity {
 }

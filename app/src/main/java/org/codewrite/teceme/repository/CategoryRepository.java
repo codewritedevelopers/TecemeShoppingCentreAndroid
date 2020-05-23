@@ -2,7 +2,6 @@ package org.codewrite.teceme.repository;
 
 import android.app.Application;
 
-import org.codewrite.teceme.model.holder.Category;
 import org.codewrite.teceme.model.rest.CategoryJson;
 
 import java.util.List;

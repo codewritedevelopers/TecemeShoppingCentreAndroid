@@ -16,10 +16,10 @@ import java.util.List;
 @Dao
 public interface WalletDao {
     @Query("SELECT * FROM wallet_table WHERE wallet_access=1")
-    LiveData<List<WalletLogEntity>> getWallet();
+    LiveData<List<WalletEntity>> getWallet();
 
     @Query("SELECT * FROM wallet_table WHERE wallet_access=1 AND wallet_owner =:owner limit 1")
-    LiveData<WalletLogEntity> getWallet(String owner);
+    LiveData<WalletEntity> getWallet(String owner);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(WalletEntity entity);
@@ -28,8 +28,8 @@ public interface WalletDao {
     void update(WalletEntity entity);
 
     @Delete
-    void delete(WalletEntity entity);
+    void delete(WalletLogEntity entity);
 
-    @Query("DELETE FROM wallet_table WHERE 1")
+    @Query("DELETE FROM wallet_table WHERE wallet_owner=:owner")
     void deleteAll(String owner);
 }
