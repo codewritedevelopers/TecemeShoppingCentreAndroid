@@ -1,6 +1,7 @@
 package org.codewrite.teceme.api;
 
 import org.codewrite.teceme.model.rest.CustomerJson;
+import org.codewrite.teceme.model.rest.WalletJson;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -34,4 +35,18 @@ public interface RestApi {
                                       @Path("id") String id,
                                       @Path("current_password") String currentPassword,
                                       @Header("Authorization") String token);
+
+    @POST("customer/wallet")
+    Call<WalletJson> createWallet(@Body WalletJson walletJson,
+                                  @Header("Authorization") String token);
+
+    @PATCH("customer/wallet")
+    Call<WalletJson> updateWallet(@Body WalletJson walletJson,
+                                  @Header("Authorization") String token);
+
+    @PATCH("customer/account/{id}")
+    Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
+                                      @Path("id") String id,
+                                      @Header("Authorization") String accessToken);
+
 }

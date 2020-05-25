@@ -2,14 +2,18 @@ package org.codewrite.teceme;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -18,12 +22,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
-import org.codewrite.teceme.ui.product.ProductSearchable;
+import org.codewrite.teceme.ui.account.AccountsActivity;
+import org.codewrite.teceme.ui.product.ProductActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     private NestedScrollView nestedScrollView;
     private SearchBox searchBox;
+   private NavController navController;
+   private BottomNavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+         navView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -39,15 +46,13 @@ public class MainActivity extends AppCompatActivity {
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration =
                 new AppBarConfiguration.Builder(R.id.navigation_home,R.id.navigation_category,
-                        R.id.navigation_stores,R.id.navigation_cart,R.id.navigation_account )
+                        R.id.navigation_stores,R.id.navigation_cart )
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-
         setupSearchView();
     }
-
 
     @Override
     public void onResume() {
@@ -88,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSearch(String searchTerm) {
                 Toast.makeText(MainActivity.this, searchTerm +" Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(MainActivity.this, ProductSearchable.class);
+                Intent i = new Intent(MainActivity.this, ProductActivity.class);
                 i.setAction(Intent.ACTION_SEARCH);
                 i.putExtra("SEARCH_ITEM", searchTerm);
                 startActivity(i);
@@ -97,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResultClick(SearchResult result){
                 //React to a result being clicked
-                Intent i = new Intent(MainActivity.this, ProductSearchable.class);
+                Intent i = new Intent(MainActivity.this, ProductActivity.class);
                 i.setAction(Intent.ACTION_SEARCH);
                 i.putExtra("SEARCH_ITEM", result.title);
                 startActivity(i);
@@ -108,6 +113,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+        });
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        MenuItem item = navView.getMenu().getItem(4);
+
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+              startActivity(new Intent(MainActivity.this, AccountsActivity.class));
+                return false;
+            }
         });
     }
 }

@@ -1,4 +1,4 @@
-package org.codewrite.teceme.ui.others;
+package org.codewrite.teceme.ui.payment;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import org.codewrite.teceme.R;
 
-public class HelpAndSupportActivity extends AppCompatActivity {
+public class CheckoutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help_and_support);
+        setContentView(R.layout.activity_checkout);
     }
 }

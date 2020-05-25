@@ -17,6 +17,8 @@ import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.repository.CustomerRepository;
 
+import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +39,7 @@ public class AccountViewModel extends AndroidViewModel {
     private LiveData<CustomerEntity> loggedInCustomer;
     private LiveData<AccessTokenEntity> accessToken;
     private MutableLiveData<CustomerJson> profileResult = new MutableLiveData<>();
+    private MutableLiveData<CustomerJson> deleteResult = new MutableLiveData<>();
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -85,7 +88,7 @@ public class AccountViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     loginResult.postValue(response.body());
                     String token = response.headers().get("Token");
-                    if (token !=null) {
+                    if (token != null) {
                         replaceWithAccessToken(new AccessTokenEntity(token));
                     }
                 } else {
@@ -100,7 +103,11 @@ public class AccountViewModel extends AndroidViewModel {
             public void onFailure(@NonNull Call<CustomerJson> call, @NonNull Throwable t) {
                 CustomerJson result = new CustomerJson();
                 result.setStatus(false);
-                result.setMessage(t.getMessage());
+                if(t.getMessage()!=null) {
+                    result.setMessage(t.getMessage());
+                }else{
+                    result.setMessage("Process timeout! Please, Try again");
+                }
                 loginResult.postValue(result);
             }
         });
@@ -111,7 +118,7 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void loginFormDataChanged(String username, String password) {
-        if (isUserNameValid(username)) {
+        if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
             loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
@@ -124,11 +131,11 @@ public class AccountViewModel extends AndroidViewModel {
         if (!isNameValid(name)) {
             signupFormState.setValue(new SignupFormState(R.string.invalid_name,
                     null, null, null, null));
+        }  else if (!isUserNameValid(username)) {
+            signupFormState.setValue(new SignupFormState(null, null, R.string.invalid_username, null, null));
         } else if (!isPhoneValid(phone)) {
             signupFormState.setValue(new SignupFormState(null, R.string.invalid_phone, null, null, null));
-        } else if (isUserNameValid(username)) {
-            signupFormState.setValue(new SignupFormState(null, null, R.string.invalid_username, null, null));
-        } else if (!isPasswordValid(password)) {
+        }else if (!isPasswordValid(password)) {
             signupFormState.setValue(new SignupFormState(null, null, null, R.string.invalid_password, null));
         } else if (!isConfirmPasswordValid(cPassword)) {
             signupFormState.setValue(new SignupFormState(null, null, null, null, R.string.invalid_password));
@@ -153,10 +160,7 @@ public class AccountViewModel extends AndroidViewModel {
 
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return true;
-        }
-        return !Patterns.EMAIL_ADDRESS.matcher(username).matches();
+        return username != null && Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
 
     // A placeholder password validation check
@@ -165,10 +169,8 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     private boolean isPasswordValidProfile(String password) {
-        if (password.isEmpty()|| password==null) {
-            return true;
-        }
-        return password.length() > 3;
+
+        return password == null || password.length() > 3;
     }
 
     private boolean isConfirmPasswordValid2(String password, String confirmPassword) {
@@ -176,7 +178,7 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     private boolean isConfirmPasswordValidProfile(String password, String confirmPassword) {
-        if (password==null) {
+        if (password == null) {
             return true;
         }
         return password.equals(confirmPassword);
@@ -235,7 +237,7 @@ public class AccountViewModel extends AndroidViewModel {
                     null, null, null, null));
         } else if (!isPhoneValid(phone)) {
             profileFormState.setValue(new ProfileFormState(null, R.string.invalid_phone, null, null, null));
-        } else if (isUserNameValid(username)) {
+        } else if (!isUserNameValid(username)) {
             profileFormState.setValue(new ProfileFormState(null, null, R.string.invalid_username, null, null));
         } else if (!isPasswordValidProfile(password)) {
             profileFormState.setValue(new ProfileFormState(null, null, null, R.string.invalid_password, null));
@@ -248,10 +250,10 @@ public class AccountViewModel extends AndroidViewModel {
         }
     }
 
-    public void update(String name, String phone,String username, String password,
+    public void update(String name, String phone, String username, String password,
                        String currentPassword, String id, String accessToken) {
         Call<CustomerJson> customerJsonCall
-                = customerRepository.updateCustomer(name, phone, username, password, currentPassword, id,accessToken);
+                = customerRepository.updateCustomer(name, phone, username, password, currentPassword, id, accessToken);
         customerJsonCall.enqueue(new Callback<CustomerJson>() {
             @Override
             public void onResponse(@NonNull Call<CustomerJson> call,
@@ -259,7 +261,7 @@ public class AccountViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     profileResult.postValue(response.body());
                     String token = response.headers().get("Token");
-                    if (token !=null) {
+                    if (token != null) {
                         updateWithAccessToken(new AccessTokenEntity(token));
                     }
                 } else {
@@ -282,5 +284,45 @@ public class AccountViewModel extends AndroidViewModel {
 
     private void updateWithAccessToken(AccessTokenEntity accessTokenEntity) {
         customerRepository.replaceAccessToken(accessTokenEntity);
+    }
+
+    public void deleteAccount(String id,String accessToken) {
+        final Call<CustomerJson> delete = customerRepository.delete(id,accessToken);//*711*7#
+
+        delete.enqueue(new Callback<CustomerJson>() {
+            @Override
+            public void onResponse(@NonNull Call<CustomerJson> call,
+                                   @NonNull Response<CustomerJson> response) {
+                if (response.isSuccessful()) {
+                    logoutCustomer();
+                    clearAccessToken();
+                } else{
+                    CustomerJson result = new CustomerJson();
+                    result.setStatus(false);
+                    result.setMessage(response.message());
+                    deleteResult.postValue(result);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CustomerJson> call, @NonNull Throwable t) {
+                CustomerJson result = new CustomerJson();
+                result.setStatus(false);
+                if(t.getMessage()!=null) {
+                    result.setMessage(t.getMessage());
+                }else{
+                    result.setMessage("Process timeout! Please, Try again");
+                }
+                loginResult.postValue(result);
+            }
+        });
+    }
+
+    private void clearAccessToken() {
+        customerRepository.deleteAllAccessToken();
+    }
+
+    public MutableLiveData<CustomerJson> getDeleteResult() {
+        return deleteResult;
     }
 }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -38,6 +40,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         accountViewModel = ViewModelProviders.of(LoginActivity.this).get(AccountViewModel.class);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if(savedInstanceState!=null){
+            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")){
+                toolbar.setVisibility(View.GONE);
+            }
+        }
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
@@ -182,6 +193,21 @@ public class LoginActivity extends AppCompatActivity {
 
     private void replaceWithLoggedInCustomer(CustomerJson loginResult) {
         accountViewModel.replaceWIthLoggedInCustomer(loginResult);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

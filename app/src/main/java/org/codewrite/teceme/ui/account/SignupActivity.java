@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -34,6 +36,14 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         accountViewModel = ViewModelProviders.of(SignupActivity.this).get(AccountViewModel.class);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if(savedInstanceState!=null){
+            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")){
+                toolbar.setVisibility(View.GONE);
+            }
+        }
         final EditText nameEditText = findViewById(R.id.name);
         final EditText phoneEditText = findViewById(R.id.phone);
         final EditText usernameEditText = findViewById(R.id.username);
@@ -156,5 +166,20 @@ public class SignupActivity extends AppCompatActivity {
 
     private void signupErrorAlert(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

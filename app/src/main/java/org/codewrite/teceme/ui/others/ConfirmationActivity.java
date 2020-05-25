@@ -17,6 +17,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     public static final String LAUNCH_KEY = "org.codewrite.teceme.LAUNCH_KEY";
     public static final String LAUNCH_EMAIL = "org.codewrite.teceme.LAUNCH_EMAIL";
+    public static final String LAUNCH_WALLET_ID = "org.codewrite.teceme.LAUNCH_WALLET_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

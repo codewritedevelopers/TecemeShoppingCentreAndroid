@@ -59,4 +59,5 @@
     <dimen name="text__x_margin">8dp</dimen>
     <dimen name="card_elevation">30dp</dimen>
     <dimen name="input_vertical_margin">48dp</dimen>
+    <dimen name="text_size_large">24sp</dimen>
 </resources>

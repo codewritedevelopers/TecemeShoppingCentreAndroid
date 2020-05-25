@@ -5,17 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
-import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.datasource.ProductDataSource;
@@ -24,10 +20,9 @@ import org.codewrite.teceme.viewmodel.ProductViewModel;
 
 import java.util.concurrent.Executor;
 
-import static java.lang.Math.ceil;
 import static java.lang.Math.round;
 
-public class ProductSearchable extends AppCompatActivity {
+public class ProductActivity extends AppCompatActivity {
 
     private ProductViewModel productViewModel;
     private RecyclerView mProductRv;
@@ -37,7 +32,7 @@ public class ProductSearchable extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_searchable);
 
-        productViewModel = ViewModelProviders.of(ProductSearchable.this).get(ProductViewModel.class);
+        productViewModel = ViewModelProviders.of(ProductActivity.this).get(ProductViewModel.class);
 
         mProductRv = findViewById(R.id.id_rv_product_list);
         setupProductRecyclerView(mProductRv);

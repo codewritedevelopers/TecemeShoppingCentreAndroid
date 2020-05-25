@@ -26,8 +26,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/navigation_account"
+        android:id="@+id/navigation_accounts"
         android:icon="@drawable/icons8_gender_neutral_user_120px"
         android:title="@string/title_account"
+        android:checkable="false"
         app:showAsAction="ifRoom" />
 </menu>

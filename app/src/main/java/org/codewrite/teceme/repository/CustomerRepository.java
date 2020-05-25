@@ -108,6 +108,17 @@ public class CustomerRepository {
         return resetApi.updateCustomer(customerJson,id,currentPassword,"Bearer "+accessToken);
     }
 
+    public Call<CustomerJson> delete(String id, String accessToken) {
+
+        CustomerJson customerJson = new CustomerJson();
+       customerJson.setCustomer_access(false);
+        return resetApi.updateCustomer(customerJson,id,accessToken);
+    }
+
+    public void deleteAllAccessToken() {
+        new DeleteAllAccessTokenAsyncTask(accessTokenDao,null).execute();
+    }
+
     private static class InsertAccessTokenAsyncTask extends AsyncTask<AccessTokenEntity, Void, Void> {
         private AccessTokenDao accessTokenDao;
 

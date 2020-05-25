@@ -6,8 +6,6 @@
     android:name="org.codewrite.teceme.StoreListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     android:columnWidth="@dimen/product_card_width"
     android:numColumns="auto_fit"
     tools:activityContext=".ui.store.StoreListActivity"

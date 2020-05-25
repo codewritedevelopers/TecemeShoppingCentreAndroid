@@ -11,8 +11,9 @@ public class WalletEntity extends Result {
     @NonNull
     @PrimaryKey
     private String wallet_owner;
+    private String wallet_id;
     private Long wallet_balance;
-    private Integer wallet_pin_code;
+    private String wallet_pin_code;
     private String wallet_secret_question;
     private String wallet_secret_answer;
     private Boolean wallet_access;
@@ -35,11 +36,11 @@ public class WalletEntity extends Result {
         this.wallet_balance = wallet_balance;
     }
 
-    public Integer getWallet_pin_code() {
+    public String getWallet_pin_code() {
         return wallet_pin_code;
     }
 
-    public void setWallet_pin_code(Integer wallet_pin_code) {
+    public void setWallet_pin_code(String wallet_pin_code) {
         this.wallet_pin_code = wallet_pin_code;
     }
 
@@ -73,5 +74,13 @@ public class WalletEntity extends Result {
 
     public void setWallet_date_created(String wallet_date_created) {
         this.wallet_date_created = wallet_date_created;
+    }
+
+    public String getWallet_id() {
+        return wallet_id;
+    }
+
+    public void setWallet_id(String wallet_id) {
+        this.wallet_id = wallet_id;
     }
 }

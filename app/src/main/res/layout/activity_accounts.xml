@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@drawable/background_with_drop_shadow"
+        app:navigationIcon="@drawable/arrow_back"
+        app:title="@string/title_accounts" />
+
+    <LinearLayout
+        android:id="@+id/profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/todo"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:scaleX="-1"
+            android:src="@drawable/user_laptop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:hint="@string/name_hint"
+                android:padding="4dp"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorBlack"
+                android:textSize="@dimen/text_size_medium" />
+
+            <TextView
+                android:id="@+id/wallet_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/wallet_id_hint"
+                android:padding="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wallet"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_gender_neutral_user_120px"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/wallet_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/wallet_changes_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/notifications"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_bell_120px"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/notifications_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/check_notification_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wish_list"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/heart"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/wish_list_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/see_wish_list_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_logout_rounded_left_filled"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/logout_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/will_logout_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/delete_account"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_gender_neutral_user_120px"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/delete_account_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/will_logout_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/help"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_help_filled"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/help_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/faq_contact_privacy_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/referral"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/ripple_background_with_border_grey"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/todo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icons8_group_filled"
+            android:tint="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/referral_text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/refer_a_friend_text"
+                android:textSize="@dimen/text_size_x_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

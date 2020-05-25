@@ -15,8 +15,6 @@ public class BackToTopFabBehavior implements
     }
     @Override
     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-        Log.d("BackToTopFabBehavior", "onScrollChange: "+scrollY);
         if (scrollY > 300){
             fab.show();
         }else{

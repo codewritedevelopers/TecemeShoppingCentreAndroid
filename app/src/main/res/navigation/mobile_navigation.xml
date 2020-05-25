@@ -12,14 +12,20 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_stores"
-        android:name="org.codewrite.teceme.ui.store.DashboardFragment"
+        android:id="@+id/navigation_category"
+        android:name="org.codewrite.teceme.ui.category.CategoryFragment"
         android:label="@string/title_categories"
         tools:layout="@layout/fragment_category" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="org.codewrite.teceme.ui.notification.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_stores"
+        android:name="org.codewrite.teceme.ui.store.StoresFragment"
+        android:label="@string/title_stores"
+        tools:layout="@layout/fragment_stores" />
+
+    <fragment
+        android:id="@+id/navigation_cart"
+        android:name="org.codewrite.teceme.ui.cart.CartFragment"
+        android:label="@string/title_cart"
+        tools:layout="@layout/fragment_cart" />
 </navigation>
