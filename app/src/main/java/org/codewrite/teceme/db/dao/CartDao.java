@@ -14,10 +14,10 @@ import java.util.List;
 
 @Dao
 public interface CartDao {
-    @Query("SELECT * FROM cart_table WHERE cart_access= 1 and cart_owner=:owner")
+    @Query("SELECT * FROM cart_table WHERE cart_owner=:owner")
     LiveData<List<CartEntity>> getCart(String owner);
 
-    @Query("SELECT * FROM cart_table WHERE cart_access= 1 AND cart_owner =:owner AND cart_product_id=:productId limit 1")
+    @Query("SELECT * FROM cart_table WHERE cart_owner =:owner AND cart_product_id=:productId limit 1")
     LiveData<CartEntity> getCartByProduct(Integer owner, Integer productId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

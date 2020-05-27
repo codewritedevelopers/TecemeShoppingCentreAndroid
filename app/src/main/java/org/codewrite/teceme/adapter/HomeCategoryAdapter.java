@@ -30,10 +30,7 @@ public class HomeCategoryAdapter extends ListAdapter<CategoryEntity, HomeCategor
                                           @NonNull CategoryEntity newItem) {
 
             return oldItem.getCategory_name().equals(newItem.getCategory_name())
-                    && oldItem.getCategory_access().equals(newItem.getCategory_access())
-                    && oldItem.getCategory_date_created().equals(newItem.getCategory_date_created())
-                    && oldItem.getCategory_level().equals(newItem.getCategory_level())
-                    && oldItem.getCategory_parent_id().equals(newItem.getCategory_parent_id());
+                    && oldItem.getCategory_level().equals(newItem.getCategory_level());
         }
     };
 
@@ -109,7 +106,7 @@ public class HomeCategoryAdapter extends ListAdapter<CategoryEntity, HomeCategor
         this.categoryViewListener = categoryViewListener;
     }
 
-    class CategoryViewHolder extends RecyclerView.ViewHolder {
+    static class CategoryViewHolder extends RecyclerView.ViewHolder {
         private TextView categoryName;
 
         CategoryViewHolder(@NonNull View itemView) {

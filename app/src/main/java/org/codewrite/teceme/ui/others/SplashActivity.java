@@ -9,22 +9,28 @@ import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
+import org.codewrite.teceme.viewmodel.CategoryViewModel;
 
 
 public class SplashActivity extends AppCompatActivity {
 
     private static final int SPLASH_DISPLAY_LENGTH = 3000;
-    Animation animFadeIn;
-    RelativeLayout splashContainer;
+    private Animation animFadeIn;
+    private RelativeLayout splashContainer;
+    private CategoryViewModel categoryViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        // get category view model
+        categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
 
         View decorView = getWindow().getDecorView();
+
         // Hide the status bar.
         int uiOptions = 0;
         uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -39,6 +45,9 @@ public class SplashActivity extends AppCompatActivity {
         // start the animation
         splashContainer.setVisibility(View.VISIBLE);
         splashContainer.startAnimation(animFadeIn);
+
+        // get data from network
+        categoryViewModel.getCategoryList();;
     }
 
     @Override

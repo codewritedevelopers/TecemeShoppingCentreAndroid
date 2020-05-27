@@ -18,7 +18,7 @@ public interface StoreDao {
     @Query("SELECT * FROM store_table WHERE store_access= 1")
     LiveData<List<StoreEntity>> getStore();
 
-    @Query("SELECT * FROM store_table WHERE store_access= 1 AND store_id =:id limit 1")
+    @Query("SELECT * FROM store_table WHERE store_id =:id limit 1")
     LiveData<StoreEntity> getStore(Integer id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

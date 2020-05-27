@@ -109,7 +109,7 @@ public class CategoryProductAdapter extends
         this.categoryProductViewListener = categoryProductViewListener;
     }
 
-    class CategoryProductViewHolder extends RecyclerView.ViewHolder {
+    static class CategoryProductViewHolder extends RecyclerView.ViewHolder {
         private TextView viewAll;
         private TextView categoryName;
 
@@ -122,10 +122,6 @@ public class CategoryProductAdapter extends
 
     public interface ProductRecyclerViewLoader {
        void loadData(int position, View itemView);
-
-        void invalidate();
-
-        boolean stop(int position);
     }
 
     public interface CategoryProductViewListener {

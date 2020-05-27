@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.ProductAdapter;
-import org.codewrite.teceme.datasource.ProductDataSource;
 import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
 
@@ -59,42 +58,8 @@ public class WishListActivity extends AppCompatActivity {
         ProductAdapter productAdapter = new ProductAdapter(this);
         mProductRv.setAdapter(productAdapter);
 
-        ProductDataSource productDataSource = new ProductDataSource();
 
-        final PagedList<ProductEntity> productEntities =
-                new PagedList.Builder<>(productDataSource,
-                        new PagedList.Config.Builder().setPageSize(10).build())
-                        .setInitialKey(0)
-                        .setNotifyExecutor(new Executor() {
-                            @Override
-                            public void execute(Runnable command) {
-                                Log.d("HomeFragment", "execute: setNotifyExecutor");
-                            }
-                        })
-                        .setFetchExecutor(new Executor() {
-                            @Override
-                            public void execute(Runnable command) {
-                                Log.d("HomeFragment", "execute: setFetchExecutor");
-                            }
-                        })
-                        .setBoundaryCallback(new PagedList.BoundaryCallback() {
-                            @Override
-                            public void onZeroItemsLoaded() {
-                                super.onZeroItemsLoaded();
-                            }
-
-                            @Override
-                            public void onItemAtFrontLoaded(@NonNull Object itemAtFront) {
-                                super.onItemAtFrontLoaded(itemAtFront);
-                            }
-
-                            @Override
-                            public void onItemAtEndLoaded(@NonNull Object itemAtEnd) {
-                                super.onItemAtEndLoaded(itemAtEnd);
-                            }
-                        }).build();
-
-        productAdapter.submitList(productEntities);
+        //productAdapter.submitList(productEntities);
     }
 
     @Override

@@ -14,14 +14,20 @@ import java.util.List;
 
 @Dao
 public interface CategoryDao {
-    @Query("SELECT * FROM category_table WHERE category_access= 1")
+    @Query("SELECT * FROM category_table")
     LiveData<List<CategoryEntity>> getCategory();
 
-    @Query("SELECT * FROM category_table WHERE category_access= 1 AND category_id =:id limit 1")
+    @Query("SELECT * FROM category_table WHERE category_id =:id limit 1")
     LiveData<CategoryEntity> getCategory(Integer id);
 
+    @Query("SELECT * FROM category_table WHERE category_parent_id =:parent_id")
+    LiveData<List<CategoryEntity>> getCategoryByParent(Integer parent_id);
+
+    @Query("SELECT * FROM category_table WHERE category_level=0")
+    LiveData<List<CategoryEntity>> getCategoryForHome();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(CategoryEntity entity);
+    void insert(CategoryEntity... entity);
 
     @Update
     void update(CategoryEntity entity);

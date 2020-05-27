@@ -1,10 +1,16 @@
 package org.codewrite.teceme.api;
 
+import org.codewrite.teceme.model.rest.CategoryJson;
 import org.codewrite.teceme.model.rest.CustomerJson;
+import org.codewrite.teceme.model.rest.ProductJson;
 import org.codewrite.teceme.model.rest.WalletJson;
+import org.codewrite.teceme.model.rest.WalletLogJson;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -13,40 +19,87 @@ import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface RestApi {
 
     /*
-     * POST
+     * POST Customer
      */
-    @POST("customer/account")
+    @POST("customers/account")
     Call<CustomerJson> signup(@Body CustomerJson customer);
 
     @FormUrlEncoded
-    @POST("customer/login")
+    @POST("customers/login")
     Call<CustomerJson> login(@Field("username") String username,
                              @Field("password") String password);
 
-    @GET("customer")
-    Call<CustomerJson> getCustomer();
-
-    @PATCH("customer/account/{id}/{current_password}")
+    /*
+     * PATCH Customer
+     */
+    @PATCH("customer/account/id/{id}/current_password/{current_password}")
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
                                       @Path("id") String id,
                                       @Path("current_password") String currentPassword,
                                       @Header("Authorization") String token);
 
-    @POST("customer/wallet")
-    Call<WalletJson> createWallet(@Body WalletJson walletJson,
-                                  @Header("Authorization") String token);
-
-    @PATCH("customer/wallet")
-    Call<WalletJson> updateWallet(@Body WalletJson walletJson,
-                                  @Header("Authorization") String token);
-
-    @PATCH("customer/account/{id}")
+    @PATCH("customers/account/id/{id}")
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
                                       @Path("id") String id,
                                       @Header("Authorization") String accessToken);
+    /*
+     * DELETE Customer
+     */
+    @DELETE("customers/account/id/{id}")
+    Call<WalletJson> deleteCustomer(@Path("id") String id,
+                                  @Header("Authorization") String token);
 
+    /*
+     * POST Wallet
+     */
+    @POST("wallets/wallet")
+    Call<WalletJson> createWallet(@Body WalletJson walletJson,
+                                  @Header("Authorization") String token);
+
+    /*
+     * POST Wallet
+     */
+    @POST("wallets/transfer-money")
+    Call<WalletLogJson> transferMoney(@Body WalletLogJson walletLogJson,
+                                  @Header("Authorization") String token);
+
+    /*
+     * POST Wallet
+     */
+    @POST("wallets/load-wallet")
+    Call<WalletLogJson> loadWallet(@Body WalletLogJson walletLogJson,
+                                      @Header("Authorization") String token);
+    /*
+     * PATCH Wallet
+     */
+    @PATCH("wallets/wallet")
+    Call<WalletJson> updateWallet(@Body WalletJson walletJson,
+                                  @Header("Authorization") String token);
+
+    /*
+     * DELETE Wallet
+     */
+    @DELETE("wallets/wallet/id/{id}")
+    Call<WalletJson> deleteWallet(@Path("id") String id,
+                                  @Header("Authorization") String token);
+
+    /*
+     * GET Category
+     */
+    @GET("categories/category")
+    Call<List<CategoryJson>> getCategoryList(@Query("category_parent_id") Integer parent_id,
+                                             @Query("category_level") Integer level);
+
+    /*
+     * GET Product
+     */
+    @GET("products/product")
+    Call<List<ProductJson>> getProductList(@Query("product_category_id") Integer category_id,
+                                           @Query("limit") Integer limit,
+                                           @Query("page") Integer page);
 }

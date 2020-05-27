@@ -15,10 +15,10 @@ import java.util.List;
 
 @Dao
 public interface WalletDao {
-    @Query("SELECT * FROM wallet_table WHERE wallet_access=1")
+    @Query("SELECT * FROM wallet_table")
     LiveData<List<WalletEntity>> getWallet();
 
-    @Query("SELECT * FROM wallet_table WHERE wallet_access=1 AND wallet_owner =:owner limit 1")
+    @Query("SELECT * FROM wallet_table WHERE wallet_owner =:owner limit 1")
     LiveData<WalletEntity> getWallet(String owner);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

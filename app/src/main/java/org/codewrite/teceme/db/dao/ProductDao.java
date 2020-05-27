@@ -1,6 +1,8 @@
 package org.codewrite.teceme.db.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.PagedList;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,17 +17,15 @@ import java.util.List;
 
 @Dao
 public interface ProductDao {
-    @Query("SELECT * FROM product_table WHERE product_access= 1")
-    LiveData<List<ProductEntity>> getProduct();
 
-    @Query("SELECT * FROM product_table WHERE product_access= 1 AND product_id =:id limit 1")
+    @Query("SELECT * FROM product_table WHERE product_id =:id limit 1")
     LiveData<ProductEntity> getProduct(Integer id);
 
-    @Query("SELECT * FROM product_table WHERE product_access= 1 AND product_id =:id AND product_category_id =:categoryId limit 1")
-    LiveData<ProductEntity> getProductByCategoryId(Integer id, Integer categoryId);
+    @Query("SELECT * FROM product_table WHERE product_category_id =:categoryId")
+    DataSource.Factory<Integer, ProductEntity> getProductsByCategoryId(Integer categoryId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(ProductEntity entity);
+    void insert(ProductEntity... entities);
 
     @Update
     void update(ProductEntity entity);

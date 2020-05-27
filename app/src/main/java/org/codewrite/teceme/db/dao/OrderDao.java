@@ -17,7 +17,7 @@ public interface OrderDao {
     @Query("SELECT * FROM order_table WHERE order_access= 1")
     LiveData<List<OrderEntity>> getOrder();
 
-    @Query("SELECT * FROM order_table WHERE order_access= 1 AND order_id =:id limit 1")
+    @Query("SELECT * FROM order_table WHERE order_id =:id limit 1")
     LiveData<OrderEntity> getOrder(Integer id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
