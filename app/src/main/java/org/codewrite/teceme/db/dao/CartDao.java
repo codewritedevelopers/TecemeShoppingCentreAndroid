@@ -15,20 +15,21 @@ import java.util.List;
 @Dao
 public interface CartDao {
     @Query("SELECT * FROM cart_table WHERE cart_owner=:owner")
-    LiveData<List<CartEntity>> getCart(String owner);
+    LiveData<List<CartEntity>> getCarts(String owner);
 
-    @Query("SELECT * FROM cart_table WHERE cart_owner =:owner AND cart_product_id=:productId limit 1")
-    LiveData<CartEntity> getCartByProduct(Integer owner, Integer productId);
+    @Query("SELECT * FROM cart_table WHERE cart_product_id=:product_id limit 1")
+    LiveData<CartEntity> getCart(Integer product_id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(CartEntity cartEntity);
+    void insert(CartEntity... cartEntity);
 
     @Update
     void update(CartEntity cartEntity);
 
-    @Delete
-    void delete(CartEntity cartEntity);
+    @Query("DELETE FROM cart_table WHERE cart_product_id =:product_id")
+    void delete(Integer product_id);
 
-    @Query("DELETE FROM cart_table WHERE cart_owner=:owner")
-    void deleteAll(String owner);
+    @Query("DELETE FROM cart_table")
+    void deleteAll();
+
 }

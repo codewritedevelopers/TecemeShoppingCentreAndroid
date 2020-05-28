@@ -61,11 +61,11 @@
         android:padding="5dp"
         android:text="@string/related_products_text"
         android:textColor="@color/colorBlack" />
-
-    <androidx.recyclerview.widget.RecyclerView
+    <org.codewrite.teceme.utils.AutoFitGridRecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:columnWidth="@dimen/product_card_width"
+        android:numColumns="auto_fit"
         tools:listitem="@layout/product_list_content" />
 
     <View

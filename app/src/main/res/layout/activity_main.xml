@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -41,11 +42,12 @@
         android:id="@+id/id_fab_back_to_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="64dp"
         android:tint="@color/colorWhite"
         android:visibility="invisible"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/icons8_up" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

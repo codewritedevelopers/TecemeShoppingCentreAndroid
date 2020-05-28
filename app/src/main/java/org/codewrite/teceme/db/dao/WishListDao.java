@@ -15,20 +15,21 @@ import java.util.List;
 @Dao
 public interface WishListDao {
     @Query("SELECT * FROM wish_list_table WHERE wishlist_customer_id =:owner")
-    LiveData<List<WishListEntity>> getWallet(String owner);
+    LiveData<List<WishListEntity>> getWishLists(String owner);
 
     @Query("SELECT * FROM wish_list_table WHERE  wishlist_product_id =:productId AND wishlist_customer_id =:owner")
-    LiveData<WishListEntity> getWalletByProduct(String owner, Integer productId);
+    LiveData<WishListEntity> getWishListByProduct(String owner, Integer productId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(WishListEntity entity);
+    void insert(WishListEntity... entities);
 
     @Update
     void update(WishListEntity entity);
 
-    @Delete
-    void delete(WishListEntity entity);
+    @Query("DELETE FROM wish_list_table WHERE wishlist_product_id=:productId")
+    void delete(Integer productId);
 
-    @Query("DELETE FROM wish_list_table WHERE wishlist_customer_id =:owner")
-    void deleteAll(String owner);
+    @Query("DELETE FROM wish_list_table")
+    void deleteAll();
+
 }

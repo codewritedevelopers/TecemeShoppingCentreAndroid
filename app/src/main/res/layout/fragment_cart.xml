@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <ImageView
+        android:id="@+id/no_cart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/no_cart"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/todo" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -10,11 +20,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/colorWhite">
             <include
-                layout="@layout/cart_list" />
+                layout="@layout/cart_list" android:visibility="visible"/>
             <Button
+                android:id="@+id/buy_now"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

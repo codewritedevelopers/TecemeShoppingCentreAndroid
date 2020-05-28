@@ -23,6 +23,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.LoginFormState;
@@ -30,9 +33,15 @@ import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 public class LoginActivity extends AppCompatActivity {
 
     private AccountViewModel accountViewModel;
+    private boolean finish_without_launching_another;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -44,11 +53,13 @@ public class LoginActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(savedInstanceState!=null){
-            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")){
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")) {
                 toolbar.setVisibility(View.GONE);
             }
         }
+        finish_without_launching_another = getIntent()
+                .getBooleanExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER", false);
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
@@ -123,10 +134,10 @@ public class LoginActivity extends AppCompatActivity {
         accountViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
             @Override
             public void onChanged(CustomerEntity customerEntity) {
-                if(customerEntity ==null){
+                if (customerEntity == null) {
                     return;
                 }
-               // Toast.makeText(LoginActivity.this, String.valueOf(customerEntity.getCustomer_access()), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(LoginActivity.this, String.valueOf(customerEntity.getCustomer_access()), Toast.LENGTH_SHORT).show();
                 lunchMainActivity();
             }
         });
@@ -175,15 +186,18 @@ public class LoginActivity extends AppCompatActivity {
         toSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(intent);
                 finish();
             }
         });
     }
 
     private void lunchMainActivity() {
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
+        if (!finish_without_launching_another) {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
         finish();
     }
 
@@ -193,6 +207,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void replaceWithLoggedInCustomer(CustomerJson loginResult) {
         accountViewModel.replaceWIthLoggedInCustomer(loginResult);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkInternetConnection();
     }
 
     @Override
@@ -210,4 +230,33 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("CheckResult")
+    private void checkInternetConnection() {
+        ReactiveNetwork
+                .observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet) {
+                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+                            single.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Boolean>() {
+                                        @Override
+                                        public void accept(Boolean isConnectedToInternet) throws Exception {
+                                            if (!isConnectedToInternet) {
+                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Snackbar.make(findViewById(R.id.main_container), "No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    }
+                });
+
+
+    }
 }

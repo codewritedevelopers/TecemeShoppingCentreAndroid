@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/product_card"
     android:layout_width="@dimen/product_card_width"
     android:layout_height="@dimen/product_card_height"
-    android:background="@color/colorWhite"
     android:layout_marginStart="@dimen/product_card_margin"
     android:layout_marginTop="@dimen/product_card_margin"
+    android:padding="4dp"
+    android:background="@color/colorWhite"
     card_view:cardCornerRadius="@dimen/product_card_radius">
 
     <LinearLayout
@@ -50,9 +52,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="@dimen/wl_indicator_margin"
+                android:clickable="true"
+                android:focusable="true"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/heart"
-                android:tint="@color/colorWhiteGrey"/>
+                android:tint="@color/colorAccent" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -60,44 +64,51 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/id_price_text"
+                android:id="@+id/id_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:hint="@string/price_hint_text"
+                android:layout_margin="8dp"
                 android:gravity="start|center_vertical"
-                android:textColor="@color/colorBlack"
-                android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/price_text_size" />
+                android:hint="@string/price_hint_text"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:textColorHint="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_x_small" />
 
             <TextView
-                android:id="@+id/id_orders_text"
+                android:id="@+id/id_orders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="4dp"
+                android:layout_marginEnd="8dp"
                 android:gravity="end|center_vertical"
                 android:hint="@string/ordered_hint_text"
                 android:textColor="@color/colorAccent"
                 android:textColorHint="@color/colorAccent"
-                android:textSize="@dimen/order_text_size" />
+                android:textSize="@dimen/order_text_size"
+                tools:ignore="RelativeOverlap" />
 
             <TextView
                 android:id="@+id/id_product_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/id_price_text"
+                android:layout_below="@id/id_price"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
+                android:ellipsize="marquee"
+                android:textColor="@color/colorBlack"
+                android:freezesText="true"
                 android:hint="@string/product_name_hint"
-                android:maxHeight="18dp"
-                android:textSize="@dimen/product_name_text_size" />
+                android:maxHeight="14dp"
+                android:textSize="@dimen/text_size_x_small" />
 
             <TextView
+                android:id="@+id/id_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/id_product_name"
@@ -105,11 +116,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:hint="@string/store_name_hint"
-                android:maxHeight="18dp"
+                android:hint="@string/weight_text"
+                android:maxHeight="14dp"
                 android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/store_name_text_size" />
+                android:textSize="@dimen/text_size_xx_small" />
         </RelativeLayout>
 
     </LinearLayout>

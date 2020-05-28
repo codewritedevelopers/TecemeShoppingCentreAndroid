@@ -8,7 +8,7 @@ import org.codewrite.teceme.model.rest.Result;
 
 @Entity(tableName = "category_table")
 public class CategoryEntity extends Result {
-    @NonNull
+
     @PrimaryKey
     private Integer category_id;
     private String category_name;
@@ -16,16 +16,6 @@ public class CategoryEntity extends Result {
     private Integer category_parent_id;
     private Boolean category_access;
     private String category_date_created;
-
-    public CategoryEntity(@NonNull Integer category_id, String category_name, Integer category_level,
-                    Integer category_parent_id, Boolean category_access, String category_date_created) {
-        this.category_id = category_id;
-        this.category_name = category_name;
-        this.category_level = category_level;
-        this.category_parent_id = category_parent_id;
-        this.category_access = category_access;
-        this.category_date_created = category_date_created;
-    }
 
     @NonNull
     public Integer getCategory_id() {

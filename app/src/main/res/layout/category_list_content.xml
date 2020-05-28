@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:background="@color/colorWhite"
-    android:orientation="horizontal"
-    android:focusable="true">
-
+    android:background="@drawable/ripple_effect_with_border_grey"
+    android:backgroundTint="@color/colorWhite"
+    android:orientation="vertical">
     <TextView
-        android:id="@+id/id_category_name"
+        android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:padding="8dp"
-        android:soundEffectsEnabled="true"
-        android:background="?android:selectableItemBackground"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft"
+        android:padding="@dimen/text_m_padding"
+        android:hint="@string/main_category_title"
+        android:textSize="@dimen/text_size_small"
+        android:background="@drawable/background_with_drop_shadow"
+        tools:ignore="RtlSymmetry" />
 </LinearLayout>
+

@@ -12,6 +12,7 @@ import androidx.paging.PagedList;
 import org.codewrite.teceme.model.rest.ProductJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.repository.ProductRepository;
 
 import java.util.List;
@@ -96,4 +97,8 @@ public class ProductViewModel extends AndroidViewModel {
         });
     }
 
+
+    public LiveData<ProductEntity> getProduct(Integer product_id) {
+        return productRepository.getProduct(product_id);
+    }
 }

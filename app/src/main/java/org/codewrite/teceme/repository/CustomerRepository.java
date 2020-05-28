@@ -10,25 +10,28 @@ import org.codewrite.teceme.api.Service;
 import org.codewrite.teceme.db.TecemeDataBase;
 import org.codewrite.teceme.db.dao.AccessTokenDao;
 import org.codewrite.teceme.db.dao.CustomerDao;
+import org.codewrite.teceme.db.dao.WishListDao;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
+import org.codewrite.teceme.model.room.WishListEntity;
 
-import java.util.concurrent.Executor;
+import java.util.List;
 
 import retrofit2.Call;
 
 public class CustomerRepository {
 
     private RestApi resetApi;
-    private LiveData<CustomerEntity> loggedInCustomer;
     private CustomerDao customerDao;
+    private WishListDao wishListDao;
     private AccessTokenDao accessTokenDao;
     public CustomerRepository(Application application) {
          resetApi = Service.getResetApi(application);
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
          customerDao = tecemeDataBase.customerDao();
          accessTokenDao = tecemeDataBase.accessTokenDao();
+         wishListDao = tecemeDataBase.wishListDao();
     }
 
     public  Call<CustomerJson> login(String username, String password) {
@@ -117,6 +120,18 @@ public class CustomerRepository {
 
     public void deleteAllAccessToken() {
         new DeleteAllAccessTokenAsyncTask(accessTokenDao,null).execute();
+    }
+
+    public LiveData<WishListEntity> getWishList(String owner, int id) {
+        return wishListDao.getWishListByProduct(owner,id);
+    }
+
+    public void addToWishList(WishListEntity wishListEntity) {
+
+    }
+
+    public Call<List<String>> getAdds() {
+       return resetApi.getAds();
     }
 
     private static class InsertAccessTokenAsyncTask extends AsyncTask<AccessTokenEntity, Void, Void> {

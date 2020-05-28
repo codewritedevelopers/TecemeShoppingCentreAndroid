@@ -3,6 +3,7 @@ package org.codewrite.teceme.repository;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 
 import org.codewrite.teceme.api.RestApi;
@@ -37,6 +38,10 @@ public class ProductRepository {
 
     public Call<List<ProductJson>> getProductList(Integer categoryId, int loadSize, Integer page) {
         return restApi.getProductList(categoryId,loadSize,page);
+    }
+
+    public LiveData<ProductEntity> getProduct(Integer product_id) {
+        return productDao.getProduct(product_id);
     }
 
     private static class DeleteAllProductAsyncTask extends AsyncTask<Void, Void, Void> {

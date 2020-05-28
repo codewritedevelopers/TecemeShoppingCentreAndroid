@@ -1,6 +1,7 @@
 package org.codewrite.teceme.db.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,14 +16,14 @@ import java.util.List;
 
 @Dao
 public interface StoreDao {
-    @Query("SELECT * FROM store_table WHERE store_access= 1")
-    LiveData<List<StoreEntity>> getStore();
+    @Query("SELECT * FROM store_table")
+    DataSource.Factory<Integer, StoreEntity> getStores();
 
     @Query("SELECT * FROM store_table WHERE store_id =:id limit 1")
     LiveData<StoreEntity> getStore(Integer id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(StoreEntity entity);
+    void insert(StoreEntity... entity);
 
     @Update
     void update(StoreEntity entity);
@@ -32,4 +33,7 @@ public interface StoreDao {
 
     @Query("DELETE FROM store_table WHERE 1")
     void deleteAll();
+
+    @Query("SELECT * FROM store_table WHERE store_category_id =:category_id")
+    DataSource.Factory<Integer, StoreEntity> getStoresByCategoryId(Integer category_id);
 }

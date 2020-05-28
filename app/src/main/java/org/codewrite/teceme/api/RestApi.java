@@ -3,8 +3,11 @@ package org.codewrite.teceme.api;
 import org.codewrite.teceme.model.rest.CategoryJson;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.rest.ProductJson;
+import org.codewrite.teceme.model.rest.StoreJson;
 import org.codewrite.teceme.model.rest.WalletJson;
 import org.codewrite.teceme.model.rest.WalletLogJson;
+import org.codewrite.teceme.model.rest.WishListJson;
+import org.codewrite.teceme.model.room.WishListEntity;
 
 import java.util.List;
 
@@ -15,7 +18,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -102,4 +104,29 @@ public interface RestApi {
     Call<List<ProductJson>> getProductList(@Query("product_category_id") Integer category_id,
                                            @Query("limit") Integer limit,
                                            @Query("page") Integer page);
+
+    /*
+     * GET Store
+     */
+    @GET("stores/store")
+    Call<List<StoreJson>> getStoreList(@Query("store_category_id") Integer category_id,
+                                       @Query("limit") int limit,
+                                       @Query("page") Integer page);
+
+    /*
+     * POST Customer
+     */
+    @POST("customers/wish-list")
+    Call<List<WishListJson>> addToWishList(@Body WishListJson wishListJson,
+                                             @Header("Authorization") String accessToken);
+
+    /*
+     * GET Ads
+     */
+    @GET("customers/ads")
+    Call<List<String>> getAds();
+
+    @DELETE("customer/wish-list")
+    Call<WishListJson> deleteWishList(@Body WishListJson wishListJson,
+                                            @Header("Authorization") String accessToken);
 }

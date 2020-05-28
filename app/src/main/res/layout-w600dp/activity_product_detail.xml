@@ -16,61 +16,38 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="6">
+            android:layout_weight="5">
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/app_bar"
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/product_detail_app_bar_height"
-                android:background="@color/colorWhiteGrey"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                android:layout_height="?actionBarSize"
+                android:layout_margin="0dp"
+                android:background="@color/colorWhite"
+                app:navigationIcon="@drawable/arrow_back"
+                app:title="@string/product_name_hint" />
 
-                <com.google.android.material.appbar.CollapsingToolbarLayout
-                    android:id="@+id/toolbar_layout"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/product_detail_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
-                    app:layout_scrollFlags="scroll"
-                    app:toolbarId="@+id/toolbar">
+                    android:orientation="vertical">
 
                     <include
                         layout="@layout/product_image_slider"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/toolbar_height" />
+                        android:layout_height="@dimen/product_detail_app_bar_height"
+                        android:visibility="visible" />
 
-                    <androidx.appcompat.widget.Toolbar
-                        android:id="@+id/toolbar"
-                        android:layout_width="match_parent"
-                        android:layout_height="?actionBarSize"
-                        android:background="@color/colorWhite" />
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/id_fab_add_to_wish_list"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        android:layout_margin="@dimen/fab_margin"
-                        android:tint="@color/colorWhiteGrey"
-                        app:backgroundTint="@color/colorWhite"
-                        app:maxImageSize="36dp"
-                        app:srcCompat="@drawable/heart" />
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-            </com.google.android.material.appbar.AppBarLayout>
-
-
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/id_product_detail_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/product_detail_app_bar_height"
-                android:paddingTop="8dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                <include layout="@layout/product_detail_content" />
+                    <include layout="@layout/product_detail_content" />
+                </LinearLayout>
             </androidx.core.widget.NestedScrollView>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -113,7 +90,7 @@
             android:id="@+id/id_related_detail_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="4"
+            android:layout_weight="5"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <include layout="@layout/related_products_and_stores" />

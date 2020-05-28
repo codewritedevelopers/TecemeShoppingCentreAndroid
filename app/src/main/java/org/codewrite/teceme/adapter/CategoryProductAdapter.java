@@ -97,7 +97,6 @@ public class CategoryProductAdapter extends
         }
         // loadData products into product recycler view & observe if loaded
         productRvLoader.loadData(position, holder.itemView);
-        Log.d("CategoryProductAdapter", "handleProductFetch: "+position);
     }
 
     public void setProductRvLoader(ProductRecyclerViewLoader productRvLoader) {

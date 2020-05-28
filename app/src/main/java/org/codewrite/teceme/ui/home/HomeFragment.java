@@ -1,5 +1,6 @@
 package org.codewrite.teceme.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
@@ -25,23 +28,30 @@ import org.codewrite.teceme.adapter.AdsSliderAdapter;
 import org.codewrite.teceme.adapter.CategoryProductAdapter;
 import org.codewrite.teceme.adapter.HomeCategoryAdapter;
 import org.codewrite.teceme.adapter.HomeProductAdapter;
+import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
+import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.ui.account.LoginActivity;
+import org.codewrite.teceme.ui.product.ProductDetailActivity;
 import org.codewrite.teceme.utils.BackToTopFabBehavior;
 import org.codewrite.teceme.utils.SliderTimer;
 import org.codewrite.teceme.utils.ZoomOutPageTransformer;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
+import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 
 public class HomeFragment extends Fragment {
 
-    private static final int NUM_PAGES = 5;
+    private SliderTimer sliderTimer;
     // adapters
-    private PagerAdapter mSliderPagerAdapter;
+    private AdsSliderAdapter mSliderPagerAdapter;
     private TabLayout mSliderIndicator;
     private HomeCategoryAdapter homeCategoryAdapter;
     private CategoryProductAdapter categoryProductAdapter;
@@ -56,9 +66,13 @@ public class HomeFragment extends Fragment {
     // view models
     private CategoryViewModel categoryViewModel;
     private ProductViewModel productViewModel;
+    private CustomerViewModel customerViewModel;
+    private AccountViewModel accountViewModel;
 
     // reference to main activity
     private FragmentActivity mActivity;
+    private AccessTokenEntity accessToken;
+    private CustomerEntity loggedInCustomer;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +90,10 @@ public class HomeFragment extends Fragment {
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         // get product view model
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+        // get customer view model
+        customerViewModel = ViewModelProviders.of(this).get(CustomerViewModel.class);
+        // get account view model
+        accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
         // find recycler view for all product by their group
         mGroupProductRv = root.findViewById(R.id.id_rv_category_product_list);
@@ -97,12 +115,50 @@ public class HomeFragment extends Fragment {
 
         mSliderIndicator.setupWithViewPager(mPager, true);
 
-        // slider timing
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new SliderTimer(getActivity(), mPager, NUM_PAGES), 3000, 4000);
+        loadAdsSlider();
+
+        accountViewModel.getAccessToken().observe(mActivity, new Observer<AccessTokenEntity>() {
+            @Override
+            public void onChanged(AccessTokenEntity accessTokenEntity) {
+                if (accessTokenEntity == null) {
+                    return;
+                }
+                accessToken = accessTokenEntity;
+            }
+        });
+
+        accountViewModel.getLoggedInCustomer().observe(mActivity, new Observer<CustomerEntity>() {
+            @Override
+            public void onChanged(CustomerEntity customerEntity) {
+                if (customerEntity == null) {
+                    return;
+                }
+                loggedInCustomer = customerEntity;
+            }
+        });
 
         // return root view
         return root;
+    }
+
+    private void loadAdsSlider() {
+        customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> list) {
+                if (list==null){
+                    List<String>  noAds = new ArrayList<>();
+                    noAds.add("noAds");
+                    mSliderPagerAdapter.subList(noAds);
+                    return;
+                }
+                mSliderPagerAdapter.subList(list);
+                // slider timing
+                Timer timer = new Timer();
+                sliderTimer = new SliderTimer(mActivity, mPager, list.size());
+                timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
+            }
+        });
+        customerViewModel.getAds();
     }
 
     @Override
@@ -157,6 +213,37 @@ public class HomeFragment extends Fragment {
                 RecyclerView groupProductsRv = itemView.findViewById(R.id.id_rv_group_product_list);
                 // create product page adapter
                 final HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity);
+
+                // set product listener
+                productAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
+                    @Override
+                    public void onProductClicked(View v, int position) {
+                        Intent intent = new Intent(mActivity, ProductDetailActivity.class);
+                        intent.putExtra("PRODUCT_ID",
+                                Objects.requireNonNull(Objects.requireNonNull(
+                                        productAdapter.getCurrentList()).get(position)).getProduct_id());
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public LiveData<Boolean> isInWishList(int id) {
+                        if (loggedInCustomer == null) {
+                            return new MutableLiveData<>();
+                        }
+                        return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                    }
+
+                    @Override
+                    public void onToggleWishList(View v, int position) {
+                        if (loggedInCustomer == null) {
+                            startActivity(new Intent(mActivity, LoginActivity.class));
+                            return;
+                        }
+                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
+                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
+                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                    }
+                });
                 // set adapter for recycler view
                 groupProductsRv.setAdapter(productAdapter);
 

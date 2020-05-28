@@ -247,4 +247,8 @@
     <string name="title_accounts">Accounts</string>
     <string name="wish_list_text">My WishList</string>
     <string name="see_wish_list_text">See all wish list, delete wish list</string>
+    <string name="main_category_title">Main Category Title</string>
+    <string name="color_text">Color</string>
+    <string name="size_text">Size</string>
+    <string name="remove_from_cart_text">Remove From Cart</string>
 </resources>

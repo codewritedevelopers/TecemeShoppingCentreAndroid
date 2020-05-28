@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/product_list_content" />
+        tools:listitem="@layout/related_product_list_content" />
 
     <View
         android:layout_width="match_parent"

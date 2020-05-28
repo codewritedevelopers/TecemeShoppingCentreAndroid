@@ -38,6 +38,7 @@ public class CategoryViewModel extends AndroidViewModel {
         return  categoryRepository.getCategoryEntityByParent(parent_id);
     }
 
+
     public LiveData<List<CategoryEntity>> getCategoryForHomeResult() {
         return  categoryRepository.getCategoryEntityHome();
     }
@@ -64,5 +65,9 @@ public class CategoryViewModel extends AndroidViewModel {
                 Log.d("CategoryViewModel", "onFailure: "+t.getMessage());
             }
         });
+    }
+
+    public LiveData<CategoryEntity> getCategory(Integer category_id) {
+        return categoryRepository.getCategory(category_id);
     }
 }

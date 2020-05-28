@@ -8,11 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.LoginFormState;
 import org.codewrite.teceme.model.rest.CustomerJson;
+import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.repository.CustomerRepository;
+import org.codewrite.teceme.repository.WishListRepository;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,19 +27,13 @@ public class CustomerViewModel extends AndroidViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<CustomerJson> loginResult = new MutableLiveData<>();
+    private MutableLiveData<Boolean> wishListResult = new MutableLiveData<>();
     private CustomerRepository customerRepository;
+    private MutableLiveData<List<String>> adsListResult= new MutableLiveData<>();
 
     public CustomerViewModel(@NonNull Application application) {
         super(application);
         customerRepository = new CustomerRepository(application);
-    }
-
-    public LiveData<LoginFormState> getLoginFormState() {
-        return loginFormState;
-    }
-
-    public LiveData<CustomerJson> getLoginResult() {
-        return loginResult;
     }
 
     public void login(String username, String password) {
@@ -64,17 +63,6 @@ public class CustomerViewModel extends AndroidViewModel {
         });
     }
 
-
-    public void loginFormDataChanged(String username, String password) {
-        if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
-        } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
-        } else {
-            loginFormState.setValue(new LoginFormState(true));
-        }
-    }
-
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
         if (username == null) {
@@ -90,5 +78,42 @@ public class CustomerViewModel extends AndroidViewModel {
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 3;
+    }
+
+    public LiveData<Boolean> isInWishList(String owner,int id) {
+        customerRepository.getWishList(owner, id).observeForever(
+                new Observer<WishListEntity>() {
+            @Override
+            public void onChanged(WishListEntity wishListEntity) {
+                if (wishListEntity!=null) {
+                    wishListResult.postValue(true);
+                }else{
+                    wishListResult.postValue(false);
+                }
+            }
+        });
+        return wishListResult;
+    }
+
+    public LiveData<List<String>> getAdsResult() {
+        return adsListResult;
+    }
+
+    public void getAds() {
+        Call<List<String>> ads = customerRepository.getAdds();
+        ads.enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call,
+                                   @NonNull Response<List<String>> response) {
+                if(response.isSuccessful()) {
+                   adsListResult.postValue(response.body());
+                }else{
+                    adsListResult.postValue(null);
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+            }
+        });
     }
 }

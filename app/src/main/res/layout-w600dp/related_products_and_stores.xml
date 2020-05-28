@@ -19,10 +19,13 @@
         android:text="@string/related_products_text"
         android:textColor="@color/colorBlack" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.codewrite.teceme.utils.AutoFitGridRecyclerView
         android:id="@+id/id_rv_related_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:columnWidth="@dimen/product_card_width"
+        android:numColumns="auto_fit"
+        android:paddingTop="15dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/product_list_content" />
 
@@ -39,10 +42,12 @@
         android:text="@string/related_store_text"
         android:textColor="@color/colorBlack" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <org.codewrite.teceme.utils.AutoFitGridRecyclerView
         android:id="@+id/id_rv_related_stores"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:columnWidth="@dimen/product_card_width"
+        android:numColumns="auto_fit"
+        android:paddingTop="15dp"
         tools:listitem="@layout/store_list_content" />
 </LinearLayout>

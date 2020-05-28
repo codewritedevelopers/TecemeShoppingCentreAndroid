@@ -1,5 +1,6 @@
 package org.codewrite.teceme.ui.account;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.ProfileFormState;
 import org.codewrite.teceme.model.form.SignupFormState;
@@ -33,6 +37,11 @@ import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.ui.others.ConfirmationActivity;
 import org.codewrite.teceme.utils.ContentLoadingDialog;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -251,5 +260,40 @@ public class ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkInternetConnection();
+    }
+
+    @SuppressLint("CheckResult")
+    private  void checkInternetConnection(){
+        ReactiveNetwork
+                .observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet){
+                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+                            single.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Boolean>() {
+                                        @Override
+                                        public void accept(Boolean isConnectedToInternet) throws Exception {
+                                            if (!isConnectedToInternet) {
+                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                            }
+                                        }
+                                    });
+                        }else{
+                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    }
+                });
+
+
     }
 }

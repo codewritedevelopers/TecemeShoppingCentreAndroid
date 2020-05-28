@@ -6,11 +6,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.codewrite.teceme.ui.home.AdsSliderFragment;
+import org.codewrite.teceme.ui.product.ProductSliderFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdsSliderAdapter extends FragmentStatePagerAdapter {
 
 
-    private static final int NUM_PAGES = 5;
+    private List<String> list =new ArrayList<>();
 
     public AdsSliderAdapter(@NonNull FragmentManager fm) {
         super(fm);
@@ -19,12 +23,18 @@ public class AdsSliderAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return new AdsSliderFragment();
+        return new AdsSliderFragment(list.get(position));
     }
 
     @Override
     public int getCount() {
-        return NUM_PAGES;
+        return list.size();
     }
 
+    public  void subList(List<String> uri){
+        if (uri!=null) {
+            this.list = uri;
+            notifyDataSetChanged();
+        }
+    }
 }
