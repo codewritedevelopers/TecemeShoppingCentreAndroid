@@ -61,7 +61,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/id_price_text"
+                android:id="@+id/id_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -90,7 +90,7 @@
                 android:id="@+id/id_product_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/id_price_text"
+                android:layout_below="@id/id_price"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="4dp"

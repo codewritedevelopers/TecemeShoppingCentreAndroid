@@ -1,5 +1,6 @@
 package org.codewrite.teceme.ui.account;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +17,9 @@ import androidx.core.app.DialogCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
@@ -28,6 +31,11 @@ import org.codewrite.teceme.ui.product.WishListActivity;
 import org.codewrite.teceme.ui.wallet.WalletActivity;
 import org.codewrite.teceme.utils.ContentLoadingDialog;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class AccountsActivity extends AppCompatActivity {
    private AccountViewModel accountViewModel;
@@ -208,6 +216,12 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        checkInternetConnection();
+    }
+
+    @Override
     public void onBackPressed() {
         finish();
         super.onBackPressed();
@@ -220,5 +234,35 @@ public class AccountsActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressLint("CheckResult")
+    private  void checkInternetConnection(){
+        ReactiveNetwork
+                .observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet){
+                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+                            single.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Boolean>() {
+                                        @Override
+                                        public void accept(Boolean isConnectedToInternet) throws Exception {
+                                            if (!isConnectedToInternet) {
+                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                            }
+                                        }
+                                    });
+                        }else{
+                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    }
+                });
+
+
     }
 }

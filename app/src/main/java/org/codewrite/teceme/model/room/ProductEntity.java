@@ -1,6 +1,7 @@
 package org.codewrite.teceme.model.room;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -8,37 +9,22 @@ import org.codewrite.teceme.model.rest.Result;
 
 @Entity(tableName = "product_table")
 public class ProductEntity extends Result {
-    @NonNull
+
     @PrimaryKey
     private Integer product_id;
     private String product_name;
+    private String product_price;
     private String product_color;
     private String product_weight;
     private String product_size;
     private String product_code;
     private String product_desc;
+    private String product_discount;
     private Integer product_category_id;
+    private int product_ordered;
     private String product_date_created;
     private Boolean product_access;
     private String product_img_uri;
-
-    public ProductEntity(@NonNull Integer product_id, String product_name, String product_color,
-                   String product_weight, String product_size, String product_code,
-                   String product_desc, Integer product_category_id, String product_date_created,
-                   Boolean product_access, String product_img_uri) {
-
-        this.product_id = product_id;
-        this.product_name = product_name;
-        this.product_color = product_color;
-        this.product_weight = product_weight;
-        this.product_size = product_size;
-        this.product_code = product_code;
-        this.product_desc = product_desc;
-        this.product_category_id = product_category_id;
-        this.product_date_created = product_date_created;
-        this.product_access = product_access;
-        this.product_img_uri = product_img_uri;
-    }
 
     @NonNull
     public Integer getProduct_id() {
@@ -66,7 +52,7 @@ public class ProductEntity extends Result {
     }
 
     public String getProduct_weight() {
-        return product_weight;
+        return product_weight==null?"":product_weight;
     }
 
     public void setProduct_weight(String product_weight) {
@@ -97,11 +83,12 @@ public class ProductEntity extends Result {
         this.product_desc = product_desc;
     }
 
+    @NonNull
     public Integer getProduct_category_id() {
         return product_category_id;
     }
 
-    public void setProduct_category_id(Integer product_category_id) {
+    public void setProduct_category_id(@NonNull Integer product_category_id) {
         this.product_category_id = product_category_id;
     }
 
@@ -122,10 +109,34 @@ public class ProductEntity extends Result {
     }
 
     public String getProduct_img_uri() {
-        return product_img_uri;
+        return product_img_uri==null?"":product_img_uri;
     }
 
     public void setProduct_img_uri(String product_img_uri) {
         this.product_img_uri = product_img_uri;
+    }
+
+    public String getProduct_price() {
+        return product_price;
+    }
+
+    public void setProduct_price(String product_price) {
+        this.product_price = product_price;
+    }
+
+    public String getProduct_discount() {
+        return product_discount;
+    }
+
+    public void setProduct_discount(String product_discount) {
+        this.product_discount = product_discount;
+    }
+
+    public int getProduct_ordered() {
+        return product_ordered;
+    }
+
+    public void setProduct_ordered(int product_ordered) {
+        this.product_ordered = product_ordered;
     }
 }

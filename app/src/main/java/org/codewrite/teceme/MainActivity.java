@@ -1,5 +1,6 @@
 package org.codewrite.teceme;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,19 +19,27 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
 import org.codewrite.teceme.ui.account.AccountsActivity;
 import org.codewrite.teceme.ui.product.ProductActivity;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
 
     private NestedScrollView nestedScrollView;
     private SearchBox searchBox;
-   private NavController navController;
-   private BottomNavigationView navView;
+    private NavController navController;
+    private BottomNavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +47,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-         navView = findViewById(R.id.nav_view);
+        navView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration =
-                new AppBarConfiguration.Builder(R.id.navigation_home,R.id.navigation_category,
-                        R.id.navigation_stores,R.id.navigation_cart )
-                .build();
+                new AppBarConfiguration.Builder(R.id.navigation_home, R.id.navigation_category,
+                        R.id.navigation_stores, R.id.navigation_cart)
+                        .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
@@ -68,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         // we set voice search
         searchBox.enableVoiceRecognition(this);
 
-        searchBox.setSearchListener(new SearchBox.SearchListener(){
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
 
             @Override
             public void onSearchOpened() {
@@ -92,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSearch(String searchTerm) {
-                Toast.makeText(MainActivity.this, searchTerm +" Searched", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, searchTerm + " Searched", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(MainActivity.this, ProductActivity.class);
                 i.setAction(Intent.ACTION_SEARCH);
                 i.putExtra("SEARCH_ITEM", searchTerm);
@@ -100,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onResultClick(SearchResult result){
+            public void onResultClick(SearchResult result) {
                 //React to a result being clicked
                 Intent i = new Intent(MainActivity.this, ProductActivity.class);
                 i.setAction(Intent.ACTION_SEARCH);
@@ -124,9 +133,43 @@ public class MainActivity extends AppCompatActivity {
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-              startActivity(new Intent(MainActivity.this, AccountsActivity.class));
+                startActivity(new Intent(MainActivity.this, AccountsActivity.class));
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkInternetConnection();
+    }
+
+    @SuppressLint("CheckResult")
+    private void checkInternetConnection() {
+        ReactiveNetwork
+                .observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet) {
+                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+                            single.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Boolean>() {
+                                        @Override
+                                        public void accept(Boolean isConnectedToInternet) throws Exception {
+                                            if (!isConnectedToInternet) {
+                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Snackbar.make(findViewById(R.id.main_container), "No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    }
+                });
     }
 }

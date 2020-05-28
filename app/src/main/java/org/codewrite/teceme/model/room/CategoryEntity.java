@@ -2,13 +2,30 @@ package org.codewrite.teceme.model.room;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.codewrite.teceme.model.rest.Result;
 
+import java.util.List;
+
 @Entity(tableName = "category_table")
 public class CategoryEntity extends Result {
-    @NonNull
+
+    public STATE getState() {
+        return state;
+    }
+
+    public void setState(STATE state) {
+        this.state = state;
+    }
+
+    public enum STATE {
+        CLOSED,
+        OPENED
+    }
+    @Ignore
+    private STATE state = STATE.CLOSED;
     @PrimaryKey
     private Integer category_id;
     private String category_name;
@@ -16,16 +33,6 @@ public class CategoryEntity extends Result {
     private Integer category_parent_id;
     private Boolean category_access;
     private String category_date_created;
-
-    public CategoryEntity(@NonNull Integer category_id, String category_name, Integer category_level,
-                    Integer category_parent_id, Boolean category_access, String category_date_created) {
-        this.category_id = category_id;
-        this.category_name = category_name;
-        this.category_level = category_level;
-        this.category_parent_id = category_parent_id;
-        this.category_access = category_access;
-        this.category_date_created = category_date_created;
-    }
 
     @NonNull
     public Integer getCategory_id() {
