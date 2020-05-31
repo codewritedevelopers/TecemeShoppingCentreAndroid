@@ -71,7 +71,7 @@ public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapt
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
-                            +"Products/product-image/"
+                            +"products/product-image/"
                             + entity.getProduct_img_uri())
                     .resize(250, 250)
                     .placeholder(R.drawable.loading_image)

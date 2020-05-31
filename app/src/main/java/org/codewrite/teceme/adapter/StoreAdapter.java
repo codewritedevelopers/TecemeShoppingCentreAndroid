@@ -72,6 +72,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
+                            +"stores/store-image/"
                             + entity.getStore_img_uri())
                     .resize(60, 60)
                     .placeholder(R.drawable.loading_image)

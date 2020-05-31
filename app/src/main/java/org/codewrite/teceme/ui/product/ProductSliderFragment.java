@@ -49,7 +49,7 @@ private String imgUrl;
         try {
             Picasso.get()
                     .load(resources.getString(R.string.api_base_url)
-                           +"Products/product-image/"
+                           +"products/product-image/"
                             + imgUrl)
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)

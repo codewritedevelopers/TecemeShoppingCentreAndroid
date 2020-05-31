@@ -70,6 +70,7 @@ public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProd
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
+                            +"products/product-image/"
                             + entity.getProduct_img_uri())
                     .resize(60, 60)
                     .placeholder(R.drawable.loading_image)

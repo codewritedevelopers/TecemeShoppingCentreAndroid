@@ -50,6 +50,7 @@ public class AdsSliderFragment extends Fragment {
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
+                            +"customers/ads-image/"
                             + imgUrl)
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.momo)
