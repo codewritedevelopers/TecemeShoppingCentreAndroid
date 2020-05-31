@@ -17,6 +17,7 @@ import org.codewrite.teceme.model.rest.WishListJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
+import org.codewrite.teceme.model.room.WalletEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.repository.CustomerRepository;
 import org.codewrite.teceme.repository.WishListRepository;
@@ -331,20 +332,14 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void addToWishList(Integer product_id, String owner, String accessToken) {
-        final Call<List<WishListJson>> wishList = wishListRepository.addToWishList(product_id,owner,accessToken);//*711*7#
+        final Call<WishListJson> wishList = wishListRepository.addToWishList(product_id,owner,accessToken);//*711*7#
 
-        wishList.enqueue(new Callback<List<WishListJson>>() {
+        wishList.enqueue(new Callback<WishListJson>() {
             @Override
-            public void onResponse(@NonNull Call<List<WishListJson>> call,
-                                   @NonNull Response<List<WishListJson>> response) {
+            public void onResponse(@NonNull Call<WishListJson> call,
+                                   @NonNull Response<WishListJson> response) {
                 if (response.isSuccessful()) {
-                    List<WishListJson> wishLists = response.body();
-                    assert wishLists != null;
-                    WishListEntity [] wishListEntities = new WishListEntity[wishLists.size()];
-                    for (int i=0; i < wishLists.size(); i++) {
-                        wishListEntities[i] = wishLists.get(i);
-                    }
-                    wishListRepository.insert(wishListEntities);
+                    wishListRepository.insert(response.body());
 
                 } else{
                     WishListJson result = new WishListJson();
@@ -355,7 +350,7 @@ public class AccountViewModel extends AndroidViewModel {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<WishListJson>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<WishListJson> call, @NonNull Throwable t) {
                 WishListJson result = new WishListJson();
                 result.setStatus(false);
                 if(t.getMessage()!=null) {
@@ -399,5 +394,45 @@ public class AccountViewModel extends AndroidViewModel {
                 wishListResult.postValue(result);
             }
         });
+    }
+
+    public void getWisLists() {
+        final Call<List<WishListJson>> wishList = wishListRepository.getWishLists();
+        wishList.enqueue(new Callback<List<WishListJson>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<WishListJson>> call,
+                                   @NonNull Response<List<WishListJson>> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    int i=0;
+                    WishListEntity [] wishListEntities =new WishListEntity[response.body().size()];
+                    for (WishListJson wishListJson : response.body()) {
+                        wishListEntities[i++] = wishListJson;
+                    }
+                    wishListRepository.insert(wishListEntities);
+                } else{
+                    WishListJson result = new WishListJson();
+                    result.setStatus(false);
+                    result.setMessage(response.message());
+                    wishListResult.postValue(result);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<WishListJson>> call, @NonNull Throwable t) {
+                WishListJson result = new WishListJson();
+                result.setStatus(false);
+                if(t.getMessage()!=null) {
+                    result.setMessage(t.getMessage());
+                }else{
+                    result.setMessage("Process timeout! Please, Try again");
+                }
+                wishListResult.postValue(result);
+            }
+        });
+    }
+
+    public LiveData<WishListEntity> isWishList(Integer product_id) {
+        return wishListRepository.getWishList(product_id);
     }
 }

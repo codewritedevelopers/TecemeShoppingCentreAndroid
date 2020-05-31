@@ -49,12 +49,13 @@ public interface RestApi {
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
                                       @Path("id") String id,
                                       @Header("Authorization") String accessToken);
+
     /*
      * DELETE Customer
      */
     @DELETE("customers/account/id/{id}")
     Call<WalletJson> deleteCustomer(@Path("id") String id,
-                                  @Header("Authorization") String token);
+                                    @Header("Authorization") String token);
 
     /*
      * POST Wallet
@@ -68,14 +69,15 @@ public interface RestApi {
      */
     @POST("wallets/transfer-money")
     Call<WalletLogJson> transferMoney(@Body WalletLogJson walletLogJson,
-                                  @Header("Authorization") String token);
+                                      @Header("Authorization") String token);
 
     /*
      * POST Wallet
      */
     @POST("wallets/load-wallet")
     Call<WalletLogJson> loadWallet(@Body WalletLogJson walletLogJson,
-                                      @Header("Authorization") String token);
+                                   @Header("Authorization") String token);
+
     /*
      * PATCH Wallet
      */
@@ -114,11 +116,21 @@ public interface RestApi {
                                        @Query("page") Integer page);
 
     /*
-     * POST Customer
+     * POST WisList
      */
     @POST("customers/wish-list")
-    Call<List<WishListJson>> addToWishList(@Body WishListJson wishListJson,
-                                             @Header("Authorization") String accessToken);
+    Call<WishListJson> addToWishList(@Body WishListJson wishListJson,
+                                     @Header("Authorization") String accessToken);
+
+    /*
+     * GET WishList
+     */
+    @GET("customers/wish-list")
+    Call<List<WishListJson>> getWishList();
+
+    @DELETE("customer/wish-list")
+    Call<WishListJson> deleteWishList(@Body WishListJson wishListJson,
+                                      @Header("Authorization") String accessToken);
 
     /*
      * GET Ads
@@ -126,7 +138,4 @@ public interface RestApi {
     @GET("customers/ads")
     Call<List<String>> getAds();
 
-    @DELETE("customer/wish-list")
-    Call<WishListJson> deleteWishList(@Body WishListJson wishListJson,
-                                            @Header("Authorization") String accessToken);
 }

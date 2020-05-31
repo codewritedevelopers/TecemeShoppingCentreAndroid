@@ -10,6 +10,7 @@ import org.codewrite.teceme.api.Service;
 import org.codewrite.teceme.db.TecemeDataBase;
 import org.codewrite.teceme.db.dao.WishListDao;
 import org.codewrite.teceme.model.rest.WishListJson;
+import org.codewrite.teceme.model.room.WalletEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 
 import java.util.List;
@@ -38,22 +39,29 @@ public class WishListRepository {
         return wishListDao.getWishLists(owner);
     }
 
-    public Call<List<WishListJson>> addToWishList(Integer product_id, String owner, String accessToken) {
+    public Call<List<WishListJson>> getWishLists() {
+        return restApi.getWishList();
+    }
+    public Call<WishListJson> addToWishList(Integer product_id, String owner, String accessToken) {
         WishListJson wishListJson = new WishListJson();
         wishListJson.setWishlist_customer_id(owner);
         wishListJson.setWishlist_product_id(product_id);
-        return restApi.addToWishList(wishListJson, accessToken);
+        return restApi.addToWishList(wishListJson, "Bearer "+accessToken);
     }
 
     public Call<WishListJson> removeWishList(Integer product_id, String owner, String accessToken) {
         WishListJson wishListJson = new WishListJson();
         wishListJson.setWishlist_customer_id(owner);
         wishListJson.setWishlist_product_id(product_id);
-        return restApi.deleteWishList(wishListJson, accessToken);
+        return restApi.deleteWishList(wishListJson, "Bearer "+accessToken);
     }
 
     public void delete(Integer product_id) {
         new DeleteWishListAsyncTask(wishListDao).execute(product_id);
+    }
+
+    public LiveData<WishListEntity> getWishList(Integer product_id) {
+        return wishListDao.getWishListByProduct(product_id);
     }
 
     private static class DeleteAllWishListAsyncTask extends AsyncTask<Void, Void, Void> {

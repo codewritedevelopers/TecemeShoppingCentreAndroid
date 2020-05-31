@@ -9,17 +9,18 @@
         android:id="@+id/ads_view_flipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:background="@color/colorWhiteGrey" />
+        android:background="@color/colorWhiteGrey"
+        android:scrollbars="none" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@color/colorTransparent"
         app:tabBackground="@drawable/indicator_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp" />

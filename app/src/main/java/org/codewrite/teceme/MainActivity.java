@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -20,14 +22,22 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
+import org.codewrite.teceme.model.room.CartEntity;
+import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.ui.account.AccountsActivity;
 import org.codewrite.teceme.ui.product.ProductActivity;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
+import org.codewrite.teceme.viewmodel.CartViewModel;
+import org.codewrite.teceme.viewmodel.CustomerViewModel;
+
+import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,12 +50,15 @@ public class MainActivity extends AppCompatActivity {
     private SearchBox searchBox;
     private NavController navController;
     private BottomNavigationView navView;
+    private CartViewModel cartViewModel;
+    private AccountViewModel accountViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
+        accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
 
         navView = findViewById(R.id.nav_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,6 +74,31 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         setupSearchView();
+        accountViewModel.getLoggedInCustomer()
+                .observe(this, new Observer<CustomerEntity>() {
+            @Override
+            public void onChanged(CustomerEntity customerEntity) {
+                if (customerEntity==null){
+                    return;
+                }
+                setBadges(customerEntity);
+            }
+        });
+    }
+
+    private void setBadges(CustomerEntity customerEntity) {
+        cartViewModel.getCartsEntity(customerEntity.getCustomer_id())
+                .observe(this, new Observer<List<CartEntity>>() {
+                    @Override
+                    public void onChanged(List<CartEntity> cartEntities) {
+                        if (cartEntities==null){
+                            return;
+                        }
+                        BadgeDrawable badge = navView.getOrCreateBadge(R.id.navigation_cart);
+                        assert badge != null;
+                        badge.setNumber(cartEntities.size());
+                    }
+                });
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.codewrite.teceme.ui.product;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,8 @@ import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.WalletEntity;
+import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.payment.PaymentActivity;
 import org.codewrite.teceme.utils.SliderTimer;
@@ -203,9 +206,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                         }
                         colors = productEntity.getProduct_color().trim().split(",");
                         //set default color
-                        if (colors.length>0) {
+                        if (colors.length > 0) {
                             mCartEntity.setProduct_color(colors[0]);
-                        }else{
+                        } else {
                             spinnerProductColor.setVisibility(View.GONE);
                         }
                         // Creating an ArrayAdapter using the string array and a default spinner layout
@@ -217,8 +220,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         spinnerProductColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                String color = (String) spinnerProductColor.getItemAtPosition(position);
-                                mCartEntity.setProduct_color(color);
+                                mCartEntity.setProduct_color(colors[position]);
                             }
 
                             @Override
@@ -238,13 +240,16 @@ public class ProductDetailActivity extends AppCompatActivity {
                         if (sizeList.size() > 0) {
                             sizeList.get(0).setSelected(true);
                             mCartEntity.setProduct_size(sizeList.get(0).getSize());
-                        }else{
+                        } else {
                             productSizeRv.setVisibility(View.GONE);
                         }
+                        // set default to zero
+                        productQuantity.setText("0");
+
                         productSizeAdapter.setProductViewListener(new ProductSizeAdapter.ProductViewListener() {
                             @Override
                             public void onChangeSize(View v, int from, int to) {
-                                mCartEntity.setProduct_size(productSizeAdapter.getCurrentList().get(to).getSize());
+                                mCartEntity.setProduct_size(sizeList.get(to).getSize());
                             }
                         });
                         productSizeAdapter.submitList(sizeList);
@@ -261,7 +266,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                                 });
 
                         String[] imgUris = productEntity.getProduct_img_uri().trim().split(",");
-                        if (imgUris.length>0) {
+                        if (imgUris.length > 0) {
                             mCartEntity.setProduct_img_uri(imgUris[0]);
                         }
                         // setup action later
@@ -280,8 +285,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     void setupActions(final ProductEntity productEntity) {
-        // set default to zero
-        productQuantity.setText("0");
+
         addProductView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -305,7 +309,28 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (isInCart) {
                     cartViewModel.removeFromCart(productEntity.getProduct_id());
                 } else {
+                    if (loggedInCustomer == null) {
+                        launchLogin();
+                        return;
+                    }
+
+                    mCartEntity.setCart_product_id(productEntity.getProduct_id());
+                    mCartEntity.setProduct_category_id(productEntity.getProduct_category_id());
+                    mCartEntity.setProduct_weight(productEntity.getProduct_weight());
+                    mCartEntity.setProduct_price(productEntity.getProduct_price());
+                    mCartEntity.setCart_access(productEntity.getProduct_access());
+                    mCartEntity.setCart_quantity(Integer.valueOf(productQuantity.getText().toString()));
+                    mCartEntity.setCart_owner(loggedInCustomer.getCustomer_id());
+                    mCartEntity.setProduct_desc(productEntity.getProduct_desc());
+                    mCartEntity.setProduct_code(productEntity.getProduct_code());
+                    mCartEntity.setCart_date_created(productEntity.getProduct_date_created());
+                    mCartEntity.setProduct_ordered(productEntity.getProduct_ordered());
+                    mCartEntity.setProduct_name(productEntity.getProduct_name());
+                    mCartEntity.setProduct_img_uri(productEntity.getProduct_img_uri());
+                    mCartEntity.setProduct_discount(productEntity.getProduct_discount());
                     cartViewModel.addToCart(mCartEntity);
+
+                    Toast.makeText(ProductDetailActivity.this, "Product added to Cart", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -330,6 +355,18 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
             }
         });
+        accountViewModel.isWishList(productEntity.getProduct_id())
+                .observe(ProductDetailActivity.this, new Observer<WishListEntity>() {
+                    @Override
+                    public void onChanged(WishListEntity wishListEntity) {
+                        if (wishListEntity == null) {
+                            fab.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
+                            return;
+                        }
+                        fab.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
+                    }
+                });
+
         cartViewModel.isInCart(productEntity.getProduct_id())
                 .observe(ProductDetailActivity.this, new Observer<CartEntity>() {
                             @Override
@@ -339,10 +376,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                                     addToCart.setText(getString(R.string.add_to_cart_text));
                                 } else {
                                     isInCart = true;
-                                    mCartEntity=cartEntity;
+
                                     addToCart.setText(getString(R.string.remove_from_cart_text));
                                     Integer quantity = cartEntity.getCart_quantity();
-                                    productQuantity.setText(String.valueOf(quantity==null?0:quantity));
+                                    productQuantity.setText(String.valueOf(quantity == null ? 0 : quantity));
 
                                     // create an new list for changes
                                     List<ProductSize> sizeList2 = new ArrayList<>();
@@ -356,12 +393,15 @@ public class ProductDetailActivity extends AppCompatActivity {
                                         sizeList2.add(productSize);
                                     }
                                     productSizeAdapter.submitList(sizeList2);
+                                    productSizeAdapter.notifyDataSetChanged();
 
                                     for (int i = 0; i < colors.length; i++) {
-                                        if (colors[i].equals(cartEntity.getProduct_color())){
-                                            spinnerProductColor.setSelection(i,true);
+                                        if (colors[i].equals(cartEntity.getProduct_color())) {
+                                            spinnerProductColor.setSelection(i, true);
                                         }
                                     }
+
+                                    mCartEntity = cartEntity;
                                 }
                             }
                         }

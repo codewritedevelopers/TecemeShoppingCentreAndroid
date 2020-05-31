@@ -123,7 +123,7 @@ public class CustomerRepository {
     }
 
     public LiveData<WishListEntity> getWishList(String owner, int id) {
-        return wishListDao.getWishListByProduct(owner,id);
+        return wishListDao.getWishListByProduct(id);
     }
 
     public void addToWishList(WishListEntity wishListEntity) {
