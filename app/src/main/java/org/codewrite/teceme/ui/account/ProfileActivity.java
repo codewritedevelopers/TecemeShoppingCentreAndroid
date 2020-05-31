@@ -73,10 +73,6 @@ public class ProfileActivity extends AppCompatActivity {
         cPasswordEditText = findViewById(R.id.confirm_password);
         updateButton = findViewById(R.id.action_update);
 
-         loadingProgressBar = findViewById(R.id.loading);
-        final AlertDialog alertDialog = ContentLoadingDialog.create(this, "Loading ...");
-        alertDialog.show();
-
         accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
@@ -94,7 +90,6 @@ public class ProfileActivity extends AppCompatActivity {
                     launchLogin();
                     return;
                 }
-                alertDialog.hide();
                 loggedInCustomer = customerEntity;
                 setupProfile(customerEntity);
             }

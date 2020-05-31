@@ -9,7 +9,7 @@
         layout="@layout/toolbar_with_search" />
 
     <LinearLayout
-        android:layout_marginTop="@dimen/toolbar_height"
+        android:layout_marginTop="?actionBarSize"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

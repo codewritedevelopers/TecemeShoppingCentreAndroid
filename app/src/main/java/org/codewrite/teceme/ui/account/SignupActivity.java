@@ -53,6 +53,7 @@ public class SignupActivity extends AppCompatActivity {
                 toolbar.setVisibility(View.GONE);
             }
         }
+
         final EditText nameEditText = findViewById(R.id.name);
         final EditText phoneEditText = findViewById(R.id.phone);
         final EditText usernameEditText = findViewById(R.id.username);
@@ -215,12 +216,18 @@ public class SignupActivity extends AppCompatActivity {
                                         @Override
                                         public void accept(Boolean isConnectedToInternet) throws Exception {
                                             if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_LONG)
+                                                        .setAction("Retry", new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                checkInternetConnection();
+                                                            }
+                                                        }).show();
                                             }
                                         }
                                     });
                         }else{
-                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_LONG).show();
                         }
                     }
                 });

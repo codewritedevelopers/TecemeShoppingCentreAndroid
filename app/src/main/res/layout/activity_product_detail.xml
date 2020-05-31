@@ -32,6 +32,7 @@
                 layout="@layout/product_image_slider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/product_detail_app_bar_height"
+                android:layout_marginTop="?actionBarSize"
                 android:visibility="visible" />
 
             <include layout="@layout/product_detail_content" />

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +23,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
 
+import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.AdsSliderAdapter;
 import org.codewrite.teceme.adapter.CategoryProductAdapter;
@@ -33,6 +37,7 @@ import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
+import org.codewrite.teceme.ui.product.ProductActivity;
 import org.codewrite.teceme.ui.product.ProductDetailActivity;
 import org.codewrite.teceme.utils.BackToTopFabBehavior;
 import org.codewrite.teceme.utils.SliderTimer;
@@ -73,6 +78,7 @@ public class HomeFragment extends Fragment {
     private FragmentActivity mActivity;
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
+    private SearchBox searchBox;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -164,8 +170,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        mSliderIndicator = view.findViewById(R.id.indicator);
         setupNestedScrollView(view);
+        setupSearchView(view);
     }
 
     @Override
@@ -311,4 +318,63 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
+
+
+    private void setupSearchView(View view) {
+        // we find search view
+        searchBox = view.findViewById(R.id.id_search_box);
+        searchBox.setDrawerLogo(R.drawable.icons8_search);
+        searchBox.setLogoTextColor(R.color.colorAccent);
+        searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));
+        // we set voice search
+        searchBox.enableVoiceRecognition(this);
+
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+                //Use this to tint the screen
+                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
+                    SearchResult result = new SearchResult(s);
+                    // add suggestions
+                    searchBox.addSearchable(result);
+                }
+            }
+
+            @Override
+            public void onSearchClosed() {
+                //Use this to un-tint the screen
+                searchBox.clearResults();
+            }
+
+            @Override
+            public void onSearchTermChanged(String s) {
+            }
+
+            @Override
+            public void onSearch(String searchTerm) {
+                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", searchTerm);
+                startActivity(i);
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+                //React to a result being clicked
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", result.title);
+                startActivity(i);
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
+    }
+
 }

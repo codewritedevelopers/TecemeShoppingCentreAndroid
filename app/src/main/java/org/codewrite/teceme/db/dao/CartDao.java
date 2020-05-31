@@ -24,7 +24,7 @@ public interface CartDao {
     void insert(CartEntity... cartEntity);
 
     @Update
-    void update(CartEntity cartEntity);
+    void update(CartEntity... cartEntity);
 
     @Query("DELETE FROM cart_table WHERE cart_product_id =:product_id")
     void delete(Integer product_id);

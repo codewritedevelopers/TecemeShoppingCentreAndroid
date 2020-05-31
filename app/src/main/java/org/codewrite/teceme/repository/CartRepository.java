@@ -41,6 +41,10 @@ public class CartRepository {
        new DeleteCartAsyncTask(cartDao).execute(product_id);
     }
 
+    public void update(CartEntity... cartEntity) {
+        new UpdateCartAsyncTask(cartDao).execute(cartEntity);
+    }
+
     private static class DeleteCartAsyncTask extends AsyncTask<Integer, Void, Void> {
         private CartDao cartDao;
 
@@ -94,6 +98,22 @@ public class CartRepository {
         protected Void doInBackground(CartEntity... entities) {
             if (this.cartDao != null) {
                 this.cartDao.insert(entities);
+            }
+            return null;
+        }
+    }
+
+    private static class UpdateCartAsyncTask extends AsyncTask<CartEntity, Void, Void> {
+        private CartDao cartDao;
+
+        UpdateCartAsyncTask(CartDao cartDao) {
+            this.cartDao = cartDao;
+        }
+
+        @Override
+        protected Void doInBackground(CartEntity... entities) {
+            if (this.cartDao != null) {
+                this.cartDao.update(entities);
             }
             return null;
         }

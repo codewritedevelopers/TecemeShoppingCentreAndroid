@@ -367,8 +367,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                     }
                 });
 
-        cartViewModel.isInCart(productEntity.getProduct_id())
-                .observe(ProductDetailActivity.this, new Observer<CartEntity>() {
+        final LiveData<CartEntity> inCart = cartViewModel.isInCart(productEntity.getProduct_id());
+        inCart.observe(ProductDetailActivity.this, new Observer<CartEntity>() {
                             @Override
                             public void onChanged(CartEntity cartEntity) {
                                 if (cartEntity == null) {
@@ -410,12 +410,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         buyNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkInternetConnection();
                 if (loggedInCustomer == null) {
                     launchLogin();
                     return;
                 }
 
+                if (productQuantity.getText().toString().equals("0")){
+                    Toast.makeText(ProductDetailActivity.this, "Please, choose quantity!", Toast.LENGTH_LONG).show();
+                return;
+                }
                 mCartEntity.setCart_product_id(productEntity.getProduct_id());
                 mCartEntity.setProduct_category_id(productEntity.getProduct_category_id());
                 mCartEntity.setProduct_weight(productEntity.getProduct_weight());
@@ -430,6 +433,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                 mCartEntity.setProduct_name(productEntity.getProduct_name());
                 mCartEntity.setProduct_img_uri(productEntity.getProduct_img_uri());
                 mCartEntity.setProduct_discount(productEntity.getProduct_discount());
+                inCart.removeObservers(ProductDetailActivity.this);
+
                 cartViewModel.addToCart(mCartEntity);
                 launchPayment();
             }

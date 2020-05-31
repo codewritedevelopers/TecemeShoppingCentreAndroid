@@ -4,28 +4,45 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhite">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/colorWhite"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/toolbar2"
+        layout="@layout/toolbar_with_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
     <ImageView
         android:id="@+id/no_cart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/no_cart"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/todo" />
+        android:layout_gravity="center"
+        android:contentDescription="@string/todo"
+        android:src="@drawable/no_cart" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar2"
         android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="100dp"
-            android:background="@color/colorWhite">
+            android:background="@color/colorWhite"
+            android:orientation="vertical">
+
             <include
-                layout="@layout/cart_list" android:visibility="visible"/>
+                layout="@layout/cart_list"
+                android:visibility="visible" />
+
             <Button
                 android:id="@+id/buy_now"
                 android:layout_width="@dimen/button_width"

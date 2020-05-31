@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:paddingTop="15dp"
     android:columnWidth="@dimen/product_card_width"
+    android:layout_margin="8dp"
     android:numColumns="auto_fit"
     tools:activityContext=".ui.store.StoreListActivity"
     tools:listitem="@layout/store_list_content" />

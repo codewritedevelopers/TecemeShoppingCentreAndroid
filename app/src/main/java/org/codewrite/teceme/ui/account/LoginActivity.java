@@ -52,14 +52,17 @@ public class LoginActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        finish_without_launching_another = getIntent()
+                .getBooleanExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER", false);
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")) {
+            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")
+                    && !finish_without_launching_another) {
                 toolbar.setVisibility(View.GONE);
             }
         }
-        finish_without_launching_another = getIntent()
-                .getBooleanExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER", false);
+        if (!finish_without_launching_another) {
+            toolbar.setVisibility(View.GONE);
+        }
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
@@ -137,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (customerEntity == null) {
                     return;
                 }
-                // Toast.makeText(LoginActivity.this, String.valueOf(customerEntity.getCustomer_access()), Toast.LENGTH_SHORT).show();
                 lunchMainActivity();
             }
         });
@@ -169,6 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     accountViewModel.login(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString());
+                    checkInternetConnection();
                 }
                 return false;
             }
@@ -180,6 +183,7 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 accountViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
+                checkInternetConnection();
             }
         });
 
@@ -195,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void lunchMainActivity() {
         if (!finish_without_launching_another) {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
         finish();
@@ -207,12 +211,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void replaceWithLoggedInCustomer(CustomerJson loginResult) {
         accountViewModel.replaceWIthLoggedInCustomer(loginResult);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkInternetConnection();
     }
 
     @Override
@@ -247,12 +245,26 @@ public class LoginActivity extends AppCompatActivity {
                                         @Override
                                         public void accept(Boolean isConnectedToInternet) throws Exception {
                                             if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                                Snackbar.make(findViewById(R.id.main_container),
+                                                        "No Internet Connection!", Snackbar.LENGTH_LONG)
+                                                        .setAction("Retry", new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                checkInternetConnection();
+                                                            }
+                                                        }).show();
                                             }
                                         }
                                     });
                         } else {
-                            Snackbar.make(findViewById(R.id.main_container), "No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                            Snackbar.make(findViewById(R.id.main_container),
+                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    .setAction("Retry", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
+                                        }
+                                    }).show();
                         }
                     }
                 });

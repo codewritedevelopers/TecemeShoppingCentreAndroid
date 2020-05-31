@@ -27,7 +27,7 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
         @Override
         public boolean areItemsTheSame(@NonNull CartEntity oldItem,
                                        @NonNull CartEntity newItem) {
-            return oldItem.getCart_owner().equals(newItem.getCart_owner());
+            return oldItem.getCart_product_id().equals(newItem.getProduct_category_id());
         }
 
         @Override
@@ -83,74 +83,105 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
         } catch (Exception e) {
             holder.productImage.setImageResource(R.drawable.no_product_image);
         }
+        // set group product name
+        if (holder.productName != null)
+            holder.productName.setText(entity.getProduct_name());
 
+        if (holder.productPrice != null) {
+            String cedis = "GH₵ ";
+            holder.productPrice.setText(cedis.concat(entity.getProduct_price()));
+        }
+
+        if (holder.productColor != null) {
+            if (!entity.getProduct_color().isEmpty()) {
+                holder.productColor.setVisibility(View.VISIBLE);
+                holder.productColor.setText(entity.getProduct_color());
+            } else {
+                holder.productColor.setVisibility(View.GONE);
+            }
+        }
+
+        if (holder.productSize != null) {
+            if (!entity.getProduct_size().isEmpty()) {
+                holder.productSize.setVisibility(View.VISIBLE);
+                holder.productSize.setText(entity.getProduct_size());
+                holder.productSize.setBackgroundColor(
+                        activityContext.getResources().getColor(R.color.colorPrimary));
+                holder.productSize.setTextColor(
+                        activityContext.getResources().getColor(R.color.colorWhite));
+            } else {
+                holder.productSize.setVisibility(View.GONE);
+            }
+        }
+
+        if (holder.productQuantity != null) {
+            holder.productQuantity.setText(String.valueOf(entity.getCart_quantity()));
+        }
+
+        if (holder.productWeight != null && entity.getProduct_weight() != null) {
+            if (!entity.getProduct_weight().isEmpty()) {
+                holder.productWeight.setVisibility(View.VISIBLE);
+                holder.productWeight.setText(entity.getProduct_weight());
+            } else {
+                holder.productWeight.setVisibility(View.GONE);
+            }
+        } else if (holder.productWeight != null) {
+            holder.productWeight.setVisibility(View.GONE);
+        }
+
+        if (holder.productDiscount != null && entity.getProduct_discount() != null) {
+            if (!entity.getProduct_discount().isEmpty()) {
+                holder.productDiscount.setVisibility(View.VISIBLE);
+                holder.productDiscount.setText(entity.getProduct_discount());
+            } else {
+                holder.productDiscount.setVisibility(View.GONE);
+            }
+        } else if (holder.productDiscount != null) {
+            holder.productDiscount.setVisibility(View.GONE);
+        }
+
+        if (holder.productOrdered != null) {
+            String ordered = entity.getProduct_ordered() + " ordered";
+            holder.productOrdered.setText(ordered);
+        }
         // set product view lister
         if (productViewListener != null) {
             // set item clicked
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    productViewListener.onProductClicked(v, position);
-                }
-            });
-
-            // set wish list indicator
-            productViewListener.isInWishList(entity.getCart_product_id())
-                    .observeForever(new Observer<Boolean>() {
-                        @Override
-                        public void onChanged(Boolean isInWishList) {
-                            if (isInWishList == null)
-                                return;
-                            if (isInWishList) {
-                                holder.wishListProduct.setColorFilter(R.color.colorPrimaryDark,
-                                        android.graphics.PorterDuff.Mode.MULTIPLY);
-                                holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        productViewListener.onToggleWishList(v, position);
-                                    }
-                                });
-                            } else {
-                                holder.wishListProduct.setColorFilter(R.color.colorAccent,
-                                        android.graphics.PorterDuff.Mode.MULTIPLY);
-                            }
-                        }
-                    });
-
-            // set group product name
-            if (holder.productName != null)
-                holder.productName.setText(entity.getProduct_name());
-
-            if (holder.productPrice != null) {
-                String cedis = "GH₵ ";
-                holder.productPrice.setText(cedis.concat(entity.getProduct_price()));
+            if (holder.productImage!=null) {
+                holder.productImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        productViewListener.onCartClicked(holder.itemView, position);
+                    }
+                });
             }
 
-            if (holder.productWeight != null && entity.getProduct_weight() != null) {
-                if (!entity.getProduct_weight().isEmpty()) {
-                    holder.productWeight.setVisibility(View.VISIBLE);
-                    holder.productWeight.setText(entity.getProduct_weight());
-                }else{
-                    holder.productWeight.setVisibility(View.GONE);
-                }
-            } else if (holder.productWeight != null) {
-                holder.productWeight.setVisibility(View.GONE);
+            if (holder.addQuantity != null) {
+                holder.addQuantity.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        productViewListener.onAddProduct(holder.itemView, position);
+                    }
+                });
             }
 
-            if (holder.productDiscount != null && entity.getProduct_discount() != null) {
-                if (!entity.getProduct_discount().isEmpty()) {
-                    holder.productDiscount.setVisibility(View.VISIBLE);
-                    holder.productDiscount.setText(entity.getProduct_discount());
-                }else{
-                    holder.productDiscount.setVisibility(View.GONE);
-                }
-            } else if (holder.productDiscount != null) {
-                holder.productDiscount.setVisibility(View.GONE);
-            }
+            if (holder.subtractQuantity != null) {
+                holder.subtractQuantity.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        productViewListener.onSubtract(holder.itemView, position);
+                    }
+                });
 
-            if (holder.productOrdered != null) {
-                String ordered =  entity.getProduct_ordered() + " ordered";
-                holder.productOrdered.setText(ordered);
+            }
+            if (holder.deleteCart != null) {
+                holder.deleteCart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        productViewListener.onDelete(holder.itemView, position);
+                    }
+                });
+
             }
         }
     }
@@ -162,10 +193,15 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
     static class ProductViewHolder extends RecyclerView.ViewHolder {
         private TextView productName;
         private TextView productPrice;
+        private TextView productColor;
+        private TextView productSize;
         private TextView productWeight;
+        private TextView productQuantity;
         private TextView productDiscount;
-        private ImageView wishListProduct;
         private ImageView productImage;
+        private ImageView addQuantity;
+        private ImageView subtractQuantity;
+        private ImageView deleteCart;
         private TextView productOrdered;
 
         ProductViewHolder(@NonNull View itemView) {
@@ -173,18 +209,25 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
             productName = itemView.findViewById(R.id.id_product_name);
             productPrice = itemView.findViewById(R.id.id_price);
             productOrdered = itemView.findViewById(R.id.id_orders);
+            productQuantity = itemView.findViewById(R.id.id_num_ordered);
             productDiscount = itemView.findViewById(R.id.id_discount);
             productWeight = itemView.findViewById(R.id.id_weight);
-            wishListProduct = itemView.findViewById(R.id.id_wish_list_indicator);
+            productColor = itemView.findViewById(R.id.id_color);
+            productSize = itemView.findViewById(R.id.product_size);
             productImage = itemView.findViewById(R.id.id_product_image);
+            deleteCart = itemView.findViewById(R.id.id_delete);
+            addQuantity = itemView.findViewById(R.id.id_add_product);
+            subtractQuantity = itemView.findViewById(R.id.id_subtract_product);
         }
     }
 
     public interface ProductViewListener {
-        void onProductClicked(View v, int position);
+        void onCartClicked(View v, int position);
 
-        LiveData<Boolean> isInWishList(int id);
+        void onAddProduct(View v, int position);
 
-        void onToggleWishList(View v, int position);
+        void onSubtract(View v, int position);
+
+        void onDelete(View v, int position);
     }
 }

@@ -217,8 +217,8 @@ public class CreateWalletActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        finish();
         super.onBackPressed();
+        finish();
     }
 
     @Override

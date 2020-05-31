@@ -73,17 +73,17 @@ public class MainActivity extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-        setupSearchView();
+
         accountViewModel.getLoggedInCustomer()
                 .observe(this, new Observer<CustomerEntity>() {
-            @Override
-            public void onChanged(CustomerEntity customerEntity) {
-                if (customerEntity==null){
-                    return;
-                }
-                setBadges(customerEntity);
-            }
-        });
+                    @Override
+                    public void onChanged(CustomerEntity customerEntity) {
+                        if (customerEntity == null) {
+                            return;
+                        }
+                        setBadges(customerEntity);
+                    }
+                });
     }
 
     private void setBadges(CustomerEntity customerEntity) {
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 .observe(this, new Observer<List<CartEntity>>() {
                     @Override
                     public void onChanged(List<CartEntity> cartEntities) {
-                        if (cartEntities==null){
+                        if (cartEntities == null) {
                             return;
                         }
                         BadgeDrawable badge = navView.getOrCreateBadge(R.id.navigation_cart);
@@ -177,12 +177,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkInternetConnection();
-    }
-
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
         ReactiveNetwork
@@ -200,19 +194,26 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void accept(Boolean isConnectedToInternet) throws Exception {
                                             if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                                Snackbar.make(findViewById(R.id.main_container),
+                                                        "No Internet Connection!", Snackbar.LENGTH_SHORT)
+                                                .setAction("Retry", new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        checkInternetConnection();
+                                                    }
+                                                }).show();
                                             }
                                         }
                                     });
                         } else {
                             Snackbar.make(findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Retry", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    checkInternetConnection();
-                                }
-                            }).show();
+                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    .setAction("Retry", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
+                                        }
+                                    }).show();
                         }
                     }
                 });

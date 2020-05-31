@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:background="@color/colorWhite2"
     tools:activityContext=".ui.product.ProductDetailActivity">
 
     <LinearLayout
@@ -13,11 +13,10 @@
         android:orientation="horizontal"
         android:weightSum="10">
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5">
-
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -32,11 +31,15 @@
                 android:id="@+id/product_detail_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_above="@+id/action_bottom"
+                android:layout_marginTop="?actionBarSize"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/colorWhite2"
+                    android:paddingBottom="50dp"
                     android:orientation="vertical">
 
                     <include
@@ -50,15 +53,15 @@
             </androidx.core.widget.NestedScrollView>
 
             <LinearLayout
+                android:id="@+id/action_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_gravity="bottom"
-                android:elevation="30dp"
+                android:layout_alignParentBottom="true"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
                 <TextView
-                    android:id="@+id/textActionAddToCart"
+                    android:id="@+id/add_to_cart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -71,7 +74,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textActionBuyNow"
+                    android:id="@+id/buy_now"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -84,7 +87,7 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
-        </FrameLayout>
+        </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/id_related_detail_container"

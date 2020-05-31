@@ -38,12 +38,11 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class AccountsActivity extends AppCompatActivity {
-   private AccountViewModel accountViewModel;
+    private AccountViewModel accountViewModel;
     private TextView nameView;
     private TextView walletIdView;
     private CustomerEntity loggedInCustomer;
     private AccessTokenEntity accessToken;
-     AlertDialog alertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,13 +55,10 @@ public class AccountsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         accountViewModel = ViewModelProviders.of(AccountsActivity.this).get(AccountViewModel.class);
-        alertDialog = ContentLoadingDialog.create(this, "Loading ...");
-        alertDialog.show();
         accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
                 if (accessTokenEntity == null) {
-                    alertDialog.cancel();
                     launchLogin();
                 }
                 accessToken = accessTokenEntity;
@@ -76,7 +72,6 @@ public class AccountsActivity extends AppCompatActivity {
                     launchLogin();
                     return;
                 }
-                alertDialog.hide();
                 loggedInCustomer = customerEntity;
                 setupProfile(customerEntity);
             }
@@ -85,7 +80,7 @@ public class AccountsActivity extends AppCompatActivity {
         findViewById(R.id.profile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               launchProfile();
+                launchProfile();
             }
         });
 
@@ -140,8 +135,9 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void launchProfile() {
-        startActivity(new Intent(AccountsActivity.this,ProfileActivity.class));
+        startActivity(new Intent(AccountsActivity.this, ProfileActivity.class));
     }
+
     private void launchWalletActivity() {
         startActivity(new Intent(AccountsActivity.this, WalletActivity.class));
     }
@@ -170,8 +166,8 @@ public class AccountsActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               dialog.cancel();
-        }
+                dialog.cancel();
+            }
         });
         builder.setMessage("Do you want to logout ?");
         AlertDialog alertDialog = builder.create();
@@ -184,7 +180,7 @@ public class AccountsActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                accountViewModel.deleteAccount(loggedInCustomer.getCustomer_id(),accessToken.getToken());
+                accountViewModel.deleteAccount(loggedInCustomer.getCustomer_id(), accessToken.getToken());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -211,9 +207,9 @@ public class AccountsActivity extends AppCompatActivity {
     private void setupProfile(CustomerEntity customerEntity) {
         nameView.setText(customerEntity.getCustomer_first_name()
                 .concat(" ").concat(customerEntity.getCustomer_middle_name() == null
-                        ?"":customerEntity.getCustomer_middle_name())
-                .concat(" ").concat(customerEntity.getCustomer_last_name()==null
-                        ?"":customerEntity.getCustomer_last_name()));
+                        ? "" : customerEntity.getCustomer_middle_name())
+                .concat(" ").concat(customerEntity.getCustomer_last_name() == null
+                        ? "" : customerEntity.getCustomer_last_name()));
         walletIdView.setText(customerEntity.getCustomer_phone());
     }
 
@@ -239,7 +235,7 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     @SuppressLint("CheckResult")
-    private  void checkInternetConnection(){
+    private void checkInternetConnection() {
         ReactiveNetwork
                 .observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
@@ -247,7 +243,7 @@ public class AccountsActivity extends AppCompatActivity {
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet){
+                        if (isConnectedToInternet) {
                             Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
                             single.subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -255,12 +251,26 @@ public class AccountsActivity extends AppCompatActivity {
                                         @Override
                                         public void accept(Boolean isConnectedToInternet) throws Exception {
                                             if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
+                                                Snackbar.make(findViewById(R.id.main_container),
+                                                        "No Internet Connection!", Snackbar.LENGTH_LONG)
+                                                        .setAction("Retry", new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                checkInternetConnection();
+                                                            }
+                                                        }).show();
                                             }
                                         }
                                     });
-                        }else{
-                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        } else {
+                            Snackbar.make(findViewById(R.id.main_container),
+                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    .setAction("Retry", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
+                                        }
+                                    }).show();
                         }
                     }
                 });

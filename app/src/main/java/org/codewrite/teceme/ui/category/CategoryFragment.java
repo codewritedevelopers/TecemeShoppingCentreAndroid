@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.CategoryAdapter;
@@ -35,6 +39,7 @@ public class CategoryFragment extends Fragment {
     private FragmentActivity mActivity;
     private Map<Integer, List<CategoryEntity>> listMap;
     private MutableLiveData<Boolean> listLoaded = new MutableLiveData<>();
+    private SearchBox searchBox;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,11 +59,10 @@ public class CategoryFragment extends Fragment {
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         listMap = new HashMap<>();
         // find recycler view for all main categories
-        ExpandableListView mCategoryListView = root.findViewById(R.id.category_list);
-        // setup recycler view
-        setupCategoryRv(mCategoryListView);
         return root;
     }
+
+
 
     private void setupCategoryRv(@NonNull final ExpandableListView expandableListView) {
         // load from database
@@ -138,5 +142,74 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ExpandableListView mCategoryListView = view.findViewById(R.id.category_list);
+        // setup recycler view
+        setupCategoryRv(mCategoryListView);
+        setupSearchView(view);
+    }
+
+    private void setupSearchView(View view) {
+        // we find search view
+        searchBox = view.findViewById(R.id.id_search_box);
+        searchBox.setDrawerLogo(R.drawable.arrow_back_with_bg);
+        searchBox.setLogoTextColor(R.color.colorAccent);
+        searchBox.setLogoText(getResources().getString(R.string.category_search_hint));
+
+        ImageView drawLogo = searchBox.findViewById(R.id.drawer_logo);
+        drawLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mActivity.onBackPressed();
+            }
+        });
+        // we set voice search
+        searchBox.enableVoiceRecognition(this);
+
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+                //Use this to tint the screen
+                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
+                    SearchResult result = new SearchResult(s);
+                    // add suggestions
+                    searchBox.addSearchable(result);
+                }
+            }
+
+            @Override
+            public void onSearchClosed() {
+                //Use this to un-tint the screen
+                searchBox.clearResults();
+            }
+
+            @Override
+            public void onSearchTermChanged(String s) {
+            }
+
+            @Override
+            public void onSearch(String searchTerm) {
+                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", searchTerm);
+                startActivity(i);
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+                //React to a result being clicked
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", result.title);
+                startActivity(i);
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
     }
 }

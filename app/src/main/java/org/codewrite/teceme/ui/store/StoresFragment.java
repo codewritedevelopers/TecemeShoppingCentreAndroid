@@ -1,55 +1,39 @@
 package org.codewrite.teceme.ui.store;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
+import com.quinny898.library.persistentsearch.SearchBox;
+import com.quinny898.library.persistentsearch.SearchResult;
 
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.adapter.AdsSliderAdapter;
-import org.codewrite.teceme.adapter.CategoryProductAdapter;
-import org.codewrite.teceme.adapter.HomeCategoryAdapter;
-import org.codewrite.teceme.adapter.HomeProductAdapter;
 import org.codewrite.teceme.adapter.StoreAdapter;
-import org.codewrite.teceme.model.room.CategoryEntity;
-import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
-import org.codewrite.teceme.utils.BackToTopFabBehavior;
-import org.codewrite.teceme.utils.SliderTimer;
-import org.codewrite.teceme.utils.ZoomOutPageTransformer;
-import org.codewrite.teceme.viewmodel.ProductViewModel;
+import org.codewrite.teceme.ui.product.ProductActivity;
 import org.codewrite.teceme.viewmodel.StoreViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-
 public class StoresFragment extends Fragment {
-    private static final int NUM_PAGES = 5;
     private StoreViewModel storeViewModel;
     private RecyclerView mStoreRv;
-    private ViewPager mPager;
-    private TabLayout mSliderIndicator;
-    private AdsSliderAdapter mSliderPagerAdapter;
     private FragmentActivity mActivity;
-    private SliderTimer sliderTimer;
     private StoreAdapter storeAdapter;
+    private SearchBox searchBox;
 
-     @Override
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = getActivity();
@@ -71,22 +55,6 @@ public class StoresFragment extends Fragment {
         mStoreRv = root.findViewById(R.id.id_rv_store_list);
         // setup recycler view, should be called before setupCategoryRv()
         setupStoreRv(mStoreRv);
-
-        // Instantiate a ViewPager and a PagerAdapter.
-        mPager = root.findViewById(R.id.ads_view_flipper);
-        mSliderIndicator = root.findViewById(R.id.indicator);
-
-        mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
-        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        mPager.setAdapter(mSliderPagerAdapter);
-
-        mSliderIndicator.setupWithViewPager(mPager, true);
-
-        // slider timing
-        Timer timer = new Timer();
-        sliderTimer = new SliderTimer(getActivity(), mPager, NUM_PAGES);
-        timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
-
         // return root view
         return root;
     }
@@ -114,8 +82,72 @@ public class StoresFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        sliderTimer.cancel();
-        super.onDestroy();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupSearchView(view);
+    }
+
+    private void setupSearchView(View view) {
+        // we find search view
+        searchBox = view.findViewById(R.id.id_search_box);
+        searchBox.setDrawerLogo(R.drawable.arrow_back_with_bg);
+        searchBox.setLogoTextColor(R.color.colorAccent);
+        searchBox.setLogoText(getResources().getString(R.string.search_your_store_text));
+        ImageView drawLogo = searchBox.findViewById(R.id.drawer_logo);
+        drawLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mActivity.onBackPressed();
+            }
+        });
+        // we set voice search
+        searchBox.enableVoiceRecognition(this);
+
+        searchBox.setSearchListener(new SearchBox.SearchListener() {
+
+            @Override
+            public void onSearchOpened() {
+                //Use this to tint the screen
+                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
+                    SearchResult result = new SearchResult(s);
+                    // add suggestions
+                    searchBox.addSearchable(result);
+                }
+            }
+
+            @Override
+            public void onSearchClosed() {
+                //Use this to un-tint the screen
+                searchBox.clearResults();
+            }
+
+            @Override
+            public void onSearchTermChanged(String s) {
+            }
+
+            @Override
+            public void onSearch(String searchTerm) {
+                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", searchTerm);
+                startActivity(i);
+            }
+
+            @Override
+            public void onResultClick(SearchResult result) {
+                //React to a result being clicked
+                Intent i = new Intent(mActivity, ProductActivity.class);
+                i.setAction(Intent.ACTION_SEARCH);
+                i.putExtra("SEARCH_ITEM", result.title);
+                startActivity(i);
+            }
+
+            @Override
+            public void onSearchCleared() {
+
+            }
+
+        });
     }
 }

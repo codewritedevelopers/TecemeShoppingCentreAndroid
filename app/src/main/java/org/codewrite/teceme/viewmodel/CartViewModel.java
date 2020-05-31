@@ -39,4 +39,8 @@ public class CartViewModel extends AndroidViewModel {
     public void removeFromCart(Integer product_id) {
         cartRepository.deleteCart(product_id);
     }
+
+    public void updateCart(CartEntity cartEntity) {
+        cartRepository.update(cartEntity);
+    }
 }

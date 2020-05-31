@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.codewrite.teceme.ui.home.AdsSliderFragment;
-import org.codewrite.teceme.ui.product.ProductSliderFragment;
 
 import java.util.ArrayList;
 import java.util.List;

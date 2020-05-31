@@ -184,7 +184,7 @@
     <string name="discount_hint_text">0%</string>
     <string name="product_price_text">0.00</string>
     <string name="todo">to do content description</string>
-    <string name="price_hint_text">GHC 3000.00</string>
+    <string name="price_hint_text">GHC 0.00</string>
     <string name="ordered_hint_text">20 orders</string>
     <string name="product_name_hint">Product Name Over Here</string>
     <string name="store_name_hint">Store Name Over Here</string>
@@ -207,10 +207,10 @@
     <string name="size_xl_text">XL</string>
     <string name="size_l_text">L</string>
     <string name="size_m_text">M</string>
-    <string name="weight_text">50KG</string>
+    <string name="weight_text">0KG</string>
     <string name="store_desc_text">Description of store</string>
     <string name="skip_text">Skip</string>
-    <string name="num_ordered_hint_text">2</string>
+    <string name="num_ordered_hint_text">0</string>
     <string name="order_status_hint">Pending</string>
     <string name="invalid_name">filed can\'t be empty</string>
     <string name="invalid_phone">invalid phone number</string>
@@ -251,4 +251,10 @@
     <string name="color_text">Color</string>
     <string name="size_text">Size</string>
     <string name="remove_from_cart_text">Remove From Cart</string>
+    <string name="search_your_cart_text">Search Your Cart</string>
+    <string name="choose_payment_method">Which type of payment method do you want to use ?</string>
+    <string name="mtn_mobile_text">MTN Mobile</string>
+    <string name="credit_card_text">Credit Card</string>
+    <string name="teceme_pay_text">Teceme Pay</string>
+    <string name="dont_have_a_wallet">You don\'t have Teceme Wallet? Create one now</string>
 </resources>
