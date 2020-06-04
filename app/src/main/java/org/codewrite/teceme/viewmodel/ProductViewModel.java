@@ -6,13 +6,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import org.codewrite.teceme.model.rest.ProductJson;
-import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
-import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.repository.ProductRepository;
 
 import java.util.List;
@@ -23,10 +22,11 @@ import retrofit2.Response;
 
 public class ProductViewModel extends AndroidViewModel {
     private ProductRepository productRepository;
-    private final int loadSize = 20;
+    private final int loadSize = 5;
     private int page;
-    private int totalCount;
     private boolean moreItem;
+    private boolean isLoading;
+    private  PagedList.BoundaryCallback<ProductEntity> boundaryCallback;
 
     public ProductViewModel(@NonNull Application application) {
         super(application);
@@ -36,37 +36,48 @@ public class ProductViewModel extends AndroidViewModel {
     public LiveData<PagedList<ProductEntity>> getProducts(final Integer category_id) {
         page = 0;
         moreItem = true;
-        PagedList.BoundaryCallback<ProductEntity> boundaryCallback;
+        isLoading = false;
 
         boundaryCallback = new PagedList.BoundaryCallback<ProductEntity>() {
             @Override
             public void onZeroItemsLoaded() {
-                super.onZeroItemsLoaded();
-                loadProducts(category_id);
+                if (moreItem && !isLoading) {
+                    loadProducts(category_id);
+                }
+                Log.d("ProductViewModel", "onZeroItemsLoaded: ");
             }
 
             @Override
             public void onItemAtFrontLoaded(@NonNull ProductEntity itemAtFront) {
-                super.onItemAtFrontLoaded(itemAtFront);
                 Log.d("ProductViewModel", "onItemAtFrontLoaded: ");
             }
 
             @Override
             public void onItemAtEndLoaded(@NonNull ProductEntity itemAtEnd) {
-                super.onItemAtEndLoaded(itemAtEnd);
-                if (moreItem) {
+                if (moreItem && !isLoading) {
                     loadProducts(category_id);
                 }
                 Log.d("ProductViewModel", "onItemAtEndLoaded: ");
             }
         };
 
-        return new LivePagedListBuilder<>(productRepository.getProductsByCategoryId(category_id), loadSize)
+        PagedList.Config pagingConfig = new PagedList.Config.Builder()
+                .setPageSize(loadSize)
+                .setPrefetchDistance(8)
+                .setEnablePlaceholders(true)
+                .build();
+        if (category_id==null) {
+            return new LivePagedListBuilder<>(productRepository.getAllProducts(), pagingConfig)
+                    .setBoundaryCallback(boundaryCallback)
+                    .build();
+        }
+        return new LivePagedListBuilder<>(productRepository.getProductsByCategoryId(category_id), pagingConfig)
                 .setBoundaryCallback(boundaryCallback)
                 .build();
     }
 
     private void loadProducts(Integer categoryId) {
+        isLoading =true;
         Call<List<ProductJson>> productList = productRepository.getProductList(categoryId, loadSize, page);
         productList.enqueue(new Callback<List<ProductJson>>() {
             @Override
@@ -86,7 +97,12 @@ public class ProductViewModel extends AndroidViewModel {
                     for (ProductJson productJson : response.body()) {
                         productEntities[i++] = productJson;
                     }
-                    productRepository.insert(productEntities);
+                    productRepository.insert(new ProductRepository.CompleteAllCallback() {
+                        @Override
+                        public void finish() {
+                            isLoading = false;
+                        }
+                    }, productEntities);
                 }
             }
 
@@ -96,7 +112,6 @@ public class ProductViewModel extends AndroidViewModel {
             }
         });
     }
-
 
     public LiveData<ProductEntity> getProduct(Integer product_id) {
         return productRepository.getProduct(product_id);

@@ -47,7 +47,7 @@ public class CartFragment extends Fragment {
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
     private Button buyNow;
-    private ImageView imageNoCart;
+    private View noCart;
     private SearchBox searchBox;
 
     @Override
@@ -74,7 +74,7 @@ public class CartFragment extends Fragment {
         // find recycler view for all product
         mCartRv = root.findViewById(R.id.id_rv_cart_list);
         buyNow = root.findViewById(R.id.buy_now);
-        imageNoCart = root.findViewById(R.id.no_cart);
+        noCart = root.findViewById(R.id.no_cart);
 
         accountViewModel.getAccessToken()
                 .observe(this.getViewLifecycleOwner(), new Observer<AccessTokenEntity>() {
@@ -93,6 +93,7 @@ public class CartFragment extends Fragment {
                     public void onChanged(CustomerEntity customerEntity) {
                         if (customerEntity == null) {
                             launchLogin();
+                            mActivity.onBackPressed();
                             return;
                         }
                         loggedInCustomer = customerEntity;
@@ -107,7 +108,6 @@ public class CartFragment extends Fragment {
     private void launchLogin() {
         Intent i = new Intent(mActivity, LoginActivity.class);
         startActivity(i);
-        mActivity.finish();
     }
 
     private void setupCartRv(@NonNull RecyclerView recyclerView, final CustomerEntity loggedInCustomer) {
@@ -127,10 +127,10 @@ public class CartFragment extends Fragment {
                         cartAdapter.submitList(cartEntities);
                         if (cartEntities.size() > 0) {
                             buyNow.setVisibility(View.VISIBLE);
-                            imageNoCart.setVisibility(View.GONE);
+                            noCart.setVisibility(View.GONE);
                         } else {
                             buyNow.setVisibility(View.GONE);
-                            imageNoCart.setVisibility(View.VISIBLE);
+                            noCart.setVisibility(View.VISIBLE);
                         }
                     }
                 });

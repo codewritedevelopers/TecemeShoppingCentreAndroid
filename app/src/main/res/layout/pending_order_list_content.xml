@@ -31,22 +31,6 @@
                 android:contentDescription="@string/todo"
                 android:src="@drawable/product1" />
 
-            <TextView
-                android:id="@+id/id_discount"
-                android:layout_width="@dimen/discount_tag_width"
-                android:layout_height="@dimen/discount_tag_height"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:background="@drawable/discount_background"
-                android:gravity="center"
-                android:hint="@string/discount_hint_text"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorWhite"
-                android:textSize="@dimen/discount_text_size"
-                android:visibility="gone" />
-
         </RelativeLayout>
 
         <LinearLayout
@@ -75,6 +59,13 @@
                     android:textColor="@color/colorBlack"
                     android:textColorHint="@color/colorBlack"
                     android:textSize="@dimen/text_size_x_small" />
+
+                <ImageView
+                    android:id="@+id/order_qr_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icons8_qr_code"
+                    android:contentDescription="@string/todo" />
 
             </LinearLayout>
 

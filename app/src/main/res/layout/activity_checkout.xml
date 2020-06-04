@@ -1,145 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorWhite">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/id_payment_method_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
-        android:src="@drawable/momo" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite">
 
-    <LinearLayout
-        android:id="@+id/payment_info"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/id_payment_method_image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1">
+            android:paddingBottom="100dp">
 
-            <TextView
+            <ImageView
+                android:id="@+id/id_payment_method_image"
                 android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="36dp"
+                android:src="@drawable/mtn_momo" />
+
+            <LinearLayout
+                android:id="@+id/payment_info"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="0.5"
-                android:text="@string/sub_total_text"
-                android:textSize="16sp" />
+                android:layout_below="@id/id_payment_method_image"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="36dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/id_sub_total"
-                android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/sub_total_text"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/id_sub_total"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="0.00"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/discount_text"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/id_discount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="0%"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/colorAccent" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/total_text"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/id_total"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="0.00"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/id_checkout"
+                android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="0.00"
-                android:textAlignment="textEnd"
+                android:layout_below="@id/payment_info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="48dp"
+                android:background="@drawable/ripple_effect_with_border"
+                android:text="@string/checkout_text"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
                 android:textSize="16sp" />
-        </LinearLayout>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="0.5"
-                android:text="@string/system_charges_text"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/id_charges"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="0.00"
-                android:textAlignment="textEnd"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="0.5"
-                android:text="@string/discount_text"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/id_discount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="0%"
-                android:textAlignment="textEnd"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/colorAccent"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="0.5"
-                android:text="@string/total_text"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/id_total"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="0.00"
-                android:textAlignment="textEnd"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/id_checkout"
-        android:layout_width="@dimen/button_width"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/payment_info"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/ripple_effect_with_border"
-        android:text="@string/checkout_text"
-        android:textAllCaps="false"
-        android:textColor="@color/colorWhite"
-        android:textSize="16sp" />
-</RelativeLayout>
+</LinearLayout>

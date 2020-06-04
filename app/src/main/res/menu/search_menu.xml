@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/search_item"
         android:title="@string/title_search"
-        android:icon="@drawable/search_bar_icon"
+        android:icon="@drawable/icons8_search_filled"
         app:showAsAction="ifRoom|withText"/>
 
 </menu>

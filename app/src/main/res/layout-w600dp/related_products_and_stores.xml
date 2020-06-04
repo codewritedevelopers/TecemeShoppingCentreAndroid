@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/colorWhite2"
     android:orientation="vertical">
 
     <View
@@ -23,10 +24,9 @@
         android:id="@+id/id_rv_related_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnWidth="@dimen/product_card_width"
+        android:columnWidth="154dp"
         android:numColumns="auto_fit"
         android:paddingTop="15dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/product_list_content" />
 
     <View
@@ -49,5 +49,6 @@
         android:columnWidth="@dimen/product_card_width"
         android:numColumns="auto_fit"
         android:paddingTop="15dp"
-        tools:listitem="@layout/store_list_content" />
+        tools:listitem="@layout/store_list_content"
+        android:paddingBottom="60dp"/>
 </LinearLayout>

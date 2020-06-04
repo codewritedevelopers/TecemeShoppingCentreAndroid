@@ -77,7 +77,6 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
                     .load(activityContext.getResources().getString(R.string.api_base_url)
                             +"products/product-image/"
                             + entity.getProduct_img_uri())
-                    .resize(60, 60)
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)
                     .into(holder.productImage);

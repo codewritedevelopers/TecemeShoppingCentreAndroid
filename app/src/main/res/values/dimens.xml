@@ -61,5 +61,5 @@
     <dimen name="input_vertical_margin">48dp</dimen>
     <dimen name="text_size_large">24sp</dimen>
     <dimen name="text_m_padding">8dp</dimen>
-    <dimen name="store_card_height">300dp</dimen>
+    <dimen name="store_card_height">250dp</dimen>
 </resources>

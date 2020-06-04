@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductSliderAdapter extends FragmentStatePagerAdapter {
 
 
-    private List<String> list =new ArrayList<>();
+    private List<String> list;
 
     public ProductSliderAdapter(@NonNull FragmentManager fm) {
         super(fm);
@@ -27,11 +27,11 @@ public class ProductSliderAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return list.size();
+        return list==null?0:list.size();
     }
 
     public  void subList(List<String> list){
-        this.list.addAll(list);
+        this.list = list;
         notifyDataSetChanged();
     }
 }

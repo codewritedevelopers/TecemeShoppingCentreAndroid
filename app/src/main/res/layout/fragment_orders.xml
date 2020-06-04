@@ -5,22 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhite">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/colorWhite"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/toolbar2"
-        layout="@layout/toolbar_with_search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
-
     <LinearLayout
-        android:id="@+id/no_cart"
+        android:id="@+id/no_orders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -41,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:text="@string/your_cart_is_empty"
+            android:text="@string/your_order_is_empty"
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/text_size_large" />
     </LinearLayout>
@@ -49,7 +35,6 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar2"
         android:scrollbars="none">
 
         <LinearLayout
@@ -57,21 +42,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorWhite"
             android:orientation="vertical">
-
-            <include
-                layout="@layout/cart_list" />
-
-            <Button
-                android:id="@+id/buy_now"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="@dimen/button_margin"
-                android:background="@drawable/ripple_effect_with_border"
-                android:text="@string/buy_now_text"
-                android:textAllCaps="false"
-                android:textColor="@color/colorWhite" />
-
+            <include layout="@layout/order_list" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

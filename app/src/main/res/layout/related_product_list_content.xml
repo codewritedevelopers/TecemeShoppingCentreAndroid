@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/product_card"
     android:layout_width="@dimen/product_card_width"
     android:layout_height="@dimen/product_card_height"
-    android:background="@color/colorWhite"
     android:layout_marginStart="@dimen/product_card_margin"
     android:layout_marginTop="@dimen/product_card_margin"
+    android:background="@color/colorWhite"
+    android:padding="4dp"
     card_view:cardCornerRadius="@dimen/product_card_radius">
 
     <LinearLayout
@@ -26,7 +27,8 @@
                 android:layout_height="@dimen/image_height"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:src="@drawable/product1" />
+                android:src="@drawable/product1"
+                android:contentDescription="@string/todo" />
 
             <TextView
                 android:id="@+id/id_discount"
@@ -51,67 +53,72 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="@dimen/wl_indicator_margin"
+                android:clickable="true"
                 android:contentDescription="@string/todo"
+                android:focusable="true"
                 android:src="@drawable/heart"
-                android:tint="@color/colorWhiteGrey"/>
+                android:tint="@color/colorAccent" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/id_price"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:hint="@string/price_hint_text"
-                android:gravity="start|center_vertical"
-                android:textColor="@color/colorBlack"
-                android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/price_text_size" />
+                android:weightSum="1">
 
-            <TextView
-                android:id="@+id/id_orders_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="4dp"
-                android:gravity="end|center_vertical"
-                android:hint="@string/ordered_hint_text"
-                android:textColor="@color/colorAccent"
-                android:textColorHint="@color/colorAccent"
-                android:textSize="@dimen/order_text_size" />
+                <TextView
+                    android:id="@+id/id_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:hint="@string/price_hint_text"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimaryDark"
+                    android:textSize="@dimen/text_size_x_small"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/id_orders"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="end|center_vertical"
+                    android:hint="@string/ordered_hint_text"
+                    android:textColor="@color/colorAccent"
+                    android:textColorHint="@color/colorAccent"
+                    android:textSize="@dimen/order_text_size"
+                    tools:ignore="RelativeOverlap" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/id_product_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/id_price"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="4dp"
+                android:ellipsize="marquee"
+                android:freezesText="true"
                 android:hint="@string/product_name_hint"
-                android:maxHeight="18dp"
-                android:textSize="@dimen/product_name_text_size" />
+                android:padding="4dp"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_x_small" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/id_weight"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/id_product_name"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:hint="@string/store_name_hint"
-                android:maxHeight="18dp"
+                android:padding="4dp"
+                android:hint="@string/weight_text"
                 android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/store_name_text_size" />
-        </RelativeLayout>
+                android:textSize="@dimen/text_size_xx_small" />
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

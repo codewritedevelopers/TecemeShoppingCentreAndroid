@@ -65,15 +65,15 @@ public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapt
     public void onBindViewHolder(@NonNull final ProductViewHolder holder, final int position) {
         // get a category product from list
         ProductEntity entity = getItem(position);
-        assert entity != null;
-
+        if (entity == null) {
+            return;
+        }
         // set image
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
-                            +"products/product-image/"
-                            + entity.getProduct_img_uri())
-                    .resize(250, 250)
+                            + "products/product-image/"
+                            + entity.getProduct_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)
                     .into(holder.productImage);
@@ -90,7 +90,6 @@ public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapt
                     productViewListener.onProductClicked(v, position);
                 }
             });
-
             // set wish list indicator
             productViewListener.isInWishList(entity.getProduct_id())
                     .observeForever(new Observer<Boolean>() {
@@ -101,54 +100,55 @@ public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapt
                             if (isInWishList) {
                                 holder.wishListProduct.setColorFilter(R.color.colorPrimaryDark,
                                         android.graphics.PorterDuff.Mode.MULTIPLY);
-                                holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        productViewListener.onToggleWishList(v, position);
-                                    }
-                                });
                             } else {
                                 holder.wishListProduct.setColorFilter(R.color.colorAccent,
                                         android.graphics.PorterDuff.Mode.MULTIPLY);
                             }
                         }
                     });
-
-            // set group product name
-            if (holder.productName != null)
-                holder.productName.setText(entity.getProduct_name());
-
-            if (holder.productPrice != null) {
-                String cedis = "GH₵ ";
-                holder.productPrice.setText(cedis.concat(entity.getProduct_price()));
-            }
-
-            if (holder.productWeight != null && entity.getProduct_weight() != null) {
-                if (!entity.getProduct_weight().isEmpty()) {
-                    holder.productWeight.setVisibility(View.VISIBLE);
-                    holder.productWeight.setText(entity.getProduct_weight());
-                }else{
-                    holder.productWeight.setVisibility(View.GONE);
+            holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (productViewListener != null) {
+                        productViewListener.onToggleWishList(v, position);
+                    }
                 }
-            } else if (holder.productWeight != null) {
+            });
+        }
+        // set group product name
+        if (holder.productName != null)
+            holder.productName.setText(entity.getProduct_name());
+
+        if (holder.productPrice != null) {
+            String cedis = "GH₵ ";
+            holder.productPrice.setText(cedis.concat(entity.getProduct_price()));
+        }
+
+        if (holder.productWeight != null && entity.getProduct_weight() != null) {
+            if (!entity.getProduct_weight().isEmpty()) {
+                holder.productWeight.setVisibility(View.VISIBLE);
+                holder.productWeight.setText(entity.getProduct_weight());
+            } else {
                 holder.productWeight.setVisibility(View.GONE);
             }
+        } else if (holder.productWeight != null) {
+            holder.productWeight.setVisibility(View.GONE);
+        }
 
-            if (holder.productDiscount != null && entity.getProduct_discount() != null) {
-                if (!entity.getProduct_discount().isEmpty()) {
-                    holder.productDiscount.setVisibility(View.VISIBLE);
-                    holder.productDiscount.setText(entity.getProduct_discount());
-                }else{
-                    holder.productDiscount.setVisibility(View.GONE);
-                }
-            } else if (holder.productDiscount != null) {
+        if (holder.productDiscount != null && entity.getProduct_discount() != null) {
+            if (!entity.getProduct_discount().isEmpty()) {
+                holder.productDiscount.setVisibility(View.VISIBLE);
+                holder.productDiscount.setText(entity.getProduct_discount());
+            } else {
                 holder.productDiscount.setVisibility(View.GONE);
             }
+        } else if (holder.productDiscount != null) {
+            holder.productDiscount.setVisibility(View.GONE);
+        }
 
-            if (holder.productOrdered != null) {
-                String ordered =  entity.getProduct_ordered() + " ordered";
-                holder.productOrdered.setText(ordered);
-            }
+        if (holder.productOrdered != null) {
+            String ordered = entity.getProduct_ordered() + " ordered";
+            holder.productOrdered.setText(ordered);
         }
     }
 

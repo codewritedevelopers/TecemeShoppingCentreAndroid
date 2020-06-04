@@ -6,13 +6,20 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhite2"
     android:orientation="vertical"
-    android:padding="4dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
+<TextView
+    android:id="@+id/id_product_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="@dimen/text_size_medium"
+    android:layout_marginBottom="8dp"
+    android:text="@string/product_name_hint"
+    />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,6 +54,11 @@
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorWhite"
                 android:textSize="@dimen/text_size_small" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quantity_text"
+                android:layout_gravity="center_vertical"/>
 
 
             <LinearLayout
@@ -56,6 +68,7 @@
                 android:layout_marginStart="16dp"
                 android:background="@color/colorWhiteGrey"
                 android:orientation="horizontal">
+
 
                 <ImageView
                     android:id="@+id/id_add_product"

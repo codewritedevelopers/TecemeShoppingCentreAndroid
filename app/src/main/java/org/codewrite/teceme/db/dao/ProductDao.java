@@ -35,4 +35,7 @@ public interface ProductDao {
 
     @Query("DELETE FROM product_table WHERE 1")
     void deleteAll();
+
+    @Query("SELECT * FROM product_table")
+    DataSource.Factory<Integer,ProductEntity> getAllProducts();
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public class AdsSliderAdapter extends FragmentStatePagerAdapter {
 
 
-    private List<String> list =new ArrayList<>();
+    private List<String> list = new ArrayList<>();
 
     public AdsSliderAdapter(@NonNull FragmentManager fm) {
         super(fm);
@@ -27,11 +27,11 @@ public class AdsSliderAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return list.size();
+        return list == null ? 0 : list.size();
     }
 
-    public  void subList(List<String> uri){
-        if (uri!=null) {
+    public void subList(List<String> uri) {
+        if (uri != null) {
             this.list = uri;
             notifyDataSetChanged();
         }

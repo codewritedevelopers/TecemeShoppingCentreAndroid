@@ -47,16 +47,18 @@ public class AdsSliderFragment extends Fragment {
                 R.layout.fragment_screen_slide_page, container, false);
         ImageView adsImage = rootView.findViewById(R.id.image);
         // set image
+        // activityContext.getResources().getString(R.string.api_base_url)
+        //                            +"customers/ads-image/"
+        //                            + imgUrl
         try {
             Picasso.get()
-                    .load(activityContext.getResources().getString(R.string.api_base_url)
-                            +"customers/ads-image/"
-                            + imgUrl)
+                    .load("https://doofindermedia.s3.amazonaws.com/blog/2018/08/06/083002-facebook-ads-ecommerce.jpg")
+                    .resize(adsImage.getWidth(),150)
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.momo)
+                    .error(R.drawable.background_with_drop_shadow)
                     .into(adsImage);
         } catch (Exception e) {
-            adsImage.setImageResource(R.drawable.momo);
+            adsImage.setImageResource(R.drawable.background_with_drop_shadow);
         }
         return rootView;
     }

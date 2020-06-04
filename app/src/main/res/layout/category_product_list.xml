@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="@dimen/group_product_section_padding">
+
+    <org.codewrite.teceme.utils.AutoFitGridRecyclerView
+        android:id="@+id/id_rv_product_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="154dp"
+        android:numColumns="auto_fit"
+        tools:activityContext=".ui.product.ProductListActivity"
+        tools:listitem="@layout/product_list_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/id_rv_category_product_list"
         android:name="org.codewrite.teceme.ProductListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/id_rv_product_list"
         android:orientation="vertical"
         app:layoutManager="LinearLayoutManager"
         tools:activityContext=".ui.product.ProductListActivity"
         tools:listitem="@layout/category_product_list_content" />
-</LinearLayout>
+
+</RelativeLayout>

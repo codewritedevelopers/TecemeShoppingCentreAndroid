@@ -147,7 +147,7 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void launchWishListActivity() {
-        startActivity(new Intent(AccountsActivity.this, WishListActivity.class));
+       // startActivity(new Intent(AccountsActivity.this, WishListActivity.class));
     }
 
     private void launchHelpActivity() {

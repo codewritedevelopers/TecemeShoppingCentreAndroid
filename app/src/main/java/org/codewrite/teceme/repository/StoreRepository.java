@@ -27,8 +27,8 @@ public class StoreRepository {
         restApi = Service.getResetApi(application);
     }
 
-    public void insert(StoreEntity... storeEntities){
-        new InsertStoreAsyncTask(storeDao).execute(storeEntities);
+    public void insert(CompletedCallback completeCallBack, StoreEntity... storeEntities){
+        new InsertStoreAsyncTask(storeDao,completeCallBack ).execute(storeEntities);
     }
 
     public DataSource.Factory<Integer, StoreEntity> getStoresByCategoryId(Integer category_id) {
@@ -71,9 +71,10 @@ public class StoreRepository {
 
     private static class InsertStoreAsyncTask extends AsyncTask<StoreEntity, Void, Void> {
         private StoreDao storeDao;
-
-        InsertStoreAsyncTask(StoreDao storeDao) {
+        private CompletedCallback completedCallback;
+        InsertStoreAsyncTask(StoreDao storeDao, CompletedCallback completedCallback) {
             this.storeDao = storeDao;
+            this.completedCallback = completedCallback;
         }
 
         @Override
@@ -83,9 +84,21 @@ public class StoreRepository {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (completedCallback!=null){
+                completedCallback.finish();
+            }
+        }
     }
 
     interface DeleteAllCallback {
+        void finish();
+    }
+
+    public interface CompletedCallback {
         void finish();
     }
 }

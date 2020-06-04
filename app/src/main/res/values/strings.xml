@@ -257,4 +257,11 @@
     <string name="credit_card_text">Credit Card</string>
     <string name="teceme_pay_text">Teceme Pay</string>
     <string name="dont_have_a_wallet">You don\'t have Teceme Wallet? Create one now</string>
+    <string name="your_cart_is_empty">Your Cart Is Empty</string>
+    <string name="quantity_text">Quantity</string>
+    <string name="airtel_tigo_cash_text">Airtel Tigo Cash</string>
+    <string name="vodafone_cash_text">Vodafone Cash</string>
+    <string name="bank_card_text">Bank Card</string>
+    <string name="reorder_text">reorder</string>
+    <string name="your_order_is_empty">Your Orders Is Empty</string>
 </resources>

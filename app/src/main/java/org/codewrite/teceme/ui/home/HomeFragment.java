@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,15 +33,19 @@ import org.codewrite.teceme.adapter.AdsSliderAdapter;
 import org.codewrite.teceme.adapter.CategoryProductAdapter;
 import org.codewrite.teceme.adapter.HomeCategoryAdapter;
 import org.codewrite.teceme.adapter.HomeProductAdapter;
+import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.repository.ProductRepository;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.product.ProductActivity;
 import org.codewrite.teceme.ui.product.ProductDetailActivity;
+import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.utils.BackToTopFabBehavior;
 import org.codewrite.teceme.utils.SliderTimer;
+import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.utils.ZoomOutPageTransformer;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
@@ -79,6 +84,9 @@ public class HomeFragment extends Fragment {
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
     private SearchBox searchBox;
+    private AutoFitGridRecyclerView mAllProductsRv;
+    private ProgressBar progressBar;
+    private boolean isRotate;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +111,8 @@ public class HomeFragment extends Fragment {
 
         // find recycler view for all product by their group
         mGroupProductRv = root.findViewById(R.id.id_rv_category_product_list);
+        mAllProductsRv = root.findViewById(R.id.id_rv_product_list);
+        progressBar = root.findViewById(R.id.progressBar);
         // setup recycler view, should be called before setupCategoryRv()
         setupCategoryProductRv(mGroupProductRv);
 
@@ -142,7 +152,6 @@ public class HomeFragment extends Fragment {
                 loggedInCustomer = customerEntity;
             }
         });
-
         // return root view
         return root;
     }
@@ -151,10 +160,15 @@ public class HomeFragment extends Fragment {
         customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> list) {
-                if (list==null){
-                    List<String>  noAds = new ArrayList<>();
+                if (list == null) {
+                    List<String> noAds = new ArrayList<>();
+                    noAds.add("noAds");
                     noAds.add("noAds");
                     mSliderPagerAdapter.subList(noAds);
+
+                    Timer timer = new Timer();
+                    sliderTimer = new SliderTimer(mActivity, mPager, noAds.size());
+                    timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
                     return;
                 }
                 mSliderPagerAdapter.subList(list);
@@ -246,9 +260,10 @@ public class HomeFragment extends Fragment {
                             startActivity(new Intent(mActivity, LoginActivity.class));
                             return;
                         }
-                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+
+//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
+//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
+//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
                     }
                 });
                 // set adapter for recycler view
@@ -262,6 +277,8 @@ public class HomeFragment extends Fragment {
                                 if (entities == null) {
                                     return;
                                 }
+                                mGroupProductRv.setVisibility(View.VISIBLE);
+                                mAllProductsRv.setVisibility(View.GONE);
                                 productAdapter.submitList(entities);
                             }
                         });
@@ -273,23 +290,78 @@ public class HomeFragment extends Fragment {
 
         // create HomeCategoryAdapter
         homeCategoryAdapter = new HomeCategoryAdapter(getActivity());
+        // all products adapter
+        final ProductAdapter productAdapter = new ProductAdapter(mActivity);
+        mAllProductsRv.setAdapter(productAdapter);
+
+        // set product listener
+        productAdapter.setProductViewListener(new ProductAdapter.ProductViewListener() {
+            @Override
+            public void onProductClicked(View v, int position) {
+                Intent intent = new Intent(mActivity, ProductDetailActivity.class);
+                Integer i = Objects.requireNonNull(Objects.requireNonNull(
+                        productAdapter.getCurrentList()).get(position)).getProduct_id();
+                intent.putExtra("PRODUCT_ID", i);
+                startActivity(intent);
+            }
+
+            @Override
+            public LiveData<Boolean> isInWishList(int id) {
+                if (loggedInCustomer == null) {
+                    return new MutableLiveData<>();
+                }
+                return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+            }
+
+            @Override
+            public void onToggleWishList(View v, int position) {
+                if (loggedInCustomer == null) {
+                    startActivity(new Intent(mActivity, LoginActivity.class));
+                    return;
+                }
+//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
+//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
+//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+            }
+        });
+
         // we set category view listener
         homeCategoryAdapter.setCategoryViewListener(new HomeCategoryAdapter.CategoryViewListener() {
             @Override
             public int onSelectItem() {
+                progressBar.setVisibility(View.VISIBLE);
                 int i = categoryViewModel.getSelectedHomeCategory();
                 CategoryEntity categoryEntity = homeCategoryAdapter.getCurrentList().get(i);
 
-                categoryViewModel.getCategoryByParentResult(categoryEntity.getCategory_id())
-                        .observe(mActivity, new Observer<List<CategoryEntity>>() {
-                            @Override
-                            public void onChanged(List<CategoryEntity> categoryEntities) {
-                                if (categoryEntities == null) {
-                                    return;
+                if (categoryEntity.getCategory_id() != -1) {
+                    mAllProductsRv.setVisibility(View.GONE);
+                    mGroupProductRv.setVisibility(View.VISIBLE);
+                    categoryViewModel.getCategoryByParentResult(categoryEntity.getCategory_id())
+                            .observe(mActivity, new Observer<List<CategoryEntity>>() {
+                                @Override
+                                public void onChanged(List<CategoryEntity> categoryEntities) {
+                                    if (categoryEntities == null) {
+                                        return;
+                                    }
+                                    progressBar.setVisibility(View.GONE);
+                                    categoryProductAdapter.submitList(categoryEntities);
                                 }
-                                categoryProductAdapter.submitList(categoryEntities);
-                            }
-                        });
+                            });
+                } else {
+                    mGroupProductRv.setVisibility(View.GONE);
+                    mAllProductsRv.setVisibility(View.VISIBLE);
+                    productViewModel.getProducts(null)
+                            .observe(mActivity, new Observer<PagedList<ProductEntity>>() {
+                                @Override
+                                public void onChanged(PagedList<ProductEntity> entities) {
+                                    if (entities == null) {
+                                        return;
+                                    }
+                                    progressBar.setVisibility(View.GONE);
+                                    productAdapter.submitList(entities);
+                                }
+                            });
+                }
                 return i;
             }
 
@@ -314,15 +386,44 @@ public class HomeFragment extends Fragment {
                         if (categoryEntities == null) {
                             return;
                         }
-                        homeCategoryAdapter.submitList(categoryEntities);
+                        CategoryEntity allCategoryEntity = new CategoryEntity();
+                        allCategoryEntity.setCategory_id(-1);
+                        allCategoryEntity.setCategory_access(true);
+                        allCategoryEntity.setCategory_level(0);
+                        allCategoryEntity.setCategory_name("All");
+                        categoryEntities.add(0, allCategoryEntity);
+                        homeCategoryAdapter.submitList(categoryEntities, new Runnable() {
+                            @Override
+                            public void run() {
+                                homeCategoryAdapter.setSelectedItem(0);
+                            }
+                        });
                     }
                 });
     }
 
 
     private void setupSearchView(View view) {
+        isRotate = false;
         // we find search view
         searchBox = view.findViewById(R.id.id_search_box);
+        FloatingActionButton fabSearch = view.findViewById(R.id.fab_search);
+        ViewAnimation.initLeft(searchBox);
+
+        fabSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRotate){
+                    ViewAnimation.showInLeft(searchBox);
+                    isRotate = false;
+                }else{
+                    ViewAnimation.showOutLeft(searchBox);
+                    isRotate = true;
+                }
+
+            }
+        });
+
         searchBox.setDrawerLogo(R.drawable.icons8_search);
         searchBox.setLogoTextColor(R.color.colorAccent);
         searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));

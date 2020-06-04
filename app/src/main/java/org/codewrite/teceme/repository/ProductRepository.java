@@ -28,8 +28,8 @@ public class ProductRepository {
         restApi = Service.getResetApi(application);
     }
 
-    public void insert(ProductEntity... productEntities){
-        new InsertProductAsyncTask(productDao).execute(productEntities);
+    public void insert(CompleteAllCallback completecallBack, ProductEntity... productEntities){
+        new InsertProductAsyncTask(productDao,completecallBack).execute(productEntities);
     }
 
     public DataSource.Factory<Integer, ProductEntity> getProductsByCategoryId(Integer category_id) {
@@ -42,6 +42,10 @@ public class ProductRepository {
 
     public LiveData<ProductEntity> getProduct(Integer product_id) {
         return productDao.getProduct(product_id);
+    }
+
+    public DataSource.Factory<Integer,ProductEntity> getAllProducts() {
+        return productDao.getAllProducts();
     }
 
     private static class DeleteAllProductAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -72,9 +76,10 @@ public class ProductRepository {
 
     private static class InsertProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
         private ProductDao productDao;
-
-        InsertProductAsyncTask(ProductDao productDao) {
+        private CompleteAllCallback completeAllCallback;
+        InsertProductAsyncTask(ProductDao productDao, CompleteAllCallback completeAllCallback) {
             this.productDao = productDao;
+            this.completeAllCallback = completeAllCallback;
         }
 
         @Override
@@ -84,9 +89,21 @@ public class ProductRepository {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (completeAllCallback!=null){
+                completeAllCallback.finish();
+            }
+        }
     }
 
     interface DeleteAllCallback {
+        void finish();
+    }
+
+    public interface CompleteAllCallback {
         void finish();
     }
 }

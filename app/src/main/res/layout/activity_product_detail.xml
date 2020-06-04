@@ -32,7 +32,6 @@
                 layout="@layout/product_image_slider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/product_detail_app_bar_height"
-                android:layout_marginTop="?actionBarSize"
                 android:visibility="visible" />
 
             <include layout="@layout/product_detail_content" />
@@ -62,11 +61,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/ripple_effect_with_border_no_radius"
+            android:background="@drawable/ripple_effect_with_border_grey"
+            android:drawableStart="@drawable/icons8_shopping_cart_120px"
             android:gravity="center"
+            android:paddingStart="8dp"
             android:text="@string/add_to_cart_text"
             android:textAllCaps="true"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold" />
 

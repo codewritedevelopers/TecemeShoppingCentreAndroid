@@ -70,7 +70,7 @@ public class StoresFragment extends Fragment {
         // we set recycler view adapter
         recyclerView.setAdapter(storeAdapter);
 
-        storeViewModel.getStores().observe(mActivity, new Observer<PagedList<StoreEntity>>() {
+        storeViewModel.getStores(null).observe(mActivity, new Observer<PagedList<StoreEntity>>() {
             @Override
             public void onChanged(PagedList<StoreEntity> storeEntities) {
                 if (storeEntities== null){

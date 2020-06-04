@@ -1,13 +1,7 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite2">
-
-    <include
-        layout="@layout/toolbar_with_search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/toolbar_margin" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollHomePage"
@@ -34,4 +28,18 @@
             <include layout="@layout/category_product_list" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-</FrameLayout>
+
+    <include
+        layout="@layout/toolbar_with_search_and_fab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="10dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

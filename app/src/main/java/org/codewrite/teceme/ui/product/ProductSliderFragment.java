@@ -51,6 +51,7 @@ private String imgUrl;
                     .load(resources.getString(R.string.api_base_url)
                            +"products/product-image/"
                             + imgUrl)
+                    .resize(productImage.getWidth(),250)
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)
                     .into(productImage);

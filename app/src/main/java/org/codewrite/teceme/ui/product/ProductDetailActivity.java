@@ -2,7 +2,6 @@ package org.codewrite.teceme.ui.product;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,10 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
@@ -30,29 +30,35 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.adapter.AdsSliderAdapter;
+import org.codewrite.teceme.adapter.HomeProductAdapter;
+import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.adapter.ProductSizeAdapter;
 import org.codewrite.teceme.adapter.ProductSliderAdapter;
+import org.codewrite.teceme.adapter.StoreAdapter;
 import org.codewrite.teceme.model.ProductSize;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
-import org.codewrite.teceme.model.room.WalletEntity;
+import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.payment.PaymentActivity;
+import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.utils.SliderTimer;
-import org.codewrite.teceme.utils.ZoomOutPageTransformer;
+import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
+import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+import org.codewrite.teceme.viewmodel.StoreViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 
 import io.reactivex.Single;
@@ -65,13 +71,15 @@ public class ProductDetailActivity extends AppCompatActivity {
     private SliderTimer sliderTimer;
     // adapters
     private ProductSliderAdapter mSliderPagerAdapter;
-    private TabLayout mSliderIndicator;
     private ProductSizeAdapter productSizeAdapter;
+    private ProductAdapter relatedProductAdapter;
+    private StoreAdapter relatedStoreAdapter;
 
     private ProductViewModel productViewModel;
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
     private CartViewModel cartViewModel;
+    private CustomerViewModel customerViewModel;
 
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
@@ -79,7 +87,6 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private ViewPager mPager;
     private NestedScrollView nestedScrollView;
-    private FloatingActionButton fab;
     private TextView productName;
     private TextView productPrice;
     private TextView productWeight;
@@ -96,6 +103,15 @@ public class ProductDetailActivity extends AppCompatActivity {
     private boolean isInWishList;
     private String[] colors;
     private List<ProductSize> sizeList;
+    private boolean isRotate;
+    private FloatingActionButton fabMore;
+    private FloatingActionButton fabWishList;
+    private FloatingActionButton fabLocateStores;
+    private AutoFitGridRecyclerView relatedProductsRv;
+    private AutoFitGridRecyclerView relatedStoresRv;
+    private StoreViewModel storeViewModel;
+    private View productSizeContainer;
+    private View productColorContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +119,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_detail);
 
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+        storeViewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
         // get account view model
         accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        customerViewModel = ViewModelProviders.of(this).get(CustomerViewModel.class);
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
 
@@ -112,18 +130,32 @@ public class ProductDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // views
         productPrice = findViewById(R.id.id_product_price);
+        productName = findViewById(R.id.id_product_name);
         productOrdered = findViewById(R.id.id_orders);
         productDiscount = findViewById(R.id.id_discount);
         productWeight = findViewById(R.id.id_weight);
         productCategory = findViewById(R.id.id_category_name);
         productQuantity = findViewById(R.id.id_num_ordered);
-        productSizeRv = findViewById(R.id.rv_product_size);
+        fabMore = findViewById(R.id.id_fab_more);
+        fabLocateStores = findViewById(R.id.id_fab_locate_stores);
+        fabWishList =findViewById(R.id.id_toggle_wish_list);
         addToCart = findViewById(R.id.add_to_cart);
         buyNow = findViewById(R.id.buy_now);
         addProductView = findViewById(R.id.id_add_product);
         subtractProductView = findViewById(R.id.id_subtract_product);
         spinnerProductColor = findViewById(R.id.spinner_colors);
-        fab = findViewById(R.id.id_fab_add_to_wish_list);
+
+        productSizeContainer = findViewById(R.id.size_container);
+        productColorContainer = findViewById(R.id.colors_container);
+
+        // recycler views
+        productSizeRv = findViewById(R.id.rv_product_size);
+        relatedProductsRv = findViewById(R.id.id_rv_related_products);
+        relatedStoresRv = findViewById(R.id.id_rv_related_stores);
+
+        // hide fabLocateStores & fabWishList
+        ViewAnimation.initUp(fabLocateStores);
+        ViewAnimation.initUp(fabWishList);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -133,7 +165,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = findViewById(R.id.ads_view_flipper);
-        mSliderIndicator = findViewById(R.id.indicator);
+        TabLayout mSliderIndicator = findViewById(R.id.indicator);
 
         mSliderPagerAdapter = new ProductSliderAdapter(getSupportFragmentManager());
         mPager.setAdapter(mSliderPagerAdapter);
@@ -160,6 +192,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
+
         int product_id = getIntent().getIntExtra("PRODUCT_ID", -1);
         if (product_id == -1) {
             Toast.makeText(this.getApplicationContext(), "Invalid Product Selected!", Toast.LENGTH_LONG).show();
@@ -176,20 +209,23 @@ public class ProductDetailActivity extends AppCompatActivity {
         // set product size adapter
         productSizeRv.setAdapter(productSizeAdapter);
 
-        productViewModel.getProduct(product_id)
-                .observe(this, new Observer<ProductEntity>() {
+        final LiveData<ProductEntity> productLive = productViewModel.getProduct(product_id);
+                productLive.observe(this, new Observer<ProductEntity>() {
                     @Override
                     public void onChanged(ProductEntity productEntity) {
                         if (productEntity == null)
                             return;
 
+                        productLive.removeObserver(this);
                         // Show the Up button in the action bar.
                         ActionBar actionBar = getSupportActionBar();
                         if (actionBar != null) {
                             actionBar.setTitle(productEntity.getProduct_name());
                         }
                         // set default quantity
-                        mCartEntity.setCart_quantity(0);
+                        mCartEntity.setCart_quantity(1);
+
+                        productName.setText(productEntity.getProduct_name());
 
                         String cedis = "GH₵ ";
                         productPrice.setText(cedis.concat(productEntity.getProduct_price()));
@@ -206,10 +242,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                         }
                         colors = productEntity.getProduct_color().trim().split(",");
                         //set default color
-                        if (colors.length > 0) {
+                        if (!colors[0].isEmpty()) {
+                            productColorContainer.setVisibility(View.VISIBLE);
                             mCartEntity.setProduct_color(colors[0]);
                         } else {
-                            spinnerProductColor.setVisibility(View.GONE);
+                            productColorContainer.setVisibility(View.GONE);
                         }
                         // Creating an ArrayAdapter using the string array and a default spinner layout
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -234,17 +271,20 @@ public class ProductDetailActivity extends AppCompatActivity {
                         sizeList = new ArrayList<>();
                         // iterate through sizes and add to sizeList
                         for (String size : sizes) {
-                            sizeList.add(new ProductSize(size));
+                            if (!size.isEmpty()) {
+                                sizeList.add(new ProductSize(size));
+                            }
                         }
                         // set default
                         if (sizeList.size() > 0) {
+                            productSizeContainer.setVisibility(View.VISIBLE);
                             sizeList.get(0).setSelected(true);
                             mCartEntity.setProduct_size(sizeList.get(0).getSize());
                         } else {
-                            productSizeRv.setVisibility(View.GONE);
+                            productSizeContainer.setVisibility(View.GONE);
                         }
                         // set default to zero
-                        productQuantity.setText("0");
+                        productQuantity.setText("1");
 
                         productSizeAdapter.setProductViewListener(new ProductSizeAdapter.ProductViewListener() {
                             @Override
@@ -280,12 +320,113 @@ public class ProductDetailActivity extends AppCompatActivity {
                         Timer timer = new Timer();
                         sliderTimer = new SliderTimer(ProductDetailActivity.this, mPager, imgUris.length);
                         timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
+
+                        setupRelateItems(productEntity);
+                    }
+                });
+    }
+
+    private void setupRelateItems(ProductEntity productEntity) {
+        // create product list adapter
+        relatedProductAdapter = new ProductAdapter(ProductDetailActivity.this);
+
+        // create store list adapter
+        relatedStoreAdapter = new StoreAdapter(ProductDetailActivity.this);
+
+        relatedProductsRv.setAdapter(relatedProductAdapter);
+
+        relatedStoresRv.setAdapter(relatedStoreAdapter);
+
+        relatedProductAdapter.setProductViewListener(new ProductAdapter.ProductViewListener() {
+            @Override
+            public void onProductClicked(View v, int position) {
+                Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
+                intent.putExtra("PRODUCT_ID",
+                        Objects.requireNonNull(Objects.requireNonNull(
+                                relatedProductAdapter.getCurrentList()).get(position)).getProduct_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public LiveData<Boolean> isInWishList(int id) {
+                if (loggedInCustomer == null) {
+                    return new MutableLiveData<>();
+                }
+                return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+            }
+
+            @Override
+            public void onToggleWishList(View v, int position) {
+                if (loggedInCustomer == null) {
+                    startActivity(new Intent(ProductDetailActivity.this, LoginActivity.class));
+                    return;
+                }
+
+//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
+//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
+//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+            }
+        });
+
+        relatedStoreAdapter.setStoreViewListener(new StoreAdapter.StoreViewListener() {
+            @Override
+            public void onViewAllClicked(View v, int position) {
+                Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
+                intent.putExtra("STORE_ID",
+                        Objects.requireNonNull(Objects.requireNonNull(
+                                relatedStoreAdapter.getCurrentList()).get(position)).getStore_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public LiveData<CategoryEntity> onLoadCategory(Integer category_id) {
+                return categoryViewModel.getCategory(category_id);
+            }
+        });
+
+        productViewModel.getProducts(productEntity.getProduct_category_id())
+                .observe(ProductDetailActivity.this, new Observer<PagedList<ProductEntity>>() {
+                    @Override
+                    public void onChanged(PagedList<ProductEntity> productEntities) {
+                        if (productEntities==null){
+                            return;
+                        }
+                        relatedProductAdapter.submitList(productEntities);
+                    }
+                });
+
+        storeViewModel.getStores(productEntity.getProduct_category_id())
+                .observe(ProductDetailActivity.this, new Observer<PagedList<StoreEntity>>() {
+                    @Override
+                    public void onChanged(PagedList<StoreEntity> storeEntities) {
+                        if (storeEntities==null){
+                            return;
+                        }
+                        relatedStoreAdapter.submitList(storeEntities);
                     }
                 });
     }
 
     void setupActions(final ProductEntity productEntity) {
 
+        isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
+            ViewAnimation.showIn(fabLocateStores);
+            ViewAnimation.showIn(fabWishList);
+
+        fabMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isRotate = ViewAnimation.rotateFab(v, !isRotate);
+                if(isRotate){
+                    ViewAnimation.showIn(fabLocateStores);
+                    ViewAnimation.showIn(fabWishList);
+                }else{
+                    ViewAnimation.showOut(fabLocateStores);
+                    ViewAnimation.showOut(fabWishList);
+                }
+
+            }
+        });
         addProductView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -335,7 +476,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabWishList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (loggedInCustomer == null) {
@@ -360,10 +501,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     @Override
                     public void onChanged(WishListEntity wishListEntity) {
                         if (wishListEntity == null) {
-                            fab.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
+                            fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
                             return;
                         }
-                        fab.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
+                        fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
                     }
                 });
 

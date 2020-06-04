@@ -71,8 +71,7 @@ public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProd
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
                             +"products/product-image/"
-                            + entity.getProduct_img_uri())
-                    .resize(60, 60)
+                            + entity.getProduct_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)
                     .into(holder.productImage);
@@ -181,4 +180,6 @@ public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProd
         LiveData<Boolean> isInWishList(int id);
         void onToggleWishList(View v, int position);
     }
+
+
 }

@@ -46,14 +46,21 @@ public class PaymentActivity extends AppCompatActivity {
                 if (group==null)
                     return;
                switch (checkedId){
-                   case R.id.mtn_momo:
-                       method="mtn_momo";
-                       break;
+
                    case R.id.teceme_pay:
                        method = "teceme_pay";
                        break;
-                   case R.id.credit_card:
-                       method= "credit_card";
+                   case R.id.mtn_momo:
+                       method="mtn_momo";
+                       break;
+                   case R.id.airtel_tigo_cash:
+                       method="airtel_tigo_money";
+                       break;
+                   case R.id.vodafone_cash:
+                       method="vodafone_cash";
+                       break;
+                   case R.id.bank_card:
+                       method= "bank_card";
                        break;
                }
                isMethodChecked =true;
