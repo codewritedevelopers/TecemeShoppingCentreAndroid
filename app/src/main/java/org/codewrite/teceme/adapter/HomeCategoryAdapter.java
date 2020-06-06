@@ -84,7 +84,7 @@ public class HomeCategoryAdapter extends ListAdapter<CategoryEntity, HomeCategor
         });
     }
 
-    private int getSelectedItem() {
+    public int getSelectedItem() {
         // check if categoryViewLister is set
         if (categoryViewListener != null)
             selectedItem = categoryViewListener.onSelectItem();
@@ -114,6 +114,7 @@ public class HomeCategoryAdapter extends ListAdapter<CategoryEntity, HomeCategor
             categoryName = itemView.findViewById(R.id.id_home_category_name);
         }
     }
+
 
     public interface CategoryViewListener {
         int onSelectItem();

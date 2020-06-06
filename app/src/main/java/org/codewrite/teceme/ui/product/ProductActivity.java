@@ -3,8 +3,10 @@ package org.codewrite.teceme.ui.product;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -22,13 +24,17 @@ import com.quinny898.library.persistentsearch.SearchResult;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+
+import java.util.List;
 
 public class ProductActivity extends AppCompatActivity {
 
     private ProductViewModel productViewModel;
     private ProductAdapter productAdapter;
     private SearchBox searchBox;
+    private TextView categoryLevel0,categoryLevel1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,95 +42,64 @@ public class ProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product);
 
         productViewModel = ViewModelProviders.of(ProductActivity.this).get(ProductViewModel.class);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        RecyclerView mProductRv = findViewById(R.id.id_rv_product_list);
+        AutoFitGridRecyclerView mProductRv = findViewById(R.id.id_rv_product_list);
+        categoryLevel0 = findViewById(R.id.id_category_level_0);
+        categoryLevel1 = findViewById(R.id.id_category_level_1);
+
         productAdapter = new ProductAdapter(this);
         mProductRv.setAdapter(productAdapter);
         handleIntent(getIntent());
-        setupSearchView();
     }
 
 
     private void handleIntent(Intent intent) {
         String group = intent.getStringExtra("GROUP"),
                 child = intent.getStringExtra("CHILD");
+
+        // Show the Up button in the action bar.
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         Integer childCategoryId = intent.getIntExtra("CHILD_CATEGORY_ID",-1);
         if (group!=null && child!=null) {
+
+            assert actionBar != null;
+            actionBar.setTitle(child);
+
             productViewModel.getProducts(childCategoryId).observe(this, 
-                    new Observer<PagedList<ProductEntity>>() {
+                    new Observer<List<ProductEntity>>() {
                 @Override
-                public void onChanged(PagedList<ProductEntity> productEntities) {
+                public void onChanged(List<ProductEntity> productEntities) {
                     if (productEntities==null){
                         return;
                     }
                     productAdapter.submitList(productEntities);
                 }
             });
+
+            categoryLevel0.setText(group);
+            categoryLevel1.setText(child);
         }
     }
 
-    private void setupSearchView() {
-        // we find search view
-        searchBox = findViewById(R.id.id_search_box);
-        searchBox.setDrawerLogo(R.drawable.arrow_back_with_bg);
-        ImageView drawLogo = searchBox.findViewById(R.id.drawer_logo);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        drawLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        searchBox.setLogoTextColor(R.color.colorAccent);
-        searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));
-        // we set voice search
-        searchBox.enableVoiceRecognition(this);
-
-        searchBox.setSearchListener(new SearchBox.SearchListener() {
-
-            @Override
-            public void onSearchOpened() {
-                //Use this to tint the screen
-                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
-                    SearchResult result = new SearchResult(s);
-                    // add suggestions
-                    searchBox.addSearchable(result);
-                }
-            }
-
-            @Override
-            public void onSearchClosed() {
-                //Use this to un-tint the screen
-                searchBox.clearResults();
-            }
-
-            @Override
-            public void onSearchTermChanged(String s) {
-            }
-
-            @Override
-            public void onSearch(String searchTerm) {
-                Toast.makeText(ProductActivity.this, searchTerm + " Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(ProductActivity.this, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", searchTerm);
-                startActivity(i);
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to a result being clicked
-                Intent i = new Intent(ProductActivity.this,ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", result.title);
-                startActivity(i);
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

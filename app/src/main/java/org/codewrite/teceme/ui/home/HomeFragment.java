@@ -1,7 +1,10 @@
 package org.codewrite.teceme.ui.home;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +21,18 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.paginate.Paginate;
+import com.paginate.recycler.LoadingListItemSpanLookup;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
@@ -57,12 +66,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 
-public class HomeFragment extends Fragment {
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SliderTimer sliderTimer;
+    ArrayList<SearchResult> searchResults =new ArrayList<>();
     // adapters
     private AdsSliderAdapter mSliderPagerAdapter;
-    private TabLayout mSliderIndicator;
     private HomeCategoryAdapter homeCategoryAdapter;
     private CategoryProductAdapter categoryProductAdapter;
 
@@ -70,6 +84,7 @@ public class HomeFragment extends Fragment {
     private View root;
     private RecyclerView mCategoryRv, mGroupProductRv;
     private ViewPager mPager;
+    private TabLayout mSliderIndicator;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton fab;
 
@@ -85,8 +100,10 @@ public class HomeFragment extends Fragment {
     private CustomerEntity loggedInCustomer;
     private SearchBox searchBox;
     private AutoFitGridRecyclerView mAllProductsRv;
-    private ProgressBar progressBar;
     private boolean isRotate;
+    private Paginate paginate;
+    private Paginate.Callbacks callbacks;
+    private SwipeRefreshLayout swipeLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +117,13 @@ public class HomeFragment extends Fragment {
 
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        swipeLayout = root.findViewById(R.id.swipe_refresh);
+        swipeLayout.setProgressViewOffset(false, 0,40);
+        swipeLayout.setOnRefreshListener(this);
+
+        setupNestedScrollView(root);
+        setupSearchView(root);
+
         // get category view model
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         // get product view model
@@ -112,7 +136,6 @@ public class HomeFragment extends Fragment {
         // find recycler view for all product by their group
         mGroupProductRv = root.findViewById(R.id.id_rv_category_product_list);
         mAllProductsRv = root.findViewById(R.id.id_rv_product_list);
-        progressBar = root.findViewById(R.id.progressBar);
         // setup recycler view, should be called before setupCategoryRv()
         setupCategoryProductRv(mGroupProductRv);
 
@@ -124,14 +147,6 @@ public class HomeFragment extends Fragment {
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = root.findViewById(R.id.ads_view_flipper);
         mSliderIndicator = root.findViewById(R.id.indicator);
-
-        mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
-        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        mPager.setAdapter(mSliderPagerAdapter);
-
-        mSliderIndicator.setupWithViewPager(mPager, true);
-
-        loadAdsSlider();
 
         accountViewModel.getAccessToken().observe(mActivity, new Observer<AccessTokenEntity>() {
             @Override
@@ -152,14 +167,25 @@ public class HomeFragment extends Fragment {
                 loggedInCustomer = customerEntity;
             }
         });
+
+        checkInternetConnection();
         // return root view
         return root;
     }
 
     private void loadAdsSlider() {
+        mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
+        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        mPager.setAdapter(mSliderPagerAdapter);
+
+        mSliderIndicator.setupWithViewPager(mPager, true);
+
         customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> list) {
+                if (sliderTimer!=null){
+                    sliderTimer.cancel();
+                }
                 if (list == null) {
                     List<String> noAds = new ArrayList<>();
                     noAds.add("noAds");
@@ -179,19 +205,6 @@ public class HomeFragment extends Fragment {
             }
         });
         customerViewModel.getAds();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mSliderIndicator = view.findViewById(R.id.indicator);
-        setupNestedScrollView(view);
-        setupSearchView(view);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     private void setupNestedScrollView(View view) {
@@ -233,7 +246,7 @@ public class HomeFragment extends Fragment {
                 // create recycler view for horizontal products
                 RecyclerView groupProductsRv = itemView.findViewById(R.id.id_rv_group_product_list);
                 // create product page adapter
-                final HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity);
+                final HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity,0);
 
                 // set product listener
                 productAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
@@ -260,7 +273,6 @@ public class HomeFragment extends Fragment {
                             startActivity(new Intent(mActivity, LoginActivity.class));
                             return;
                         }
-
 //                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
 //                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
 //                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
@@ -271,9 +283,9 @@ public class HomeFragment extends Fragment {
 
 //              observe products from db
                 productViewModel.getProducts(categoryLevel_1.getCategory_id())
-                        .observe(mActivity, new Observer<PagedList<ProductEntity>>() {
+                        .observe(mActivity, new Observer<List<ProductEntity>>() {
                             @Override
-                            public void onChanged(PagedList<ProductEntity> entities) {
+                            public void onChanged(List<ProductEntity> entities) {
                                 if (entities == null) {
                                     return;
                                 }
@@ -284,6 +296,25 @@ public class HomeFragment extends Fragment {
                         });
             }
         });
+
+        categoryProductAdapter.setCategoryProductViewListener(
+                new CategoryProductAdapter.CategoryProductViewListener() {
+            @Override
+            public void onViewAllClicked(View v, int position) {
+                CategoryEntity categoryEntity1 = categoryProductAdapter.getCurrentList().get(position);
+                CategoryEntity categoryEntity
+                        = homeCategoryAdapter.getCurrentList().get(homeCategoryAdapter.getSelectedItem());
+                String child = categoryEntity1.getCategory_name();
+                String group = categoryEntity.getCategory_name();
+                Integer childCategoryId = categoryEntity1.getCategory_id();
+
+                Intent intent = new Intent(mActivity, ProductActivity.class);
+                intent.putExtra("GROUP", group);
+                intent.putExtra("CHILD", child);
+                intent.putExtra("CHILD_CATEGORY_ID", childCategoryId);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupCategoryRv(@NonNull RecyclerView recyclerView) {
@@ -291,11 +322,12 @@ public class HomeFragment extends Fragment {
         // create HomeCategoryAdapter
         homeCategoryAdapter = new HomeCategoryAdapter(getActivity());
         // all products adapter
-        final ProductAdapter productAdapter = new ProductAdapter(mActivity);
+        final HomeProductAdapter productAdapter
+                = new HomeProductAdapter(mActivity,HomeProductAdapter.ALL_PRODUCT_VIEW);
         mAllProductsRv.setAdapter(productAdapter);
 
         // set product listener
-        productAdapter.setProductViewListener(new ProductAdapter.ProductViewListener() {
+        productAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
             @Override
             public void onProductClicked(View v, int position) {
                 Intent intent = new Intent(mActivity, ProductDetailActivity.class);
@@ -329,9 +361,8 @@ public class HomeFragment extends Fragment {
         homeCategoryAdapter.setCategoryViewListener(new HomeCategoryAdapter.CategoryViewListener() {
             @Override
             public int onSelectItem() {
-                progressBar.setVisibility(View.VISIBLE);
                 int i = categoryViewModel.getSelectedHomeCategory();
-                CategoryEntity categoryEntity = homeCategoryAdapter.getCurrentList().get(i);
+                final CategoryEntity categoryEntity = homeCategoryAdapter.getCurrentList().get(i);
 
                 if (categoryEntity.getCategory_id() != -1) {
                     mAllProductsRv.setVisibility(View.GONE);
@@ -343,25 +374,63 @@ public class HomeFragment extends Fragment {
                                     if (categoryEntities == null) {
                                         return;
                                     }
-                                    progressBar.setVisibility(View.GONE);
                                     categoryProductAdapter.submitList(categoryEntities);
                                 }
                             });
                 } else {
                     mGroupProductRv.setVisibility(View.GONE);
                     mAllProductsRv.setVisibility(View.VISIBLE);
-                    productViewModel.getProducts(null)
-                            .observe(mActivity, new Observer<PagedList<ProductEntity>>() {
+
+                    if (paginate !=null){
+                        paginate.unbind();
+                    }
+                    productViewModel.getProductListResult()
+                            .observe(mActivity, new Observer<List<ProductEntity>>() {
                                 @Override
-                                public void onChanged(PagedList<ProductEntity> entities) {
+                                public void onChanged(List<ProductEntity> entities) {
                                     if (entities == null) {
                                         return;
                                     }
-                                    progressBar.setVisibility(View.GONE);
                                     productAdapter.submitList(entities);
                                 }
                             });
+
+                    callbacks = new Paginate.Callbacks() {
+                        @Override
+                        public void onLoadMore() {
+                            Log.d("ProductViewModel", "onLoadMore: ");
+                            productViewModel.loadProducts(categoryEntity.getCategory_id()
+                                    == -1 ? null : categoryEntity.getCategory_id());
+                        }
+
+                        @Override
+                        public boolean isLoading() {
+                            // Indicate whether new page loading is in progress or not
+                            Log.d("ProductViewModel", "isLoading: ");
+                            return productViewModel.isLoading();
+                        }
+
+                        @Override
+                        public boolean hasLoadedAllItems() {
+                            // Indicate whether all data (pages) are loaded or not
+                            Log.d("ProductViewModel", "hasLoadedAllItems: ");
+                            return !productViewModel.isMoreItem();
+                        }
+                    };
+                    paginate = Paginate.with(mAllProductsRv, callbacks)
+                            .addLoadingListItem(true)
+                            .setLoadingListItemSpanSizeLookup(new LoadingListItemSpanLookup() {
+                                @Override
+                                public int getSpanSize() {
+                                    GridLayoutManager gridLayoutManager = (GridLayoutManager)
+                                            mAllProductsRv.getLayoutManager();
+                                    assert gridLayoutManager != null;
+                                    return gridLayoutManager.getSpanCount();
+                                }
+                            })
+                            .setLoadingTriggerThreshold(2).build();
                 }
+
                 return i;
             }
 
@@ -398,10 +467,11 @@ public class HomeFragment extends Fragment {
                                 homeCategoryAdapter.setSelectedItem(0);
                             }
                         });
+
+                        swipeLayout.setRefreshing(false);
                     }
                 });
     }
-
 
     private void setupSearchView(View view) {
         isRotate = false;
@@ -413,10 +483,10 @@ public class HomeFragment extends Fragment {
         fabSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isRotate){
+                if (isRotate) {
                     ViewAnimation.showInLeft(searchBox);
                     isRotate = false;
-                }else{
+                } else {
                     ViewAnimation.showOutLeft(searchBox);
                     isRotate = true;
                 }
@@ -429,53 +499,176 @@ public class HomeFragment extends Fragment {
         searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));
         // we set voice search
         searchBox.enableVoiceRecognition(this);
-
         searchBox.setSearchListener(new SearchBox.SearchListener() {
 
             @Override
             public void onSearchOpened() {
-                //Use this to tint the screen
-                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
-                    SearchResult result = new SearchResult(s);
                     // add suggestions
-                    searchBox.addSearchable(result);
-                }
+                    searchBox.addAllSearchables(searchResults);
             }
 
             @Override
             public void onSearchClosed() {
                 //Use this to un-tint the screen
-                searchBox.clearResults();
             }
 
             @Override
             public void onSearchTermChanged(String s) {
+               setSearchResult(s);
             }
 
             @Override
-            public void onSearch(String searchTerm) {
-                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", searchTerm);
-                startActivity(i);
+            public void onSearch(final String searchTerm) {
+                SearchResult searchResult = new SearchResult(searchTerm,
+                        getResources().getDrawable(R.drawable.icons8_time_machine));
+                onResultClick(searchResult);
             }
 
             @Override
-            public void onResultClick(SearchResult result) {
-                //React to a result being clicked
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", result.title);
-                startActivity(i);
+            public void onResultClick(final SearchResult result) {
+                final LiveData<ProductEntity> productLive = productViewModel.searchProduct(result.title);
+                productLive.observe(mActivity, new Observer<ProductEntity>() {
+                    @Override
+                    public void onChanged(ProductEntity productEntity) {
+                        if (productEntity==null){
+                            final LiveData<CategoryEntity> categoryLive = categoryViewModel.searchCategory(result.title);
+                            categoryLive.observe(mActivity, new Observer<CategoryEntity>() {
+                                @Override
+                                public void onChanged(CategoryEntity categoryEntity) {
+                                    if (categoryEntity==null){
+                                        return;
+                                    }
+                                    List<CategoryEntity> currentList = homeCategoryAdapter.getCurrentList();
+                                    String group = "", child;
+                                    for (CategoryEntity entity : currentList) {
+                                        if (entity.getCategory_id().equals(categoryEntity.getCategory_parent_id())){
+                                            group = entity.getCategory_name();
+                                            break;
+                                        }
+                                    }
+                                    child = categoryEntity.getCategory_name();
+
+                                    Intent intent = new Intent(mActivity,ProductActivity.class);
+                                    intent.putExtra("GROUP", group);
+                                    intent.putExtra("CHILD", child);
+                                    intent.putExtra("CHILD_CATEGORY_ID", categoryEntity.getCategory_id());
+                                    startActivity(intent);
+                                    categoryLive.removeObserver(this);
+                                }
+                            });
+                            return;
+                        }
+                        productLive.removeObserver(this);
+                        Intent intent = new Intent(mActivity,ProductDetailActivity.class);
+                        intent.putExtra("PRODUCT_ID", productEntity.getProduct_id());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
             public void onSearchCleared() {
-
+                searchResults.clear();
             }
 
         });
     }
 
+    private void setSearchResult(final String s) {
+        searchResults.clear();
+
+        productViewModel.searchProducts(s)
+                .observe(mActivity, new Observer<List<ProductEntity>>() {
+                    @Override
+                    public void onChanged(List<ProductEntity> entities) {
+                        if (entities==null){
+                            return;
+                        }
+                        if (entities.size() ==0) {
+                            productViewModel.searchOnlineProducts(s);
+                        }
+                        for (ProductEntity entity : entities) {
+                            searchResults.add(new SearchResult(entity.getProduct_name(),
+                                    getResources().getDrawable(R.drawable.icons8_time_machine)));
+                        }
+                        searchBox.clearSearchable();
+                        searchBox.addAllSearchables(searchResults);
+                    }
+                });
+
+        final LiveData<List<CategoryEntity>> searchCategories = categoryViewModel.searchCategories(s);
+        searchCategories.observe(mActivity, new Observer<List<CategoryEntity>>() {
+            @Override
+            public void onChanged(List<CategoryEntity> categoryEntities) {
+                if (categoryEntities==null){
+                    return;
+                }
+                searchCategories.removeObserver(this);
+                for (CategoryEntity entity : categoryEntities) {
+                    searchResults.add(new SearchResult(entity.getCategory_name(),
+                            getResources().getDrawable(R.drawable.icons8_time_machine)));
+                }
+
+                searchBox.clearSearchable();
+                searchBox.addAllSearchables(searchResults);
+            }
+        });
+    }
+
+
+    @Override
+    public void onRefresh() {
+        checkInternetConnection();
+        productViewModel.invalidate();
+        categoryViewModel.getCategoryList();
+        loadAdsSlider();
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        loadAdsSlider();
+    }
+
+    @SuppressLint("CheckResult")
+    private void checkInternetConnection() {
+        ReactiveNetwork
+                .observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet) {
+                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+                            single.subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Boolean>() {
+                                        @Override
+                                        public void accept(Boolean isConnectedToInternet) throws Exception {
+                                            if (!isConnectedToInternet) {
+                                                Snackbar.make(mActivity.findViewById(R.id.main_container),
+                                                        "No Internet Connection!", Snackbar.LENGTH_SHORT)
+                                                        .setAction("Retry", new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                checkInternetConnection();
+                                                            }
+                                                        }).show();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Snackbar.make(mActivity.findViewById(R.id.main_container),
+                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    .setAction("Retry", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
+                                        }
+                                    }).show();
+                        }
+                    }
+                });
+    }
 }

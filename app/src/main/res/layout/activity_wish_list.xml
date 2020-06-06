@@ -2,8 +2,10 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,6 +17,26 @@
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/wish_list_text" />
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="UseCompoundDrawables">
+    <ImageView
+        android:id="@+id/no_wish_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_empty_wishlist"
+        android:contentDescription="@string/todo" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_large"
+            android:layout_gravity="center"
+            android:text="@string/you_wishlist_is_empty_text"/>
+    </LinearLayout>
     <include
         layout="@layout/wish_list"
         android:layout_width="match_parent"

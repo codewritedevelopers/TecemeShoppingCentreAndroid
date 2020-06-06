@@ -65,7 +65,7 @@ public class CategoryProductAdapter extends
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final CategoryProductViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final CategoryProductViewHolder holder, final int position) {
         // get a category product from list
         CategoryEntity entity = getItem(position);
         // if entity null don't bind view
@@ -76,6 +76,17 @@ public class CategoryProductAdapter extends
         // set group product name
         if (holder.categoryName != null) {
             holder.categoryName.setText(entity.getCategory_name());
+        }
+
+        if (categoryProductViewListener!=null){
+            if (holder.viewAll!=null) {
+                holder.viewAll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        categoryProductViewListener.onViewAllClicked(v,position);
+                    }
+                });
+            }
         }
 
         // handle fetching of products into view
@@ -124,6 +135,6 @@ public class CategoryProductAdapter extends
     }
 
     public interface CategoryProductViewListener {
-        void onViewAllClicked(View v, CategoryEntity entity);
+        void onViewAllClicked(View v, int position);
     }
 }

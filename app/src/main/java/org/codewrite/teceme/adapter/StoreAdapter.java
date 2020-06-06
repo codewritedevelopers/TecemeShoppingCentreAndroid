@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.textclassifier.TextLanguage;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +19,6 @@ import com.squareup.picasso.Picasso;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
-import org.w3c.dom.Text;
 
 public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.StoreViewHolder> {
 
@@ -91,9 +89,13 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             holder.storeLocation.setText(entity.getStore_location());
 
         // set group store view
-        if (holder.storeViewed != null) {
-            String viewed = entity.getStore_viewed() + " viewed";
-            holder.storeViewed.setText(viewed);
+        if (holder.storeFollowing != null) {
+            String viewed = entity.getStore_following() + " following";
+            holder.storeFollowing.setText(viewed);
+
+            if (entity.getStore_following()==0){
+                holder.storeFollowing.setVisibility(View.GONE);
+            }
         }
 
         // set group store category
@@ -123,7 +125,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
         private ImageView storeImage;
         private TextView storeCategory;
         private TextView storeLocation;
-        private TextView storeViewed;
+        private TextView storeFollowing;
 
         StoreViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -131,7 +133,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             storeImage = itemView.findViewById(R.id.id_store_image);
             storeLocation = itemView.findViewById(R.id.id_store_location);
             storeCategory = itemView.findViewById(R.id.id_store_category);
-            storeViewed = itemView.findViewById(R.id.id_store_viewed);
+            storeFollowing = itemView.findViewById(R.id.id_store_viewed);
         }
     }
 

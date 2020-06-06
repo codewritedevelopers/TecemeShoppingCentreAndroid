@@ -26,6 +26,7 @@ import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.notification.NotificationActivity;
+import org.codewrite.teceme.ui.orders.OrderActivity;
 import org.codewrite.teceme.ui.others.HelpActivity;
 import org.codewrite.teceme.ui.product.WishListActivity;
 import org.codewrite.teceme.ui.wallet.WalletActivity;
@@ -106,6 +107,14 @@ public class AccountsActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.orders).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchOrdersActivity();
+            }
+        });
+
+
         findViewById(R.id.help).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,8 +156,13 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private void launchWishListActivity() {
-       // startActivity(new Intent(AccountsActivity.this, WishListActivity.class));
+        startActivity(new Intent(AccountsActivity.this, WishListActivity.class));
     }
+
+    private void launchOrdersActivity() {
+        startActivity(new Intent(AccountsActivity.this, OrderActivity.class));
+    }
+
 
     private void launchHelpActivity() {
         startActivity(new Intent(AccountsActivity.this, HelpActivity.class));

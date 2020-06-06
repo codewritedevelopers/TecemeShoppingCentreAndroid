@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.codewrite.teceme.utils.AutoFitGridRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<org.codewrite.teceme.utils.AutoFitGridRecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/id_rv_store_list"
     android:name="org.codewrite.teceme.StoreListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="15dp"
-    android:columnWidth="@dimen/product_card_width"
-    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:columnWidth="@dimen/store_card_width"
     android:numColumns="auto_fit"
     tools:activityContext=".ui.store.StoreListActivity"
     tools:listitem="@layout/store_list_content" />

@@ -38,7 +38,6 @@ import java.util.List;
 
 public class CartFragment extends Fragment {
 
-    private static final int NUM_PAGES = 5;
     private CartViewModel cartViewModel;
     private AccountViewModel accountViewModel;
     private RecyclerView mCartRv;
@@ -107,6 +106,7 @@ public class CartFragment extends Fragment {
 
     private void launchLogin() {
         Intent i = new Intent(mActivity, LoginActivity.class);
+        i.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER", true);
         startActivity(i);
     }
 

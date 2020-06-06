@@ -11,6 +11,8 @@ import android.widget.TextView;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.CategoryEntity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,19 +21,25 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<CategoryEntity> expandableListTitle;
+    private List<CategoryEntity> filterListTitle = new ArrayList<>();
     private Map<Integer,List<CategoryEntity>> expandableListDetail;
+    private Map<Integer,List<CategoryEntity>> filterListDetail = new HashMap<>();
 
     public CategoryAdapter(Context context, List<CategoryEntity> expandableListTitle,
                                        Map<Integer,List<CategoryEntity>> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;
+        filterListDetail.clear();
+        filterListTitle.clear();
+        filterListDetail.putAll(expandableListDetail);
+        filterListTitle.addAll(expandableListTitle);
     }
 
     @Override
     public CategoryEntity getChild(int listPosition, int expandedListPosition) {
         return Objects.requireNonNull(
-                this.expandableListDetail.get(expandableListTitle.get(listPosition).getCategory_id()))
+                this.filterListDetail.get(filterListTitle.get(listPosition).getCategory_id()))
                 .get(expandedListPosition);
     }
 
@@ -58,18 +66,18 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildrenCount(int listPosition) {
         return Objects.requireNonNull(
-                this.expandableListDetail.get(
-                        this.expandableListTitle.get(listPosition).getCategory_id())).size();
+                this.filterListDetail.get(
+                        this.filterListTitle.get(listPosition).getCategory_id())).size();
     }
 
     @Override
     public CategoryEntity getGroup(int listPosition) {
-        return this.expandableListTitle.get(listPosition);
+        return this.filterListTitle.get(listPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this.expandableListTitle.size();
+        return this.filterListTitle.size();
     }
 
     @Override
@@ -100,5 +108,37 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
+    }
+
+    public void filterData(String query){
+
+        query = query.toLowerCase();
+        filterListTitle.clear();
+
+        if(query.isEmpty()){
+            filterListTitle.addAll(expandableListTitle);
+        }
+        else {
+
+            for(CategoryEntity categoryEntity: expandableListTitle){
+
+                List<CategoryEntity> entities = expandableListDetail.get(categoryEntity.getCategory_id());
+                assert entities != null;
+                List<CategoryEntity> newList = new ArrayList<>();
+                for (CategoryEntity entity : entities) {
+                    if(entity.getCategory_name().toLowerCase().contains(query)
+                            || categoryEntity.getCategory_name().toLowerCase().contains(query)){
+                        newList.add(entity);
+                    }
+                }
+                if(categoryEntity.getCategory_name().toLowerCase().contains(query) || newList.size() > 0){
+                    filterListTitle.add(categoryEntity);
+                }
+                if(newList.size() > 0){
+                  filterListDetail.put(categoryEntity.getCategory_id(),newList);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }

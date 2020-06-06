@@ -7,14 +7,19 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+
+import com.paginate.Paginate;
 
 import org.codewrite.teceme.model.rest.ProductJson;
 import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.repository.ProductRepository;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,75 +27,38 @@ import retrofit2.Response;
 
 public class ProductViewModel extends AndroidViewModel {
     private ProductRepository productRepository;
-    private final int loadSize = 5;
+    private final int loadSize = 4;
     private int page;
     private boolean moreItem;
     private boolean isLoading;
-    private  PagedList.BoundaryCallback<ProductEntity> boundaryCallback;
+    private PagedList.BoundaryCallback<ProductEntity> boundaryCallback;
+
+    private Paginate.Callbacks callbacks;
+    private MutableLiveData<List<ProductEntity>> productListResult = new MutableLiveData<>();
 
     public ProductViewModel(@NonNull Application application) {
         super(application);
         productRepository = new ProductRepository(application);
-    }
-
-    public LiveData<PagedList<ProductEntity>> getProducts(final Integer category_id) {
-        page = 0;
+        page = 1;
         moreItem = true;
         isLoading = false;
-
-        boundaryCallback = new PagedList.BoundaryCallback<ProductEntity>() {
-            @Override
-            public void onZeroItemsLoaded() {
-                if (moreItem && !isLoading) {
-                    loadProducts(category_id);
-                }
-                Log.d("ProductViewModel", "onZeroItemsLoaded: ");
-            }
-
-            @Override
-            public void onItemAtFrontLoaded(@NonNull ProductEntity itemAtFront) {
-                Log.d("ProductViewModel", "onItemAtFrontLoaded: ");
-            }
-
-            @Override
-            public void onItemAtEndLoaded(@NonNull ProductEntity itemAtEnd) {
-                if (moreItem && !isLoading) {
-                    loadProducts(category_id);
-                }
-                Log.d("ProductViewModel", "onItemAtEndLoaded: ");
-            }
-        };
-
-        PagedList.Config pagingConfig = new PagedList.Config.Builder()
-                .setPageSize(loadSize)
-                .setPrefetchDistance(8)
-                .setEnablePlaceholders(true)
-                .build();
-        if (category_id==null) {
-            return new LivePagedListBuilder<>(productRepository.getAllProducts(), pagingConfig)
-                    .setBoundaryCallback(boundaryCallback)
-                    .build();
-        }
-        return new LivePagedListBuilder<>(productRepository.getProductsByCategoryId(category_id), pagingConfig)
-                .setBoundaryCallback(boundaryCallback)
-                .build();
     }
 
-    private void loadProducts(Integer categoryId) {
-        isLoading =true;
+    public LiveData<List<ProductEntity>> getProducts(final Integer category_id) {
+        if (category_id == null) {
+            return productRepository.getAllProducts(loadSize,(page*loadSize-loadSize));
+        }
+        return productRepository.getProductsByCategoryId(category_id);
+    }
+
+    public void loadProducts(Integer categoryId) {
         Call<List<ProductJson>> productList = productRepository.getProductList(categoryId, loadSize, page);
         productList.enqueue(new Callback<List<ProductJson>>() {
             @Override
             public void onResponse(@NonNull Call<List<ProductJson>> call,
-                                   @NonNull Response<List<ProductJson>> response) {
+                                   @NonNull final Response<List<ProductJson>> response) {
 
                 if (response.isSuccessful()) {
-                    if (response.headers().get("MoreItem") != null) {
-                        moreItem = true;
-                        page++;
-                    }else{
-                        moreItem = false;
-                    }
                     assert response.body() != null;
                     ProductEntity[] productEntities = new ProductEntity[response.body().size()];
                     int i = 0;
@@ -100,12 +68,107 @@ public class ProductViewModel extends AndroidViewModel {
                     productRepository.insert(new ProductRepository.CompleteAllCallback() {
                         @Override
                         public void finish() {
+                            if (response.headers().get("MoreItem") != null) {
+                                moreItem = true;
+                                page++;
+                            } else {
+                                moreItem = false;
+                            }
                             isLoading = false;
+
+                            final LiveData<List<ProductEntity>> allProducts =
+                                    productRepository.getAllProducts(loadSize*page, 0);
+                            allProducts.observeForever(new Observer<List<ProductEntity>>() {
+                                @Override
+                                public void onChanged(List<ProductEntity> entities) {
+                                    if (entities==null){
+                                        return;
+                                    }
+                                    productListResult.postValue(entities);
+                                    allProducts.removeObserver(this);
+                                }
+                            });
                         }
                     }, productEntities);
                 }
             }
+            @Override
+            public void onFailure(@NonNull Call<List<ProductJson>> call, @NonNull Throwable t) {
+                Log.d("ProductDataSource", "onFailure: " + t.getMessage());
+            }
+        });
+        isLoading = true;
+    }
 
+    public LiveData<ProductEntity> getProduct(Integer product_id) {
+        return productRepository.getProduct(product_id);
+    }
+    public LiveData<List<ProductEntity>> searchProducts(String query){
+        return  productRepository.searchProducts(query);
+    }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public boolean isMoreItem() {
+        return moreItem;
+    }
+
+    public MutableLiveData<List<ProductEntity>> getProductListResult() {
+        return productListResult;
+    }
+
+    public void deleteAll() {
+    }
+
+    public void invalidate() {
+        page = 1;
+        moreItem = true;
+        isLoading = false;
+    }
+
+    public void searchOnlineProducts(String s) {
+       Call<List<ProductJson>> productList = productRepository.searchOnlineProducts(s);
+        productList.enqueue(new Callback<List<ProductJson>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ProductJson>> call,
+                                   @NonNull final Response<List<ProductJson>> response) {
+
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    ProductEntity[] productEntities = new ProductEntity[response.body().size()];
+                    int i = 0;
+                    for (ProductJson productJson : response.body()) {
+                        productEntities[i++] = productJson;
+                    }
+                    productRepository.insert(new ProductRepository.CompleteAllCallback() {
+                        @Override
+                        public void finish() {
+                            if (response.headers().get("MoreItem") != null) {
+                                moreItem = true;
+                                page++;
+                            } else {
+                                moreItem = false;
+                            }
+                            isLoading = false;
+
+                            final LiveData<List<ProductEntity>> allProducts =
+                                    productRepository.getAllProducts(loadSize*page, 0);
+                            allProducts.observeForever(new Observer<List<ProductEntity>>() {
+                                @Override
+                                public void onChanged(List<ProductEntity> entities) {
+                                    if (entities==null){
+                                        return;
+                                    }
+                                    productListResult.postValue(entities);
+                                    allProducts.removeObserver(this);
+                                }
+                            });
+                        }
+                    }, productEntities);
+                }
+            }
             @Override
             public void onFailure(@NonNull Call<List<ProductJson>> call, @NonNull Throwable t) {
                 Log.d("ProductDataSource", "onFailure: " + t.getMessage());
@@ -113,7 +176,7 @@ public class ProductViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<ProductEntity> getProduct(Integer product_id) {
-        return productRepository.getProduct(product_id);
+    public LiveData<ProductEntity> searchProduct(String query) {
+        return productRepository.searchProduct("%"+query+"%");
     }
 }

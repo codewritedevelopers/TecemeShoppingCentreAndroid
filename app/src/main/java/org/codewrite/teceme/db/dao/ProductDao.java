@@ -22,7 +22,7 @@ public interface ProductDao {
     LiveData<ProductEntity> getProduct(Integer id);
 
     @Query("SELECT * FROM product_table WHERE product_category_id =:categoryId")
-    DataSource.Factory<Integer, ProductEntity> getProductsByCategoryId(Integer categoryId);
+    LiveData<List<ProductEntity>> getProductsByCategoryId(Integer categoryId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ProductEntity... entities);
@@ -36,6 +36,12 @@ public interface ProductDao {
     @Query("DELETE FROM product_table WHERE 1")
     void deleteAll();
 
-    @Query("SELECT * FROM product_table")
-    DataSource.Factory<Integer,ProductEntity> getAllProducts();
+    @Query("SELECT * FROM product_table LIMIT :limit OFFSET :offset")
+    LiveData<List<ProductEntity>> getAllProducts(int limit, int offset);
+
+    @Query("SELECT * FROM product_table WHERE product_name LIKE :query OR product_desc LIKE :query")
+    LiveData<List<ProductEntity>> searchProducts(String query);
+
+    @Query("SELECT * FROM product_table WHERE product_name LIKE :query OR product_desc LIKE :query LIMIT 1")
+    LiveData<ProductEntity> searchProduct(String query);
 }

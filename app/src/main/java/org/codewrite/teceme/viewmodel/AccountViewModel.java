@@ -432,6 +432,10 @@ public class AccountViewModel extends AndroidViewModel {
         });
     }
 
+    public LiveData<List<WishListEntity>> getWishListResult(String customer_id){
+        return wishListRepository.getWishLists(customer_id);
+    }
+
     public LiveData<WishListEntity> isWishList(Integer product_id) {
         return wishListRepository.getWishList(product_id);
     }

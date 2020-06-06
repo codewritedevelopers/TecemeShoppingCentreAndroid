@@ -40,6 +40,7 @@ public class CategoryFragment extends Fragment {
     private Map<Integer, List<CategoryEntity>> listMap;
     private MutableLiveData<Boolean> listLoaded = new MutableLiveData<>();
     private SearchBox searchBox;
+    private  ExpandableListView expandableListView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,9 +143,9 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ExpandableListView mCategoryListView = view.findViewById(R.id.category_list);
+         expandableListView = view.findViewById(R.id.category_list);
         // setup recycler view
-        setupCategoryRv(mCategoryListView);
+        setupCategoryRv(expandableListView);
         setupSearchView(view);
     }
 
@@ -170,46 +171,38 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onSearchOpened() {
                 //Use this to tint the screen
-                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
-                    SearchResult result = new SearchResult(s);
-                    // add suggestions
-                    searchBox.addSearchable(result);
-                }
             }
 
             @Override
             public void onSearchClosed() {
-                //Use this to un-tint the screen
-                searchBox.clearResults();
+
             }
 
             @Override
             public void onSearchTermChanged(String s) {
+                categoryAdapter.filterData(s);
+                expandAll();
             }
 
             @Override
             public void onSearch(String searchTerm) {
-                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", searchTerm);
-                startActivity(i);
             }
 
             @Override
             public void onResultClick(SearchResult result) {
-                //React to a result being clicked
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", result.title);
-                startActivity(i);
             }
 
             @Override
             public void onSearchCleared() {
-
             }
 
         });
+    }
+
+    private void expandAll() {
+        int count = categoryAdapter.getGroupCount();
+        for (int i = 0; i < count; i++){
+             expandableListView.expandGroup(i);
+        }
     }
 }

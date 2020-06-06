@@ -13,13 +13,17 @@ public class OrderEntity extends Result {
     private Integer order_id;
     private String order_owner;
     private Integer order_quantity;
-    private Integer order_product_id;
+    private String product_name;
+    private String product_price;
     private String product_color;
     private String product_weight;
     private String product_size;
-    private Boolean order_access;
-    private String order_date_created;
-
+    private String product_code;
+    private String product_desc;
+    private int order_status;
+    private Integer product_category_id;
+    private String product_img_uri;
+    private String cart_date_created;
 
     @NonNull
     public Integer getOrder_id() {
@@ -46,28 +50,20 @@ public class OrderEntity extends Result {
         this.order_quantity = order_quantity;
     }
 
-    public Integer getOrder_product_id() {
-        return order_product_id;
+    public String getProduct_name() {
+        return product_name;
     }
 
-    public void setOrder_product_id(Integer order_product_id) {
-        this.order_product_id = order_product_id;
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
     }
 
-    public Boolean getOrder_access() {
-        return order_access;
+    public String getProduct_price() {
+        return product_price;
     }
 
-    public void setOrder_access(Boolean order_access) {
-        this.order_access = order_access;
-    }
-
-    public String getOrder_date_created() {
-        return order_date_created;
-    }
-
-    public void setOrder_date_created(String order_date_created) {
-        this.order_date_created = order_date_created;
+    public void setProduct_price(String product_price) {
+        this.product_price = product_price;
     }
 
     public String getProduct_color() {
@@ -92,5 +88,53 @@ public class OrderEntity extends Result {
 
     public void setProduct_size(String product_size) {
         this.product_size = product_size;
+    }
+
+    public String getProduct_code() {
+        return product_code;
+    }
+
+    public void setProduct_code(String product_code) {
+        this.product_code = product_code;
+    }
+
+    public String getProduct_desc() {
+        return product_desc;
+    }
+
+    public void setProduct_desc(String product_desc) {
+        this.product_desc = product_desc;
+    }
+
+    public Integer getProduct_category_id() {
+        return product_category_id;
+    }
+
+    public void setProduct_category_id(Integer product_category_id) {
+        this.product_category_id = product_category_id;
+    }
+
+    public String getProduct_img_uri() {
+        return product_img_uri;
+    }
+
+    public void setProduct_img_uri(String product_img_uri) {
+        this.product_img_uri = product_img_uri;
+    }
+
+    public String getCart_date_created() {
+        return cart_date_created;
+    }
+
+    public void setCart_date_created(String cart_date_created) {
+        this.cart_date_created = cart_date_created;
+    }
+
+    public int getOrder_status() {
+        return order_status;
+    }
+
+    public void setOrder_status(int order_status) {
+        this.order_status = order_status;
     }
 }

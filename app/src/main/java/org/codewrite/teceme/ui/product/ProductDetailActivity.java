@@ -385,9 +385,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         productViewModel.getProducts(productEntity.getProduct_category_id())
-                .observe(ProductDetailActivity.this, new Observer<PagedList<ProductEntity>>() {
+                .observe(ProductDetailActivity.this, new Observer<List<ProductEntity>>() {
                     @Override
-                    public void onChanged(PagedList<ProductEntity> productEntities) {
+                    public void onChanged(List<ProductEntity> productEntities) {
                         if (productEntities==null){
                             return;
                         }

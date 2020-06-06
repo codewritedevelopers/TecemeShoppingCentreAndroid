@@ -21,7 +21,7 @@ public class StoreEntity extends Result {
     private Integer store_category_id;
     private String store_email;
     private String store_phone;
-    private int store_viewed;
+    private int store_following;
 
     @NonNull
     public String getStore_name() {
@@ -96,12 +96,12 @@ public class StoreEntity extends Result {
         this.store_phone = store_phone;
     }
 
-    public int getStore_viewed() {
-        return store_viewed;
+    public int getStore_following() {
+        return store_following;
     }
 
-    public void setStore_viewed(int store_viewed) {
-        this.store_viewed = store_viewed;
+    public void setStore_following(int store_following) {
+        this.store_following = store_following;
     }
 
     @NonNull

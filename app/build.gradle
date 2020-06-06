@@ -36,6 +36,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     testImplementation "androidx.paging:paging-common:$paging_version"
+    implementation 'com.github.markomilos:paginate:0.5.1'
     // optional - RxJava support
     implementation "androidx.paging:paging-rxjava2:$paging_version"
     implementation 'com.karumi:dexter:6.1.2'

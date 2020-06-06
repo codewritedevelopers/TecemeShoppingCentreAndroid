@@ -14,7 +14,7 @@
         android:columnWidth="154dp"
         android:numColumns="auto_fit"
         tools:activityContext=".ui.product.ProductListActivity"
-        tools:listitem="@layout/product_list_content" />
+        tools:listitem="@layout/home_all_product_list_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/id_rv_category_product_list"

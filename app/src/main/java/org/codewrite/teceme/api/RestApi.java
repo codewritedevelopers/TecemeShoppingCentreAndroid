@@ -138,4 +138,6 @@ public interface RestApi {
     @GET("customers/ads")
     Call<List<String>> getAds();
 
+    @GET("products/product")
+    Call<List<ProductJson>> getSearchProducts(@Query("query") String s);
 }

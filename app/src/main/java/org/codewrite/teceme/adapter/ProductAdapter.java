@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.ProductEntity;
 
-public class ProductAdapter extends PagedListAdapter<ProductEntity, ProductAdapter.ProductViewHolder> {
+public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.ProductViewHolder> {
 
     private static final DiffUtil.ItemCallback<ProductEntity>
             DIFF_CALLBACK = new DiffUtil.ItemCallback<ProductEntity>() {

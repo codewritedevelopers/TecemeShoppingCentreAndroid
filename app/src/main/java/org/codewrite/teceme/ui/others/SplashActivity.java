@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
+import org.codewrite.teceme.viewmodel.ProductViewModel;
 
 
 public class SplashActivity extends AppCompatActivity {

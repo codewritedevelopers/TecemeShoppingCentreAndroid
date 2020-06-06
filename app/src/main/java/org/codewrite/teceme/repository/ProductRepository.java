@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
+import androidx.paging.PagedList;
 
 import org.codewrite.teceme.api.RestApi;
 import org.codewrite.teceme.api.Service;
@@ -32,7 +33,8 @@ public class ProductRepository {
         new InsertProductAsyncTask(productDao,completecallBack).execute(productEntities);
     }
 
-    public DataSource.Factory<Integer, ProductEntity> getProductsByCategoryId(Integer category_id) {
+    public LiveData<List<ProductEntity>>
+    getProductsByCategoryId(Integer category_id) {
         return productDao.getProductsByCategoryId(category_id);
     }
 
@@ -44,8 +46,20 @@ public class ProductRepository {
         return productDao.getProduct(product_id);
     }
 
-    public DataSource.Factory<Integer,ProductEntity> getAllProducts() {
-        return productDao.getAllProducts();
+    public LiveData<List<ProductEntity>> getAllProducts(int loadSize, int offset) {
+        return productDao.getAllProducts(loadSize,offset);
+    }
+
+    public LiveData<List<ProductEntity>> searchProducts(String query) {
+        return productDao.searchProducts("%"+query+"%");
+    }
+
+    public Call<List<ProductJson>> searchOnlineProducts(String s) {
+        return restApi.getSearchProducts(s);
+    }
+
+    public LiveData<ProductEntity> searchProduct(String query) {
+        return productDao.searchProduct(query);
     }
 
     private static class DeleteAllProductAsyncTask extends AsyncTask<Void, Void, Void> {

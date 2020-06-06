@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.ProductEntity;
 
-public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProductAdapter.ProductViewHolder> {
+public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAdapter.ProductViewHolder> {
 
     private static final DiffUtil.ItemCallback<ProductEntity>
             DIFF_CALLBACK = new DiffUtil.ItemCallback<ProductEntity>() {
@@ -40,6 +41,8 @@ public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProd
                     && oldItem.getProduct_ordered()== newItem.getProduct_ordered();
         }
     };
+    public static final int ALL_PRODUCT_VIEW = 1;
+    private int VieWType;
 
     // member variable or objects
     private Context activityContext;
@@ -47,16 +50,23 @@ public class HomeProductAdapter extends PagedListAdapter<ProductEntity, HomeProd
     /**
      * @class: CategoryProductAdapter
      */
-    public HomeProductAdapter(Context activityContext) {
+    public HomeProductAdapter(Context activityContext,int VieWType) {
         super(DIFF_CALLBACK);
         this.activityContext = activityContext;
+        this.VieWType = VieWType;
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.home_product_list_content, parent, false);
+        View view;
+        if (ALL_PRODUCT_VIEW==VieWType) {
+             view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.home_all_product_list_content, parent, false);
+        }else{
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.home_product_list_content, parent, false);
+        }
         return new ProductViewHolder(view);
     }
 

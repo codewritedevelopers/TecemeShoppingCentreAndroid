@@ -3,10 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorWhite"
     tools:context=".ui.product.ProductActivity">
-    <include
-        android:id="@+id/search_box"
-        layout="@layout/toolbar_with_search" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_margin="0dp"
+        android:background="@color/colorWhite"
+        app:navigationIcon="@drawable/arrow_back"
+        app:title="@string/product_name_hint" />
 
     <LinearLayout
         android:layout_marginTop="?actionBarSize"
@@ -15,6 +22,7 @@
         android:layout_height="match_parent">
 
     <include
+        android:layout_marginTop="8dp"
         android:id="@+id/category_path"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -50,8 +50,16 @@ public class CategoryRepository {
         return  categoryDao.getCategoryForHome();
     }
 
+    public LiveData<List<CategoryEntity>> searchCategories(String query) {
+        return  categoryDao.searchCategories("%"+query+"%");
+    }
+
     public LiveData<CategoryEntity> getCategory(Integer category_id) {
        return categoryDao.getCategory(category_id);
+    }
+
+    public LiveData<CategoryEntity> searchCategory(String query) {
+        return  categoryDao.searchCategory("%"+query+"%");
     }
 
     private static class DeleteAllAsyncTask extends AsyncTask<Void, Void, Void> {

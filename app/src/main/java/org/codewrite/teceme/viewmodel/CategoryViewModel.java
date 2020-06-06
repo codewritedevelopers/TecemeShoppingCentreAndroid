@@ -42,6 +42,9 @@ public class CategoryViewModel extends AndroidViewModel {
     public LiveData<List<CategoryEntity>> getCategoryForHomeResult() {
         return  categoryRepository.getCategoryEntityHome();
     }
+    public LiveData<List<CategoryEntity>> searchCategories(String query) {
+        return  categoryRepository.searchCategories(query);
+    }
 
     public void getCategoryList() {
         Call<List<CategoryJson>> call = categoryRepository.getCategoryList();
@@ -69,5 +72,9 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public LiveData<CategoryEntity> getCategory(Integer category_id) {
         return categoryRepository.getCategory(category_id);
+    }
+
+    public LiveData<CategoryEntity> searchCategory(String query) {
+        return categoryRepository.searchCategory(query);
     }
 }

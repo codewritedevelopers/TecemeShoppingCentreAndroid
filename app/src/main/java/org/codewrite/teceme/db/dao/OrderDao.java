@@ -14,8 +14,8 @@ import java.util.List;
 
 @Dao
 public interface OrderDao {
-    @Query("SELECT * FROM order_table WHERE order_access= 1")
-    LiveData<List<OrderEntity>> getOrder();
+    @Query("SELECT * FROM order_table")
+    LiveData<List<OrderEntity>> getOrders();
 
     @Query("SELECT * FROM order_table WHERE order_id =:id limit 1")
     LiveData<OrderEntity> getOrder(Integer id);
@@ -31,4 +31,7 @@ public interface OrderDao {
 
     @Query("DELETE FROM order_table WHERE 1")
     void deleteAll();
+
+    @Query("SELECT * FROM order_table WHERE order_status=:status AND order_owner=:owner")
+    LiveData<List<OrderEntity>> getOrders(int status, String owner);
 }

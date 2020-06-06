@@ -2,10 +2,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="@dimen/card_elevation">
-
     <com.quinny898.library.persistentsearch.SearchBox
         android:id="@+id/id_search_box"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="@dimen/card_elevation"/>
+        android:layout_margin="0dp"
+        android:layout_height="wrap_content"/>
 </FrameLayout>

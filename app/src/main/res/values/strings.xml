@@ -264,4 +264,12 @@
     <string name="bank_card_text">Bank Card</string>
     <string name="reorder_text">reorder</string>
     <string name="your_order_is_empty">Your Orders Is Empty</string>
+    <string name="you_wishlist_is_empty_text">You Wishlist Is Empty</string>
+    <string name="my_orders_text">My Orders</string>
+    <string name="see_orders_text">Seel all orders and pending orders</string>
+    <string name="gh_currency">GH₵</string>
+    <string name="balance">0.00</string>
+    <string name="account_balance">Account Balance</string>
+    <string name="activate_account">Activate Account</string>
+    <string name="transaction_logs">Transactions Logs</string>
 </resources>

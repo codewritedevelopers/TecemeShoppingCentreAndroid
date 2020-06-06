@@ -9,6 +9,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import org.codewrite.teceme.model.room.CategoryEntity;
+import org.codewrite.teceme.model.room.ProductEntity;
 
 import java.util.List;
 
@@ -26,6 +27,9 @@ public interface CategoryDao {
     @Query("SELECT * FROM category_table WHERE category_level=0")
     LiveData<List<CategoryEntity>> getCategoryForHome();
 
+    @Query("SELECT * FROM category_table WHERE category_name LIKE :query")
+    LiveData<List<CategoryEntity>> searchCategories(String query);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CategoryEntity... entity);
 
@@ -37,4 +41,7 @@ public interface CategoryDao {
 
     @Query("DELETE FROM category_table WHERE 1")
     void deleteAll();
+
+    @Query("SELECT * FROM category_table WHERE category_level>0 AND category_name LIKE :query LIMIT 1 ")
+    LiveData<CategoryEntity> searchCategory(String query);
 }
