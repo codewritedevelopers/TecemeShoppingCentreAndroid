@@ -54,7 +54,7 @@
             android:tint="@color/colorAccent"
             app:backgroundTint="@color/colorWhite"
             app:fabSize="mini"
-            app:srcCompat="@drawable/icons8_location_filled"
+            app:srcCompat="@drawable/icons8_online_store_120px_1"
             tools:ignore="RelativeOverlap" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

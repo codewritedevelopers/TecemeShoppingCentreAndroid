@@ -15,8 +15,10 @@ import org.codewrite.teceme.model.form.SignupFormState;
 import org.codewrite.teceme.model.form.WalletFormState;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.rest.WalletJson;
+import org.codewrite.teceme.model.rest.WalletLogJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
+import org.codewrite.teceme.model.room.WalletLogEntity;
 import org.codewrite.teceme.repository.CustomerRepository;
 import org.codewrite.teceme.repository.WalletRepository;
 
@@ -36,6 +38,7 @@ public class WalletViewModel extends AndroidViewModel {
     private CustomerRepository customerRepository;
     private LiveData<CustomerEntity> loggedInCustomer;
     private LiveData<AccessTokenEntity> accessToken;
+    private MutableLiveData<WalletLogJson> walletLogResult =new MutableLiveData<>();
     private MutableLiveData<WalletJson> walletResult = new MutableLiveData<>();
 
     public WalletViewModel(@NonNull Application application) {
@@ -163,5 +166,46 @@ public class WalletViewModel extends AndroidViewModel {
 
     public LiveData<CustomerEntity> getLoggedInCustomer() {
         return loggedInCustomer;
+    }
+
+    public void submitTransaction(String customer_id, String token,
+                                  long amount, String transType, String transactionTo) {
+
+        Call<WalletJson> wallet
+                = walletRepository.addWalletLog(customer_id, token, amount, transType,transactionTo);
+        wallet.enqueue(new Callback<WalletJson>() {
+            @Override
+            public void onResponse(@NonNull Call<WalletJson> call,
+                                   @NonNull Response<WalletJson> response) {
+                if (response.isSuccessful()) {
+                    walletResult.postValue(response.body());
+                    String token = response.headers().get("Token");
+                    if (token !=null) {
+                        updateWithAccessToken(new AccessTokenEntity(token));
+                    }
+                } else {
+                    WalletJson walletJson = new WalletJson();
+                    walletJson.setStatus(false);
+                    walletJson.setMessage(response.message());
+                    walletResult.postValue(walletJson);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WalletJson> call, @NonNull Throwable t) {
+                WalletJson walletJson = new WalletJson();
+                walletJson.setStatus(false);
+                if(t.getMessage()!=null) {
+                    walletJson.setMessage(t.getMessage());
+                }else{
+                    walletJson.setMessage("Process timeout! Please, Try again");
+                }
+                walletResult.postValue(walletJson);
+            }
+        });
+    }
+
+    public MutableLiveData<WalletLogJson> getWalletLogResult() {
+        return walletLogResult;
     }
 }

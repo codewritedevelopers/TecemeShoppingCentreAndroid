@@ -272,4 +272,10 @@
     <string name="account_balance">Account Balance</string>
     <string name="activate_account">Activate Account</string>
     <string name="transaction_logs">Transactions Logs</string>
+    <string name="no_notification_text">No Notification Available</string>
+    <string name="prompt_transaction">Select Transaction Type</string>
+    <string name="transact_with_teceme_wallet">Transact With Teceme Wallet</string>
+    <string name="amount">Enter amount</string>
+    <string name="prompt_transact_email">Enter email of receipt</string>
+    <string name="submit">Submit</string>
 </resources>

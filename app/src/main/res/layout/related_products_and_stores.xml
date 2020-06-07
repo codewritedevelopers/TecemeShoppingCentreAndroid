@@ -25,7 +25,7 @@
         android:columnWidth="154dp"
         android:numColumns="auto_fit"
         android:paddingTop="15dp"
-        tools:listitem="@layout/product_list_content" />
+        tools:listitem="@layout/related_product_list_content" />
 
     <View
         android:layout_width="match_parent"

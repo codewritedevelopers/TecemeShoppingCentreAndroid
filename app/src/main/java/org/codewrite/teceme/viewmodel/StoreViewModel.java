@@ -104,4 +104,8 @@ public class StoreViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public LiveData<StoreEntity> getStore(int store_id) {
+        return storeRepository.getStore(store_id);
+    }
 }

@@ -3,6 +3,7 @@ package org.codewrite.teceme.repository;
 import android.app.Application;
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 
 import org.codewrite.teceme.api.RestApi;
@@ -41,6 +42,10 @@ public class StoreRepository {
 
     public DataSource.Factory<Integer, StoreEntity> getStores() {
         return storeDao.getStores();
+    }
+
+    public LiveData<StoreEntity> getStore(int store_id) {
+        return storeDao.getStore(store_id);
     }
 
     private static class DeleteAllStoreAsyncTask extends AsyncTask<Void, Void, Void> {

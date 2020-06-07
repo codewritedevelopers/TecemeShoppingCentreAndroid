@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.form.WalletFormState;
 import org.codewrite.teceme.model.rest.WalletJson;
+import org.codewrite.teceme.model.rest.WalletLogJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
@@ -39,6 +40,11 @@ public class WalletActivity extends AppCompatActivity {
    private WalletViewModel walletViewModel;
     private CustomerEntity loggedInCustomer;
     private AccessTokenEntity mAccessTokenEntity;
+    private String mTransType;
+    private TextView mTransactionToTextView;
+    private TextView mAmount;
+    private Button submitButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +53,6 @@ public class WalletActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         walletViewModel = ViewModelProviders.of(WalletActivity.this).get(WalletViewModel.class);
-
-
         walletViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
@@ -68,6 +72,8 @@ public class WalletActivity extends AppCompatActivity {
                     return;
                 }
                 loggedInCustomer = customerEntity;
+
+                setupWalletTransaction();
             }
         });
 
@@ -81,6 +87,69 @@ public class WalletActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setupWalletTransaction() {
+
+        mTransactionToTextView = findViewById(R.id.transaction_to);
+        mAmount= findViewById(R.id.amount);
+        submitButton = findViewById(R.id.submit);
+        Spinner transactionType = findViewById(R.id.transaction_type);
+
+        // We create an ArrayAdapter using the string array and a default spinner layout
+        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.wallet_transaction_type, android.R.layout.simple_spinner_item);
+        // We specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // We apply the adapter to the questions spinner
+        transactionType.setAdapter(adapter);
+
+        // set default item
+        mTransType = "Deposit";
+
+        transactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position==0){
+                    mTransType = "Deposit";
+                    mTransactionToTextView.setVisibility(View.GONE);
+                }else{
+                    mTransType = "Transfer";
+                    mTransactionToTextView.setVisibility(View.VISIBLE);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Integer.parseInt(mAmount.getText().toString()) <= 0){
+                    Toast.makeText(WalletActivity.this, "Amount can't be negative!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                walletViewModel.submitTransaction(loggedInCustomer.getCustomer_id(),
+                        mAccessTokenEntity.getToken(), Long.parseLong(mAmount.getText().toString()),
+                        mTransType,mTransactionToTextView.getText().toString());
+            }
+        });
+        walletViewModel.getWalletLogResult()
+                .observe(this, new Observer<WalletLogJson>() {
+            @Override
+            public void onChanged(WalletLogJson walletLogJson) {
+                if (walletLogJson==null){
+                    return;
+                }
+                if (!walletLogJson.isStatus()) {
+                    mTransactionToTextView.setText(null);
+                    mAmount.setText(null);
+                }
+
+                Toast.makeText(WalletActivity.this, walletLogJson.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void launchLogin() {

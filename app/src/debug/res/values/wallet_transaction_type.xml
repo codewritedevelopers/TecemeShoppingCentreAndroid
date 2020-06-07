@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="wallet_transaction_type">
+        <item>Load My Wallet</item>
+        <item>Transfer To Another Wallet</item>
+    </string-array>
+</resources>

@@ -20,17 +20,7 @@
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/title_activity_profile" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="206dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="24dp"
-        android:src="@drawable/user_laptop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/scrollView2"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/todo" />
+
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -41,14 +31,23 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:layout_editor_absoluteX="16dp">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="206dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:src="@drawable/user_laptop" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical"
-            android:theme="@style/AppTheme.NoActionBar"
-            tools:activityContext=".ui.login.LoginActivity">
-
+            android:layout_centerHorizontal="true">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -163,6 +162,7 @@
                 android:textColor="@color/colorWhite" />
 
         </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 

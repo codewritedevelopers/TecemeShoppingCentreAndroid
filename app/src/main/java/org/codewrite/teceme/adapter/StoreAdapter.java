@@ -63,7 +63,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
     @Override
     public void onBindViewHolder(@NonNull final StoreViewHolder holder, int position) {
         // get a category product from list
-        StoreEntity entity = getItem(position);
+        final StoreEntity entity = getItem(position);
         assert entity != null;
 
         // set image
@@ -113,7 +113,15 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
                             }
                         }
                     });
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    storeViewListener.onViewClicked(v, entity.getStore_category_id());
+                }
+            });
         }
+
     }
 
     public void setStoreViewListener(StoreViewListener storeViewListener) {
@@ -138,7 +146,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
     }
 
     public interface StoreViewListener {
-        void onViewAllClicked(View v, int position);
+        void onViewClicked(View v, Integer store_id);
 
         LiveData<CategoryEntity> onLoadCategory(Integer category_id);
     }

@@ -75,7 +75,7 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
-                            +"products/product-image/"
+                            + "products/product-image/"
                             + entity.getProduct_img_uri())
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.no_product_image)
@@ -139,15 +139,10 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
         } else if (holder.productDiscount != null) {
             holder.productDiscount.setVisibility(View.GONE);
         }
-
-        if (holder.productOrdered != null) {
-            String ordered = entity.getProduct_ordered() + " ordered";
-            holder.productOrdered.setText(ordered);
-        }
         // set product view lister
         if (productViewListener != null) {
             // set item clicked
-            if (holder.productImage!=null) {
+            if (holder.productImage != null) {
                 holder.productImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -202,13 +197,11 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
         private ImageView addQuantity;
         private ImageView subtractQuantity;
         private ImageView deleteCart;
-        private TextView productOrdered;
 
         ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             productName = itemView.findViewById(R.id.id_product_name);
             productPrice = itemView.findViewById(R.id.id_price);
-            productOrdered = itemView.findViewById(R.id.id_orders);
             productQuantity = itemView.findViewById(R.id.id_num_ordered);
             productDiscount = itemView.findViewById(R.id.id_discount);
             productWeight = itemView.findViewById(R.id.id_weight);

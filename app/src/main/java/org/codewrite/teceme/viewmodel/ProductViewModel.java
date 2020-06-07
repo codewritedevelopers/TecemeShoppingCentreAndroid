@@ -90,11 +90,16 @@ public class ProductViewModel extends AndroidViewModel {
                             });
                         }
                     }, productEntities);
+                }else{
+                    isLoading = false;
+                    moreItem = false;
                 }
             }
             @Override
             public void onFailure(@NonNull Call<List<ProductJson>> call, @NonNull Throwable t) {
-                Log.d("ProductDataSource", "onFailure: " + t.getMessage());
+                Log.d("ProductViewModel", "onFailure: " + t.getMessage());
+                moreItem = false;
+                isLoading = false;
             }
         });
         isLoading = true;

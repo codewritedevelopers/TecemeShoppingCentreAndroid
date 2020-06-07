@@ -68,13 +68,14 @@ import java.util.Timer;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SliderTimer sliderTimer;
-    ArrayList<SearchResult> searchResults =new ArrayList<>();
+    ArrayList<SearchResult> searchResults = new ArrayList<>();
     // adapters
     private AdsSliderAdapter mSliderPagerAdapter;
     private HomeCategoryAdapter homeCategoryAdapter;
@@ -118,7 +119,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
         swipeLayout = root.findViewById(R.id.swipe_refresh);
-        swipeLayout.setProgressViewOffset(false, 0,40);
+        swipeLayout.setProgressViewOffset(false, 0, 40);
         swipeLayout.setOnRefreshListener(this);
 
         setupNestedScrollView(root);
@@ -167,8 +168,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 loggedInCustomer = customerEntity;
             }
         });
-
-        checkInternetConnection();
         // return root view
         return root;
     }
@@ -183,13 +182,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> list) {
-                if (sliderTimer!=null){
+                if (sliderTimer != null) {
                     sliderTimer.cancel();
                 }
                 if (list == null) {
                     List<String> noAds = new ArrayList<>();
-                    noAds.add("noAds");
-                    noAds.add("noAds");
+                    noAds.add("https://doofindermedia.s3.amazonaws.com/blog/2018/08/06/083002-facebook-ads-ecommerce.jpg");
+                    noAds.add("https://beta.adspire.de/wp-content/uploads/2018/06/ecommerce-shopfiy-facebook-ads-1-1.jpg");
+                    noAds.add("https://kreativeonlinedesigns.com.au/wp-content/uploads/2016/02/e-commerce-850x390.jpg");
                     mSliderPagerAdapter.subList(noAds);
 
                     Timer timer = new Timer();
@@ -246,7 +246,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 // create recycler view for horizontal products
                 RecyclerView groupProductsRv = itemView.findViewById(R.id.id_rv_group_product_list);
                 // create product page adapter
-                final HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity,0);
+                final HomeProductAdapter productAdapter = new HomeProductAdapter(mActivity, 0);
 
                 // set product listener
                 productAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
@@ -299,22 +299,22 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         categoryProductAdapter.setCategoryProductViewListener(
                 new CategoryProductAdapter.CategoryProductViewListener() {
-            @Override
-            public void onViewAllClicked(View v, int position) {
-                CategoryEntity categoryEntity1 = categoryProductAdapter.getCurrentList().get(position);
-                CategoryEntity categoryEntity
-                        = homeCategoryAdapter.getCurrentList().get(homeCategoryAdapter.getSelectedItem());
-                String child = categoryEntity1.getCategory_name();
-                String group = categoryEntity.getCategory_name();
-                Integer childCategoryId = categoryEntity1.getCategory_id();
+                    @Override
+                    public void onViewAllClicked(View v, int position) {
+                        CategoryEntity categoryEntity1 = categoryProductAdapter.getCurrentList().get(position);
+                        CategoryEntity categoryEntity
+                                = homeCategoryAdapter.getCurrentList().get(homeCategoryAdapter.getSelectedItem());
+                        String child = categoryEntity1.getCategory_name();
+                        String group = categoryEntity.getCategory_name();
+                        Integer childCategoryId = categoryEntity1.getCategory_id();
 
-                Intent intent = new Intent(mActivity, ProductActivity.class);
-                intent.putExtra("GROUP", group);
-                intent.putExtra("CHILD", child);
-                intent.putExtra("CHILD_CATEGORY_ID", childCategoryId);
-                startActivity(intent);
-            }
-        });
+                        Intent intent = new Intent(mActivity, ProductActivity.class);
+                        intent.putExtra("GROUP", group);
+                        intent.putExtra("CHILD", child);
+                        intent.putExtra("CHILD_CATEGORY_ID", childCategoryId);
+                        startActivity(intent);
+                    }
+                });
     }
 
     private void setupCategoryRv(@NonNull RecyclerView recyclerView) {
@@ -323,7 +323,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         homeCategoryAdapter = new HomeCategoryAdapter(getActivity());
         // all products adapter
         final HomeProductAdapter productAdapter
-                = new HomeProductAdapter(mActivity,HomeProductAdapter.ALL_PRODUCT_VIEW);
+                = new HomeProductAdapter(mActivity, HomeProductAdapter.ALL_PRODUCT_VIEW);
         mAllProductsRv.setAdapter(productAdapter);
 
         // set product listener
@@ -381,7 +381,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     mGroupProductRv.setVisibility(View.GONE);
                     mAllProductsRv.setVisibility(View.VISIBLE);
 
-                    if (paginate !=null){
+                    if (paginate != null) {
                         paginate.unbind();
                     }
                     productViewModel.getProductListResult()
@@ -459,7 +459,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         allCategoryEntity.setCategory_id(-1);
                         allCategoryEntity.setCategory_access(true);
                         allCategoryEntity.setCategory_level(0);
-                        allCategoryEntity.setCategory_name("All");
+                        allCategoryEntity.setCategory_name("All Categories");
                         categoryEntities.add(0, allCategoryEntity);
                         homeCategoryAdapter.submitList(categoryEntities, new Runnable() {
                             @Override
@@ -503,8 +503,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             @Override
             public void onSearchOpened() {
-                    // add suggestions
-                    searchBox.addAllSearchables(searchResults);
+                // add suggestions
+                searchBox.addAllSearchables(searchResults);
             }
 
             @Override
@@ -514,7 +514,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             @Override
             public void onSearchTermChanged(String s) {
-               setSearchResult(s);
+                setSearchResult(s);
             }
 
             @Override
@@ -530,25 +530,25 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 productLive.observe(mActivity, new Observer<ProductEntity>() {
                     @Override
                     public void onChanged(ProductEntity productEntity) {
-                        if (productEntity==null){
+                        if (productEntity == null) {
                             final LiveData<CategoryEntity> categoryLive = categoryViewModel.searchCategory(result.title);
                             categoryLive.observe(mActivity, new Observer<CategoryEntity>() {
                                 @Override
                                 public void onChanged(CategoryEntity categoryEntity) {
-                                    if (categoryEntity==null){
+                                    if (categoryEntity == null) {
                                         return;
                                     }
                                     List<CategoryEntity> currentList = homeCategoryAdapter.getCurrentList();
                                     String group = "", child;
                                     for (CategoryEntity entity : currentList) {
-                                        if (entity.getCategory_id().equals(categoryEntity.getCategory_parent_id())){
+                                        if (entity.getCategory_id().equals(categoryEntity.getCategory_parent_id())) {
                                             group = entity.getCategory_name();
                                             break;
                                         }
                                     }
                                     child = categoryEntity.getCategory_name();
 
-                                    Intent intent = new Intent(mActivity,ProductActivity.class);
+                                    Intent intent = new Intent(mActivity, ProductActivity.class);
                                     intent.putExtra("GROUP", group);
                                     intent.putExtra("CHILD", child);
                                     intent.putExtra("CHILD_CATEGORY_ID", categoryEntity.getCategory_id());
@@ -559,7 +559,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             return;
                         }
                         productLive.removeObserver(this);
-                        Intent intent = new Intent(mActivity,ProductDetailActivity.class);
+                        Intent intent = new Intent(mActivity, ProductDetailActivity.class);
                         intent.putExtra("PRODUCT_ID", productEntity.getProduct_id());
                         startActivity(intent);
                     }
@@ -581,10 +581,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 .observe(mActivity, new Observer<List<ProductEntity>>() {
                     @Override
                     public void onChanged(List<ProductEntity> entities) {
-                        if (entities==null){
+                        if (entities == null) {
                             return;
                         }
-                        if (entities.size() ==0) {
+                        if (entities.size() == 0) {
                             productViewModel.searchOnlineProducts(s);
                         }
                         for (ProductEntity entity : entities) {
@@ -600,7 +600,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         searchCategories.observe(mActivity, new Observer<List<CategoryEntity>>() {
             @Override
             public void onChanged(List<CategoryEntity> categoryEntities) {
-                if (categoryEntities==null){
+                if (categoryEntities == null) {
                     return;
                 }
                 searchCategories.removeObserver(this);
@@ -625,50 +625,30 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         loadAdsSlider();
     }
 
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+          Disposable retry = single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(mActivity.findViewById(R.id.main_container),
-                                                        "No Internet Connection!", Snackbar.LENGTH_SHORT)
-                                                        .setAction("Retry", new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                checkInternetConnection();
-                                                            }
-                                                        }).show();
-                                            }
-                                        }
-                                    });
-                        } else {
+                        if (!isConnectedToInternet) {
                             Snackbar.make(mActivity.findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    "No Internet Connection!", Snackbar.LENGTH_SHORT)
                                     .setAction("Retry", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            checkInternetConnection();
                                         }
                                     }).show();
                         }
                     }
                 });
     }
+
 }

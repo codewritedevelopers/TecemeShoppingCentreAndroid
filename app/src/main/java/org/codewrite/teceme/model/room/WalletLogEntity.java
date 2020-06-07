@@ -11,7 +11,7 @@ public class WalletLogEntity  extends Result {
     @NonNull
     @PrimaryKey
     private Integer wallet_log_id;
-    private Integer wallet_log_owner;
+    private String wallet_log_owner;
     private String wallet_log_transaction_type;
     private Long wallet_log_amount;
     private String wallet_log_transaction_to;
@@ -27,11 +27,11 @@ public class WalletLogEntity  extends Result {
         this.wallet_log_id = wallet_log_id;
     }
 
-    public Integer getWallet_log_owner() {
+    public String getWallet_log_owner() {
         return wallet_log_owner;
     }
 
-    public void setWallet_log_owner(Integer wallet_log_owner) {
+    public void setWallet_log_owner(String wallet_log_owner) {
         this.wallet_log_owner = wallet_log_owner;
     }
 

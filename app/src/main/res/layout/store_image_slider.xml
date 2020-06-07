@@ -1,26 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
+    android:background="@color/colorWhite2">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/ads_view_flipper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:background="@color/colorWhiteGrey" />
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
+        android:padding="0dp" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom|start"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         app:tabBackground="@drawable/indicator_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp" />
-</RelativeLayout>
+
+    <LinearLayout
+        android:layout_gravity="end|bottom"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/id_toggle_wish_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            android:tint="@color/colorAccent"
+            app:backgroundTint="@color/colorWhite"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/heart"
+            tools:ignore="RelativeOverlap" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/id_fab_locate_stores"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"
+            android:tint="@color/colorAccent"
+            app:backgroundTint="@color/colorWhite"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/icons8_location_filled"
+            tools:ignore="RelativeOverlap" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/id_fab_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:tint="@color/colorWhite"
+            app:fabSize="normal"
+            android:layout_margin="2dp"
+            app:srcCompat="@drawable/icons8_plus_math" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

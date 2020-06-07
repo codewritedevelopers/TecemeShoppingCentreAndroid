@@ -140,4 +140,9 @@ public interface RestApi {
 
     @GET("products/product")
     Call<List<ProductJson>> getSearchProducts(@Query("query") String s);
+
+    @POST("customers/wallet-log")
+    Call<WalletJson> addWalletLog(@Body WalletLogJson walletLogJson,
+                                  @Header("Authorization") String accessToken);
+
 }

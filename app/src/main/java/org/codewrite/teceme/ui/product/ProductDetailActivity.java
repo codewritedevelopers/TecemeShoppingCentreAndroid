@@ -45,6 +45,7 @@ import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.payment.PaymentActivity;
+import org.codewrite.teceme.ui.store.StoreDetailActivity;
 import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.utils.SliderTimer;
 import org.codewrite.teceme.utils.ViewAnimation;
@@ -72,7 +73,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     // adapters
     private ProductSliderAdapter mSliderPagerAdapter;
     private ProductSizeAdapter productSizeAdapter;
-    private ProductAdapter relatedProductAdapter;
+    private HomeProductAdapter relatedProductAdapter;
     private StoreAdapter relatedStoreAdapter;
 
     private ProductViewModel productViewModel;
@@ -103,6 +104,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private boolean isInWishList;
     private String[] colors;
     private List<ProductSize> sizeList;
+    private String[] imgUris;
     private boolean isRotate;
     private FloatingActionButton fabMore;
     private FloatingActionButton fabWishList;
@@ -305,7 +307,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                                     }
                                 });
 
-                        String[] imgUris = productEntity.getProduct_img_uri().trim().split(",");
+                       imgUris = productEntity.getProduct_img_uri().trim().split(",");
                         if (imgUris.length > 0) {
                             mCartEntity.setProduct_img_uri(imgUris[0]);
                         }
@@ -328,7 +330,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void setupRelateItems(ProductEntity productEntity) {
         // create product list adapter
-        relatedProductAdapter = new ProductAdapter(ProductDetailActivity.this);
+        relatedProductAdapter = new HomeProductAdapter(ProductDetailActivity.this,HomeProductAdapter.ALL_PRODUCT_VIEW);
 
         // create store list adapter
         relatedStoreAdapter = new StoreAdapter(ProductDetailActivity.this);
@@ -337,7 +339,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         relatedStoresRv.setAdapter(relatedStoreAdapter);
 
-        relatedProductAdapter.setProductViewListener(new ProductAdapter.ProductViewListener() {
+        relatedProductAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
             @Override
             public void onProductClicked(View v, int position) {
                 Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
@@ -370,11 +372,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         relatedStoreAdapter.setStoreViewListener(new StoreAdapter.StoreViewListener() {
             @Override
-            public void onViewAllClicked(View v, int position) {
-                Intent intent = new Intent(ProductDetailActivity.this, ProductDetailActivity.class);
-                intent.putExtra("STORE_ID",
-                        Objects.requireNonNull(Objects.requireNonNull(
-                                relatedStoreAdapter.getCurrentList()).get(position)).getStore_id());
+            public void onViewClicked(View v, Integer store_id) {
+                Intent intent = new Intent(ProductDetailActivity.this, StoreDetailActivity.class);
+                intent.putExtra("STORE_ID", store_id);
                 startActivity(intent);
             }
 

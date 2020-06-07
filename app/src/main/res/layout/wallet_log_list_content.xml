@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="@color/colorWhite"
-    card_view:cardCornerRadius="@dimen/product_card_radius">
+    card_view:cardCornerRadius="15dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,26 +26,10 @@
             <ImageView
                 android:id="@+id/id_product_image"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/image_height_2"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/product1" />
-
-            <TextView
-                android:id="@+id/id_discount"
-                android:layout_width="@dimen/discount_tag_width"
-                android:layout_height="@dimen/discount_tag_height"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:background="@drawable/discount_background"
-                android:gravity="center"
-                android:hint="@string/discount_hint_text"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorWhite"
-                android:textSize="@dimen/discount_text_size"
-                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -76,18 +60,6 @@
                     android:textColorHint="@color/colorBlack"
                     android:textSize="@dimen/text_size_x_small" />
 
-                <ImageView
-                    android:id="@+id/id_delete"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_margin="4dp"
-                    android:baselineAligned="false"
-                    android:clickable="true"
-                    android:contentDescription="@string/todo"
-                    android:focusable="true"
-                    android:padding="4dp"
-                    android:soundEffectsEnabled="true"
-                    android:src="@drawable/ic_icons8_trash" />
             </LinearLayout>
 
             <TextView
@@ -137,21 +109,6 @@
                     android:textSize="@dimen/text_size_small" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:hint="@string/quantity_text"
-                    android:textAlignment="gravity"
-                    android:textColor="@color/colorBlack"
-                    android:textColorHint="@color/colorBlack"
-                    android:textSize="@dimen/text_size_small" />
-
                 <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -161,19 +118,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
                         android:background="@color/colorWhiteGrey"
                         android:orientation="horizontal">
 
-
-                        <ImageView
-                            android:id="@+id/id_add_product"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="@dimen/text_x_padding"
-                            android:paddingEnd="@dimen/text_x_padding"
-                            android:src="@drawable/icons8_plus_math" />
+                            android:text="@string/quantity_text" />
 
                         <TextView
                             android:id="@+id/id_num_ordered"
@@ -183,22 +134,13 @@
                             android:layout_marginStart="@dimen/text__x_margin"
                             android:layout_marginEnd="@dimen/text__x_margin"
                             android:hint="@string/num_ordered_hint_text"
-                            android:maxLength="3"
+                            android:maxLength="6"
                             android:paddingStart="@dimen/text_x_padding"
                             android:paddingEnd="@dimen/text_x_padding"
                             android:textColor="@color/colorBlack"
                             android:textColorHint="@color/colorBlack" />
-
-                        <ImageView
-                            android:id="@+id/id_subtract_product"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="@dimen/text_x_padding"
-                            android:paddingEnd="@dimen/text_x_padding"
-                            android:src="@drawable/icons8_minus" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -116,4 +116,12 @@ public class CustomerViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void stopFollowingStore(String store_id, String customer_id, String token) {
+
+    }
+
+    public void startFollowingStore(String store_id, String customer_id, String token) {
+
+    }
 }
