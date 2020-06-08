@@ -12,8 +12,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.WalletLogPagerAdapter;
-import org.codewrite.teceme.ui.walletLogs.WalletLogFragment;
-import org.codewrite.teceme.ui.walletLogs.PendingWalletLogFragment;
 
 public class TranscationLogActivity extends AppCompatActivity {
 
@@ -32,8 +30,8 @@ public class TranscationLogActivity extends AppCompatActivity {
         walletLogsTitleTab = findViewById(R.id.transaction_title_tab);
 
         WalletLogPagerAdapter walletLogAdapter = new WalletLogPagerAdapter(getSupportFragmentManager());
-        walletLogAdapter.addFrag(new WalletLogFragment(),"Incoming Transactions");
-        walletLogAdapter.addFrag(new PendingWalletLogFragment(), "Outgoing Transactions");
+        walletLogAdapter.addFrag(new IncomingFragment(),"Incoming Transactions");
+        walletLogAdapter.addFrag(new OutgoingFragment(), "Outgoing Transactions");
         walletLogsViewPager.setAdapter(walletLogAdapter);
         // set up tabs indicators
         walletLogsTitleTab.setupWithViewPager(walletLogsViewPager);

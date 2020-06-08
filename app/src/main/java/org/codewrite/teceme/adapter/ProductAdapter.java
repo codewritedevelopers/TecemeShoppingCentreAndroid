@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -76,9 +75,9 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
                             + "products/product-image/"
                             + entity.getProduct_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_product_image)
                     .into(holder.productImage);
         } catch (Exception e) {
+
             holder.productImage.setImageResource(R.drawable.no_product_image);
         }
 

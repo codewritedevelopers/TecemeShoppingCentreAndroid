@@ -103,6 +103,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
+        MenuItem item = navView.getMenu().getItem(4);
+
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(MainActivity.this, AccountsActivity.class));
+                return false;
+            }
+        });
         super.onResume();
     }
 
@@ -160,20 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-        });
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        MenuItem item = navView.getMenu().getItem(4);
-
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                startActivity(new Intent(MainActivity.this, AccountsActivity.class));
-                return false;
-            }
         });
     }
 

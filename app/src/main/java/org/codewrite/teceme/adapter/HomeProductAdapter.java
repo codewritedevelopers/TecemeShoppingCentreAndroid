@@ -1,6 +1,7 @@
 package org.codewrite.teceme.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.BuildConfig;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.codewrite.teceme.R;
@@ -83,7 +86,6 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
                             +"products/product-image/"
                             + entity.getProduct_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_product_image)
                     .into(holder.productImage);
         } catch (Exception e) {
             holder.productImage.setImageResource(R.drawable.no_product_image);

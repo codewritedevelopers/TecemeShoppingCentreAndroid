@@ -80,7 +80,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onChanged(AccessTokenEntity accessTokenEntity) {
                         if (accessTokenEntity == null) {
-                            launchLogin();
+                          return;
                         }
                         accessToken = accessTokenEntity;
                     }
@@ -91,8 +91,6 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onChanged(CustomerEntity customerEntity) {
                         if (customerEntity == null) {
-                            launchLogin();
-                            mActivity.onBackPressed();
                             return;
                         }
                         loggedInCustomer = customerEntity;
@@ -248,7 +246,6 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onSearchCleared() {
-
             }
 
         });

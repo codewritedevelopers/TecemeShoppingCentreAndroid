@@ -3,6 +3,7 @@ package org.codewrite.teceme.ui.product;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -100,6 +101,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private Spinner spinnerProductColor;
     private TextView productQuantity;
     private TextView productCategory;
+    private TextView productDesc;
     private boolean isInCart;
     private boolean isInWishList;
     private String[] colors;
@@ -137,6 +139,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         productDiscount = findViewById(R.id.id_discount);
         productWeight = findViewById(R.id.id_weight);
         productCategory = findViewById(R.id.id_category_name);
+        productDesc = findViewById(R.id.id_product_desc);
         productQuantity = findViewById(R.id.id_num_ordered);
         fabMore = findViewById(R.id.id_fab_more);
         fabLocateStores = findViewById(R.id.id_fab_locate_stores);
@@ -241,6 +244,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                             productWeight.setText(productEntity.getProduct_weight());
                         } else {
                             productWeight.setVisibility(View.GONE);
+                        }
+                        if (!productEntity.getProduct_desc().trim().isEmpty()) {
+                            productDesc.setText(Html.fromHtml(productEntity.getProduct_desc()));
+                        } else {
+                            productDesc.setVisibility(View.GONE);
                         }
                         colors = productEntity.getProduct_color().trim().split(",");
                         //set default color

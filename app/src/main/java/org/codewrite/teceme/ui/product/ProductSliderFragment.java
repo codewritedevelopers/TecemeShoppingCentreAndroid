@@ -53,7 +53,6 @@ private String imgUrl;
                             + imgUrl)
                     .resize(productImage.getWidth(),250)
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_product_image)
                     .into(productImage);
         } catch (Exception e) {
             productImage.setImageResource(R.drawable.no_product_image);

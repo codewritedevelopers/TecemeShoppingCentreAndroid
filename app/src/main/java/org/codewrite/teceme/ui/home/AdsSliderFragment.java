@@ -63,7 +63,6 @@ public class AdsSliderFragment extends Fragment {
                     .load(imgUrl)
                     .resize(adsImage.getWidth(),150)
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.background_with_drop_shadow)
                     .into(adsImage);
         } catch (Exception e) {
             adsImage.setImageResource(R.drawable.background_with_drop_shadow);

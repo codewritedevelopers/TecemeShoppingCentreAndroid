@@ -113,6 +113,7 @@ public class CustomerViewModel extends AndroidViewModel {
             }
             @Override
             public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+                adsListResult.postValue(null);
             }
         });
     }

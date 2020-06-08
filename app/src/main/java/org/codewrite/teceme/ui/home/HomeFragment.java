@@ -173,11 +173,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void loadAdsSlider() {
-        mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
-        mPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        mPager.setAdapter(mSliderPagerAdapter);
+        if (mSliderPagerAdapter==null) {
+            mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
 
-        mSliderIndicator.setupWithViewPager(mPager, true);
+            mPager.setPageTransformer(true, new ZoomOutPageTransformer());
+            mPager.setAdapter(mSliderPagerAdapter);
+
+            mSliderIndicator.setupWithViewPager(mPager, true);
+        }
 
         customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
             @Override
@@ -389,6 +392,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                 @Override
                                 public void onChanged(List<ProductEntity> entities) {
                                     if (entities == null) {
+                                        paginate.setHasMoreDataToLoad(false);
                                         return;
                                     }
                                     productAdapter.submitList(entities);
@@ -474,7 +478,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void setupSearchView(View view) {
-        isRotate = false;
+        isRotate = true;
         // we find search view
         searchBox = view.findViewById(R.id.id_search_box);
         FloatingActionButton fabSearch = view.findViewById(R.id.fab_search);
@@ -626,8 +630,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onResume() {
-        super.onResume();
         loadAdsSlider();
+        super.onResume();
     }
 
     @SuppressLint("CheckResult")
