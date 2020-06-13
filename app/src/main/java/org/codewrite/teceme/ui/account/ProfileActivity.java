@@ -72,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         cPasswordEditText = findViewById(R.id.confirm_password);
         updateButton = findViewById(R.id.action_update);
+        loadingProgressBar = findViewById(R.id.loading);
 
         accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
@@ -166,7 +167,7 @@ public class ProfileActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loadingProgressBar.setVisibility(View.VISIBLE);
-                   updateCustomer();
+                    updateCustomer();
                 }
                 return false;
             }
@@ -176,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-               updateCustomer();
+                updateCustomer();
             }
         });
     }
@@ -189,7 +190,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void updateCustomer() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Verify Current Password");
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_verify_password,null);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_verify_password, null);
         final EditText currentPassword = view.findViewById(R.id.current_password);
         builder.setView(view);
         builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -199,7 +200,7 @@ public class ProfileActivity extends AppCompatActivity {
                         phoneEditText.getText().toString(),
                         usernameEditText.getText().toString(),
                         passwordEditText.getText().toString().isEmpty()
-                                ?null:passwordEditText.getText().toString(),
+                                ? null : passwordEditText.getText().toString(),
                         currentPassword.getText().toString(),
                         loggedInCustomer.getCustomer_id(),
                         mAccessTokenEntity.getToken());
@@ -220,9 +221,9 @@ public class ProfileActivity extends AppCompatActivity {
         usernameEditText.setText(customerEntity.getCustomer_username());
         nameEditText.setText(customerEntity.getCustomer_first_name()
                 .concat(" ").concat(customerEntity.getCustomer_middle_name() == null
-                        ?"":customerEntity.getCustomer_middle_name())
-        .concat(" ").concat(customerEntity.getCustomer_last_name()==null
-                        ?"":customerEntity.getCustomer_last_name()));
+                        ? "" : customerEntity.getCustomer_middle_name())
+                .concat(" ").concat(customerEntity.getCustomer_last_name() == null
+                        ? "" : customerEntity.getCustomer_last_name()));
         phoneEditText.setText(customerEntity.getCustomer_phone());
 
         accountViewModel.profileFormDataChanged(nameEditText.getText().toString(),
@@ -256,6 +257,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -263,32 +265,17 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @SuppressLint("CheckResult")
-    private  void checkInternetConnection(){
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+    private void checkInternetConnection() {
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet){
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
-                                            }
-                                        }
-                                    });
-                        }else{
-                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_INDEFINITE).show();
+                        if (!isConnectedToInternet) {
+                            Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
                         }
                     }
                 });
-
-
     }
 }

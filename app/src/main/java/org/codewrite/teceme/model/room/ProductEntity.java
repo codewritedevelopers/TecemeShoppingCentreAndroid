@@ -1,7 +1,6 @@
 package org.codewrite.teceme.model.room;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -23,7 +22,7 @@ public class ProductEntity extends Result {
     private Integer product_category_id;
     private int product_ordered;
     private String product_date_created;
-    private Boolean product_access;
+    private Integer product_access;
     private String product_img_uri;
 
     @NonNull
@@ -100,11 +99,11 @@ public class ProductEntity extends Result {
         this.product_date_created = product_date_created;
     }
 
-    public Boolean getProduct_access() {
+    public Integer getProduct_access() {
         return product_access;
     }
 
-    public void setProduct_access(Boolean product_access) {
+    public void setProduct_access(Integer product_access) {
         this.product_access = product_access;
     }
 

@@ -13,8 +13,6 @@ import org.codewrite.teceme.model.room.CartEntity;
 
 import java.util.List;
 
-import retrofit2.Call;
-
 public class CartRepository {
     private CartDao cartDao;
     private RestApi restApi;
@@ -22,7 +20,7 @@ public class CartRepository {
     public CartRepository(Application application) {
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
         cartDao = tecemeDataBase.cartDao();
-        restApi = Service.getResetApi(application);
+        restApi = Service.getRestApi(application,null);
     }
 
     public void insert(CartEntity cartEntities){
@@ -31,6 +29,10 @@ public class CartRepository {
 
     public LiveData<List<CartEntity>> getCarts(String owner) {
         return cartDao.getCarts(owner);
+    }
+
+    public LiveData<Long> getCartsTotal(String owner) {
+        return cartDao.getCartsTotal(owner);
     }
 
     public LiveData<CartEntity> getCart(Integer product_id) {
@@ -43,6 +45,10 @@ public class CartRepository {
 
     public void update(CartEntity... cartEntity) {
         new UpdateCartAsyncTask(cartDao).execute(cartEntity);
+    }
+
+    public void deleteOldCarts(String today) {
+        new DeleteAllOldCartAsyncTask(cartDao).execute(today);
     }
 
     private static class DeleteCartAsyncTask extends AsyncTask<Integer, Void, Void> {
@@ -61,29 +67,19 @@ public class CartRepository {
         }
     }
 
-    private static class DeleteAllCartAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class DeleteAllOldCartAsyncTask extends AsyncTask<String, Void, Void> {
         private CartDao cartDao;
-        private CartRepository.DeleteAllCallback deleteAllCallback;
 
-        DeleteAllCartAsyncTask(CartDao cartDao, CartRepository.DeleteAllCallback deleteAllCallback) {
+        DeleteAllOldCartAsyncTask(CartDao cartDao) {
             this.cartDao = cartDao;
-            this.deleteAllCallback = deleteAllCallback;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(String... dates) {
             if (this.cartDao != null) {
-                this.cartDao.deleteAll();
+                this.cartDao.deleteAllOldCart(dates[0]);
             }
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (deleteAllCallback != null) {
-                deleteAllCallback.finish();
-            }
         }
     }
 

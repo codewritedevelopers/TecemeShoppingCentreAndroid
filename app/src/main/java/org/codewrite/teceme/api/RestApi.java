@@ -1,15 +1,22 @@
 package org.codewrite.teceme.api;
 
+import androidx.room.Delete;
+
 import org.codewrite.teceme.model.rest.CategoryJson;
 import org.codewrite.teceme.model.rest.CustomerJson;
 import org.codewrite.teceme.model.rest.ProductJson;
+import org.codewrite.teceme.model.rest.Result;
 import org.codewrite.teceme.model.rest.StoreJson;
+import org.codewrite.teceme.model.rest.StoreProductJson;
 import org.codewrite.teceme.model.rest.WalletJson;
 import org.codewrite.teceme.model.rest.WalletLogJson;
 import org.codewrite.teceme.model.rest.WishListJson;
+import org.codewrite.teceme.model.room.CartEntity;
+import org.codewrite.teceme.model.room.CustomerOrderEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -18,6 +25,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -39,58 +47,42 @@ public interface RestApi {
     /*
      * PATCH Customer
      */
-    @PATCH("customer/account/id/{id}/current_password/{current_password}")
+    @PATCH("customer/account/current_password/{current_password}")
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
-                                      @Path("id") String id,
-                                      @Path("current_password") String currentPassword,
-                                      @Header("Authorization") String token);
+                                      @Path("current_password") String currentPassword);
 
-    @PATCH("customers/account/id/{id}")
-    Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
-                                      @Path("id") String id,
-                                      @Header("Authorization") String accessToken);
-
-    /*
-     * DELETE Customer
-     */
-    @DELETE("customers/account/id/{id}")
-    Call<WalletJson> deleteCustomer(@Path("id") String id,
-                                    @Header("Authorization") String token);
+    @PATCH("customers/account")
+    Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson);
 
     /*
      * POST Wallet
      */
     @POST("wallets/wallet")
-    Call<WalletJson> createWallet(@Body WalletJson walletJson,
-                                  @Header("Authorization") String token);
+    Call<WalletJson> createWallet(@Body WalletJson walletJson);
 
     /*
      * POST Wallet
      */
     @POST("wallets/transfer-money")
-    Call<WalletLogJson> transferMoney(@Body WalletLogJson walletLogJson,
-                                      @Header("Authorization") String token);
+    Call<WalletLogJson> transferMoney(@Body WalletLogJson walletLogJson);
 
     /*
      * POST Wallet
      */
     @POST("wallets/load-wallet")
-    Call<WalletLogJson> loadWallet(@Body WalletLogJson walletLogJson,
-                                   @Header("Authorization") String token);
+    Call<WalletLogJson> loadWallet(@Body WalletLogJson walletLogJson);
 
     /*
      * PATCH Wallet
      */
     @PATCH("wallets/wallet")
-    Call<WalletJson> updateWallet(@Body WalletJson walletJson,
-                                  @Header("Authorization") String token);
+    Call<WalletJson> updateWallet(@Body WalletJson walletJson);
 
     /*
      * DELETE Wallet
      */
     @DELETE("wallets/wallet/id/{id}")
-    Call<WalletJson> deleteWallet(@Path("id") String id,
-                                  @Header("Authorization") String token);
+    Call<WalletJson> deleteWallet(@Path("id") String id);
 
     /*
      * GET Category
@@ -107,20 +99,31 @@ public interface RestApi {
                                            @Query("limit") Integer limit,
                                            @Query("page") Integer page);
 
+    @GET("products/product")
+    Call<List<ProductJson>> getSearchProducts(@Query("query") String s);
+
+    @GET("products/product/product_id/{id}")
+    Call<ProductJson> getProduct(@Path("id") Integer product_id);
+
+    /*
+     * GET StoreProduct
+     */
+    @GET("stores/store-product/store_id/{store_id}")
+    Call<List<StoreProductJson>> getStoreProducts(@Path("store_id") Integer store_id);
     /*
      * GET Store
      */
     @GET("stores/store")
-    Call<List<StoreJson>> getStoreList(@Query("store_category_id") Integer category_id,
-                                       @Query("limit") int limit,
-                                       @Query("page") Integer page);
+    Call<List<StoreJson>> getStoreList();
+
+    @GET("stores/store")
+    Call<List<StoreJson>> getStoreListByCategory(@Query("store_category_id") Integer category_id);
 
     /*
      * POST WisList
      */
     @POST("customers/wish-list")
-    Call<WishListJson> addToWishList(@Body WishListJson wishListJson,
-                                     @Header("Authorization") String accessToken);
+    Call<WishListJson> addToWishList(@Body WishListJson wishListJson);
 
     /*
      * GET WishList
@@ -128,9 +131,8 @@ public interface RestApi {
     @GET("customers/wish-list")
     Call<List<WishListJson>> getWishList();
 
-    @DELETE("customer/wish-list")
-    Call<WishListJson> deleteWishList(@Body WishListJson wishListJson,
-                                      @Header("Authorization") String accessToken);
+    @DELETE("customers/wish-list/wishlist_id/{id}")
+    Call<WishListJson> deleteWishList(@Path("id") String id);
 
     /*
      * GET Ads
@@ -138,11 +140,14 @@ public interface RestApi {
     @GET("customers/ads")
     Call<List<String>> getAds();
 
-    @GET("products/product")
-    Call<List<ProductJson>> getSearchProducts(@Query("query") String s);
 
     @POST("customers/wallet-log")
-    Call<WalletJson> addWalletLog(@Body WalletLogJson walletLogJson,
-                                  @Header("Authorization") String accessToken);
+    Call<WalletJson> addWalletLog(@Body WalletLogJson walletLogJson);
 
+    @POST("customers/checkout/method/{method}")
+    Call<Result> checkoutCustomer(@Body Map<String, Object> order,
+                                  @Path("method") String method);
+
+    @POST("customers/send-reset-link/username/{email}")
+    Call<Result> resetPassword(@Path("email") String email);
 }

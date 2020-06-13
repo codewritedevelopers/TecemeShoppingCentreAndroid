@@ -14,7 +14,7 @@ public class CartEntity extends Result {
     @PrimaryKey
     private Integer cart_product_id;
     private Integer cart_quantity;
-    private Boolean cart_access;
+    private Integer cart_access;
     private String product_name;
     private String product_price;
     private String product_color;
@@ -45,11 +45,11 @@ public class CartEntity extends Result {
         this.cart_quantity = cart_quantity;
     }
 
-    public Boolean getCart_access() {
+    public Integer getCart_access() {
         return cart_access;
     }
 
-    public void setCart_access(Boolean cart_access) {
+    public void setCart_access(Integer cart_access) {
         this.cart_access = cart_access;
     }
 

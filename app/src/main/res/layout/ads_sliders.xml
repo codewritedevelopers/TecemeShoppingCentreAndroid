@@ -5,7 +5,7 @@
     android:layout_height="@dimen/ads_slider_height">
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/ads_view_flipper"
+        android:id="@+id/image_view_flipper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="0dp"

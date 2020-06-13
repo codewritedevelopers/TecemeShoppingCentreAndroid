@@ -1,13 +1,10 @@
 package org.codewrite.teceme.ui.product;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,24 +13,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.quinny898.library.persistentsearch.SearchBox;
-import com.quinny898.library.persistentsearch.SearchResult;
 
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.adapter.HomeProductAdapter;
 import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
-import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+import org.codewrite.teceme.viewmodel.WishListViewModel;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +35,8 @@ public class ProductActivity extends AppCompatActivity {
 
     private ProductViewModel productViewModel;
     private AccountViewModel accountViewModel;
-    private CustomerViewModel customerViewModel;;
+    private WishListViewModel wishListViewModel;
+
     private ProductAdapter productAdapter;
     private SearchBox searchBox;
     private TextView categoryLevel0,categoryLevel1;
@@ -56,8 +50,7 @@ public class ProductActivity extends AppCompatActivity {
 
         productViewModel = ViewModelProviders.of(ProductActivity.this).get(ProductViewModel.class);
         accountViewModel = ViewModelProviders.of(ProductActivity.this).get(AccountViewModel.class);
-        customerViewModel = ViewModelProviders.of(ProductActivity.this).get(CustomerViewModel.class);
-
+        wishListViewModel = ViewModelProviders.of(ProductActivity.this).get(WishListViewModel.class);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -132,22 +125,25 @@ public class ProductActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public LiveData<Boolean> isInWishList(int id) {
-                    if (loggedInCustomer == null) {
-                        return new MutableLiveData<>();
+                public LiveData<WishListEntity> isInWishList(Integer id) {
+                    if (loggedInCustomer == null||accessToken==null) {
+                        MutableLiveData<WishListEntity> data= new MutableLiveData<>();
+                        data.setValue(null);
+                        return data;
                     }
-                    return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                    return wishListViewModel.isWishList(id,loggedInCustomer.getCustomer_id());
                 }
-
                 @Override
-                public void onToggleWishList(View v, int position) {
-                    if (loggedInCustomer == null) {
+                public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
+                    if (loggedInCustomer == null||accessToken==null) {
                         startActivity(new Intent(ProductActivity.this, LoginActivity.class));
                         return;
                     }
-//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                    if (added) {
+                        wishListViewModel.removeWishList(id,accessToken.getToken());
+                    } else {
+                        wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
+                    }
                 }
             });
         }

@@ -16,11 +16,11 @@ import java.util.List;
 
 @Dao
 public interface StoreDao {
-    @Query("SELECT * FROM store_table")
-    DataSource.Factory<Integer, StoreEntity> getStores();
+    @Query("SELECT * FROM store_table WHERE store_access=1")
+    LiveData<List<StoreEntity>> getStores();
 
-    @Query("SELECT * FROM store_table WHERE store_id =:id limit 1")
-    LiveData<StoreEntity> getStore(Integer id);
+    @Query("SELECT * FROM store_table WHERE store_id =:id AND store_access=1 limit 1")
+    LiveData<StoreEntity> getStore(String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(StoreEntity... entity);
@@ -34,6 +34,12 @@ public interface StoreDao {
     @Query("DELETE FROM store_table WHERE 1")
     void deleteAll();
 
-    @Query("SELECT * FROM store_table WHERE store_category_id =:category_id")
-    DataSource.Factory<Integer, StoreEntity> getStoresByCategoryId(Integer category_id);
+    @Query("SELECT * FROM store_table WHERE store_category_id =:category_id AND store_access=1")
+    LiveData<List<StoreEntity>> getStoresByCategoryId(Integer category_id);
+
+    @Query("SELECT * FROM store_table WHERE store_access=1 AND store_name LIKE :query OR store_desc OR store_location LIKE :query LIKE :query")
+    LiveData<List<StoreEntity>> searchStores(String query);
+
+    @Query("SELECT * FROM store_table WHERE store_access=1 AND store_name LIKE :query OR store_desc LIKE :query OR store_location LIKE :query LIMIT 1")
+    LiveData<StoreEntity> searchStore(String query);
 }

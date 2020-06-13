@@ -22,6 +22,7 @@ import com.squareup.picasso.Picasso;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.WishListEntity;
 
 public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAdapter.ProductViewHolder> {
 
@@ -41,7 +42,7 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
                     && oldItem.getProduct_category_id().equals(newItem.getProduct_category_id())
                     && oldItem.getProduct_weight().equals(newItem.getProduct_weight())
                     && oldItem.getProduct_price().equals(newItem.getProduct_price())
-                    && oldItem.getProduct_ordered()== newItem.getProduct_ordered();
+                    && oldItem.getProduct_ordered() == newItem.getProduct_ordered();
         }
     };
     public static final int ALL_PRODUCT_VIEW = 1;
@@ -50,10 +51,11 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
     // member variable or objects
     private Context activityContext;
     private ProductViewListener productViewListener;
+
     /**
      * @class: CategoryProductAdapter
      */
-    public HomeProductAdapter(Context activityContext,int VieWType) {
+    public HomeProductAdapter(Context activityContext, int VieWType) {
         super(DIFF_CALLBACK);
         this.activityContext = activityContext;
         this.VieWType = VieWType;
@@ -63,10 +65,10 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        if (ALL_PRODUCT_VIEW==VieWType) {
-             view = LayoutInflater.from(parent.getContext())
+        if (ALL_PRODUCT_VIEW == VieWType) {
+            view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.home_all_product_list_content, parent, false);
-        }else{
+        } else {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.home_product_list_content, parent, false);
         }
@@ -76,14 +78,14 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
     @Override
     public void onBindViewHolder(@NonNull final ProductViewHolder holder, final int position) {
         // get a category product from list
-        ProductEntity entity = getItem(position);
+        final ProductEntity entity = getItem(position);
         assert entity != null;
 
         // set image
         try {
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
-                            +"products/product-image/"
+                            + "products/product-image/"
                             + entity.getProduct_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
                     .into(holder.productImage);
@@ -92,39 +94,52 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
         }
 
         // set product view lister
-       if (productViewListener!=null){
-           // set item clicked
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                productViewListener.onProductClicked(v,position);
-            }
-        });
-        // set wish list indicator
-           productViewListener.isInWishList(entity.getProduct_id())
-                   .observeForever(new Observer<Boolean>() {
-               @Override
-               public void onChanged(Boolean isInWishList) {
-                   if (isInWishList == null)
-                       return;
-                   if (isInWishList){
-                       holder.wishListProduct.setColorFilter(R.color.colorPrimaryDark,
-                               android.graphics.PorterDuff.Mode.MULTIPLY);
-                   }else {
-                       holder.wishListProduct.setColorFilter(R.color.colorAccent,
-                               android.graphics.PorterDuff.Mode.MULTIPLY);
-                   }
-               }
-           });
-           holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   if (productViewListener!=null){
-                       productViewListener.onToggleWishList(v,position);
-                   }
-               }
-           });
-       }
+        if (productViewListener != null) {
+            // set item clicked
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    productViewListener.onProductClicked(v, position);
+                }
+            });
+            // set wish list indicator
+            productViewListener.isInWishList(entity.getProduct_id())
+                    .observeForever(new Observer<WishListEntity>() {
+                        @Override
+                        public void onChanged(final WishListEntity isInWishList) {
+                            if (isInWishList == null) {
+                                holder.wishListProduct.setColorFilter(R.color.colorAccent,
+                                        android.graphics.PorterDuff.Mode.MULTIPLY);
+
+                                holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (productViewListener != null) {
+                                            holder.wishListProduct.clearColorFilter();
+                                            productViewListener.onToggleWishList(v, entity.getProduct_id(),
+                                                    null, false);
+                                        }
+                                    }
+                                });
+                                return;
+                            }
+                            holder.wishListProduct.clearColorFilter();
+
+                            holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (productViewListener != null) {
+                                        holder.wishListProduct.setColorFilter(R.color.colorAccent,
+                                                android.graphics.PorterDuff.Mode.MULTIPLY);
+
+                                        productViewListener.onToggleWishList(v, entity.getProduct_id(),
+                                                isInWishList.getWishlist_id(), true);
+                                    }
+                                }
+                            });
+                        }
+                    });
+        }
         // set group product name
         if (holder.productName != null)
             holder.productName.setText(entity.getProduct_name());
@@ -138,7 +153,7 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
             if (!entity.getProduct_weight().isEmpty()) {
                 holder.productWeight.setVisibility(View.VISIBLE);
                 holder.productWeight.setText(entity.getProduct_weight());
-            }else{
+            } else {
                 holder.productWeight.setVisibility(View.GONE);
             }
         } else if (holder.productWeight != null) {
@@ -149,7 +164,7 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
             if (!entity.getProduct_discount().isEmpty()) {
                 holder.productDiscount.setVisibility(View.VISIBLE);
                 holder.productDiscount.setText(entity.getProduct_discount());
-            }else{
+            } else {
                 holder.productDiscount.setVisibility(View.GONE);
             }
         } else if (holder.productDiscount != null) {
@@ -157,8 +172,11 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
         }
 
         if (holder.productOrdered != null) {
-            String ordered =  entity.getProduct_ordered() + " ordered";
+            String ordered = entity.getProduct_ordered() + " ordered";
             holder.productOrdered.setText(ordered);
+            if (entity.getProduct_ordered() == 0) {
+                holder.productOrdered.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -189,8 +207,10 @@ public class HomeProductAdapter extends ListAdapter<ProductEntity, HomeProductAd
 
     public interface ProductViewListener {
         void onProductClicked(View v, int position);
-        LiveData<Boolean> isInWishList(int id);
-        void onToggleWishList(View v, int position);
+
+        LiveData<WishListEntity> isInWishList(Integer id);
+
+        void onToggleWishList(View v, Integer product_id, String id, boolean added);
     }
 
 

@@ -3,58 +3,46 @@ package org.codewrite.teceme.ui.store;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.ActionBar;
-import androidx.core.widget.NestedScrollView;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-
-import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.HomeProductAdapter;
-import org.codewrite.teceme.adapter.ProductSizeAdapter;
-import org.codewrite.teceme.adapter.ProductSliderAdapter;
 import org.codewrite.teceme.adapter.StoreAdapter;
-import org.codewrite.teceme.model.ProductSize;
+import org.codewrite.teceme.adapter.StoreSliderAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
-import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
-import org.codewrite.teceme.ui.payment.PaymentActivity;
 import org.codewrite.teceme.ui.product.ProductDetailActivity;
 import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.utils.SliderTimer;
 import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
-import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
-import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
 import org.codewrite.teceme.viewmodel.StoreViewModel;
+import org.codewrite.teceme.viewmodel.WishListViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,55 +58,56 @@ import io.reactivex.schedulers.Schedulers;
 public class StoreDetailActivity extends AppCompatActivity {
     private SliderTimer sliderTimer;
     // adapters
-    private ProductSliderAdapter mSliderPagerAdapter;
+    private StoreSliderAdapter mSliderPagerAdapter;
     private HomeProductAdapter relatedProductAdapter;
-    private StoreAdapter relatedStoreAdapter;
 
     private ProductViewModel productViewModel;
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
-    private CustomerViewModel customerViewModel;
+    private WishListViewModel wishListViewModel;
     private StoreViewModel storeViewModel;
 
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
 
     private ViewPager mPager;
-    private NestedScrollView nestedScrollView;
     private TextView storeName;
     private TextView storeCategory;
-    private boolean isInCart;
     private boolean isFollowing;
     private boolean isRotate;
     private FloatingActionButton fabMore;
     private FloatingActionButton fabFollow;
     private FloatingActionButton fabLocateStores;
     private AutoFitGridRecyclerView relatedProductsRv;
-    private AutoFitGridRecyclerView relatedStoresRv;
+    private TextView storeLocation;
+    private TextView storeDesc;
+    private TextView storePhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_detail);
+        setContentView(R.layout.activity_store_detail);
 
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
         storeViewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
         // get account view model
         accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
-        customerViewModel = ViewModelProviders.of(this).get(CustomerViewModel.class);
+        wishListViewModel = ViewModelProviders.of(this).get(WishListViewModel.class);
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // views
-        storeName = findViewById(R.id.id_product_name);
-        storeCategory = findViewById(R.id.id_category_name);
+        storeName = findViewById(R.id.id_store_name);
+        storeLocation = findViewById(R.id.id_store_location);
+        storeDesc = findViewById(R.id.id_store_desc);
+        storePhone = findViewById(R.id.id_phone);
+        storeCategory = findViewById(R.id.id_store_category);
         fabMore = findViewById(R.id.id_fab_more);
         fabLocateStores = findViewById(R.id.id_fab_locate_stores);
-        fabFollow =findViewById(R.id.id_toggle_wish_list);
+        fabFollow = findViewById(R.id.id_follow);
         // recycler views
         relatedProductsRv = findViewById(R.id.id_rv_related_products);
-        relatedStoresRv = findViewById(R.id.id_rv_related_stores);
 
         // hide fabLocateStores & fabWishList
         ViewAnimation.initUp(fabLocateStores);
@@ -131,10 +120,10 @@ public class StoreDetailActivity extends AppCompatActivity {
         }
 
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = findViewById(R.id.ads_view_flipper);
+        mPager = findViewById(R.id.image_view_flipper);
         TabLayout mSliderIndicator = findViewById(R.id.indicator);
 
-        mSliderPagerAdapter = new ProductSliderAdapter(getSupportFragmentManager());
+        mSliderPagerAdapter = new StoreSliderAdapter(getSupportFragmentManager());
         mPager.setAdapter(mSliderPagerAdapter);
 
         mSliderIndicator.setupWithViewPager(mPager, true);
@@ -153,23 +142,28 @@ public class StoreDetailActivity extends AppCompatActivity {
             @Override
             public void onChanged(CustomerEntity customerEntity) {
                 if (customerEntity == null) {
+                    String store_id = getIntent().getStringExtra("STORE_ID");
+                    if (store_id==null) {
+                        Toast.makeText(StoreDetailActivity.this.getApplicationContext(), "Invalid Store Selected!", Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        setupProductDetail(store_id);
+                    }
                     return;
                 }
                 loggedInCustomer = customerEntity;
+                String store_id = getIntent().getStringExtra("STORE_ID");
+                if (store_id == null) {
+                    Toast.makeText(StoreDetailActivity.this.getApplicationContext(), "Invalid Store Selected!", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    setupProductDetail(store_id);
+                }
             }
         });
-
-
-        int product_id = getIntent().getIntExtra("PRODUCT_ID", -1);
-        if (product_id == -1) {
-            Toast.makeText(this.getApplicationContext(), "Invalid Product Selected!", Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            setupProductDetail(product_id);
-        }
     }
 
-    private void setupProductDetail(final int store_id) {
+    private void setupProductDetail(final String store_id) {
 
         final LiveData<StoreEntity> storeLive = storeViewModel.getStore(store_id);
         storeLive.observe(this, new Observer<StoreEntity>() {
@@ -178,7 +172,6 @@ public class StoreDetailActivity extends AppCompatActivity {
                 if (storeEntity == null)
                     return;
 
-                storeLive.removeObserver(this);
                 // Show the Up button in the action bar.
                 ActionBar actionBar = getSupportActionBar();
                 if (actionBar != null) {
@@ -202,6 +195,24 @@ public class StoreDetailActivity extends AppCompatActivity {
                 // setup action later
                 setupActions(storeEntity);
 
+                if (!storeEntity.getStore_desc().trim().isEmpty()) {
+                    storeDesc.setText(Html.fromHtml(storeEntity.getStore_desc()));
+                } else {
+                    storeDesc.setVisibility(View.GONE);
+                }
+
+                if (!storeEntity.getStore_location().trim().isEmpty()) {
+                    storeLocation.setText(Html.fromHtml(storeEntity.getStore_location()));
+                } else {
+                    storeLocation.setVisibility(View.GONE);
+                }
+
+                if (!storeEntity.getStore_phone().trim().isEmpty()) {
+                    storePhone.setText(Html.fromHtml(storeEntity.getStore_phone()));
+                } else {
+                    storePhone.setVisibility(View.GONE);
+                }
+
                 // new size list
                 // iterate through sizes and add to imgUriList
                 mSliderPagerAdapter.subList(new ArrayList<>(Arrays.asList(imgUris)));
@@ -209,7 +220,7 @@ public class StoreDetailActivity extends AppCompatActivity {
                 // slider timing
                 Timer timer = new Timer();
                 sliderTimer = new SliderTimer(StoreDetailActivity.this, mPager, imgUris.length);
-                timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
+                timer.scheduleAtFixedRate(sliderTimer, 4000, 4000);
 
                 setupRelateItems(storeEntity);
             }
@@ -219,14 +230,8 @@ public class StoreDetailActivity extends AppCompatActivity {
     private void setupRelateItems(StoreEntity storeEntity) {
         // create product list adapter
         relatedProductAdapter =
-                new HomeProductAdapter(StoreDetailActivity.this,HomeProductAdapter.ALL_PRODUCT_VIEW);
-
-        // create store list adapter
-        relatedStoreAdapter = new StoreAdapter(StoreDetailActivity.this);
-
+                new HomeProductAdapter(StoreDetailActivity.this, HomeProductAdapter.ALL_PRODUCT_VIEW);
         relatedProductsRv.setAdapter(relatedProductAdapter);
-
-        relatedStoresRv.setAdapter(relatedStoreAdapter);
 
         relatedProductAdapter.setProductViewListener(new HomeProductAdapter.ProductViewListener() {
             @Override
@@ -239,39 +244,26 @@ public class StoreDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public LiveData<Boolean> isInWishList(int id) {
-                if (loggedInCustomer == null) {
-                    return new MutableLiveData<>();
+            public LiveData<WishListEntity> isInWishList(Integer id) {
+                if (loggedInCustomer == null || wishListViewModel == null) {
+                    MutableLiveData<WishListEntity> data = new MutableLiveData<>();
+                    data.setValue(null);
+                    return data;
                 }
-                return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                return wishListViewModel.isWishList(id, loggedInCustomer.getCustomer_id());
             }
 
             @Override
-            public void onToggleWishList(View v, int position) {
-                if (loggedInCustomer == null) {
+            public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
+                if (loggedInCustomer == null || wishListViewModel == null) {
                     startActivity(new Intent(StoreDetailActivity.this, LoginActivity.class));
                     return;
                 }
-
-//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
-            }
-        });
-
-        relatedStoreAdapter.setStoreViewListener(new StoreAdapter.StoreViewListener() {
-            @Override
-            public void onViewClicked(View v, Integer store_id) {
-                Intent intent = new Intent(StoreDetailActivity.this, StoreDetailActivity.class);
-                intent.putExtra("STORE_ID",
-                        Objects.requireNonNull(Objects.requireNonNull(
-                                relatedStoreAdapter.getCurrentList()).get(store_id)).getStore_id());
-                startActivity(intent);
-            }
-
-            @Override
-            public LiveData<CategoryEntity> onLoadCategory(Integer category_id) {
-                return categoryViewModel.getCategory(category_id);
+                if (added) {
+                    wishListViewModel.removeWishList(id, accessToken.getToken());
+                } else {
+                    wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                }
             }
         });
 
@@ -279,23 +271,14 @@ public class StoreDetailActivity extends AppCompatActivity {
                 .observe(StoreDetailActivity.this, new Observer<List<ProductEntity>>() {
                     @Override
                     public void onChanged(List<ProductEntity> productEntities) {
-                        if (productEntities==null){
+                        if (productEntities == null) {
                             return;
                         }
                         relatedProductAdapter.submitList(productEntities);
                     }
                 });
 
-        storeViewModel.getStores(storeEntity.getStore_category_id())
-                .observe(StoreDetailActivity.this, new Observer<PagedList<StoreEntity>>() {
-                    @Override
-                    public void onChanged(PagedList<StoreEntity> storeEntities) {
-                        if (storeEntities==null){
-                            return;
-                        }
-                        relatedStoreAdapter.submitList(storeEntities);
-                    }
-                });
+
     }
 
     void setupActions(final StoreEntity storeEntity) {
@@ -308,10 +291,10 @@ public class StoreDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isRotate = ViewAnimation.rotateFab(v, !isRotate);
-                if(isRotate){
+                if (isRotate) {
                     ViewAnimation.showIn(fabLocateStores);
                     ViewAnimation.showIn(fabFollow);
-                }else{
+                } else {
                     ViewAnimation.showOut(fabLocateStores);
                     ViewAnimation.showOut(fabFollow);
                 }
@@ -328,11 +311,11 @@ public class StoreDetailActivity extends AppCompatActivity {
                 }
                 checkInternetConnection();
                 if (isFollowing) {
-                    customerViewModel.stopFollowingStore(storeEntity.getStore_id(),
+                    accountViewModel.stopFollowingStore(storeEntity.getStore_id(),
                             loggedInCustomer.getCustomer_id(),
                             accessToken.getToken());
                 } else {
-                    customerViewModel.startFollowingStore(storeEntity.getStore_id(),
+                    accountViewModel.startFollowingStore(storeEntity.getStore_id(),
                             loggedInCustomer.getCustomer_id(),
                             accessToken.getToken());
                 }
@@ -368,36 +351,17 @@ public class StoreDetailActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
-                                            }
-                                        }
-                                    });
-                        } else {
-                            Snackbar.make(findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("Retry", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            checkInternetConnection();
-                                        }
-                                    }).show();
+                        if (!isConnectedToInternet) {
+                            Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
                         }
                     }
                 });
+
     }
 }

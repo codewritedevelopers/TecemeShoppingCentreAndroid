@@ -4,15 +4,16 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
-import androidx.paging.DataSource;
-import androidx.paging.PagedList;
 
 import org.codewrite.teceme.api.RestApi;
 import org.codewrite.teceme.api.Service;
 import org.codewrite.teceme.db.TecemeDataBase;
 import org.codewrite.teceme.db.dao.ProductDao;
+import org.codewrite.teceme.db.dao.StoreProductDao;
 import org.codewrite.teceme.model.rest.ProductJson;
+import org.codewrite.teceme.model.rest.StoreProductJson;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.StoreProductEntity;
 
 import java.util.List;
 
@@ -21,16 +22,22 @@ import retrofit2.Call;
 public class ProductRepository {
 
     private ProductDao productDao;
+    private StoreProductDao storeProductDao;
     private RestApi restApi;
 
     public ProductRepository(Application application) {
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
         productDao = tecemeDataBase.productDao();
-        restApi = Service.getResetApi(application);
+        storeProductDao = tecemeDataBase.storeProductDao();
+        restApi = Service.getRestApi(application,null);
     }
 
-    public void insert(CompleteAllCallback completecallBack, ProductEntity... productEntities){
-        new InsertProductAsyncTask(productDao,completecallBack).execute(productEntities);
+    public void insert(CompleteAllCallback completecallBack, ProductEntity... entities){
+        new InsertProductAsyncTask(productDao,completecallBack).execute(entities);
+    }
+
+    public void insert(CompleteAllCallback completecallBack, StoreProductEntity... entities){
+        new InsertStoreProductAsyncTask(storeProductDao,completecallBack).execute(entities);
     }
 
     public LiveData<List<ProductEntity>>
@@ -60,6 +67,14 @@ public class ProductRepository {
 
     public LiveData<ProductEntity> searchProduct(String query) {
         return productDao.searchProduct(query);
+    }
+
+    public Call<ProductJson> loadProduct(Integer product_id) {
+        return restApi.getProduct(product_id);
+    }
+
+    public Call<List<StoreProductJson>> loadStoreProduct(Integer store_id) {
+        return restApi.getStoreProducts(store_id);
     }
 
     private static class DeleteAllProductAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -100,6 +115,32 @@ public class ProductRepository {
         protected Void doInBackground(ProductEntity... entities) {
             if (this.productDao != null) {
                 this.productDao.insert(entities);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (completeAllCallback!=null){
+                completeAllCallback.finish();
+            }
+        }
+    }
+
+
+    private static class InsertStoreProductAsyncTask extends AsyncTask<StoreProductEntity, Void, Void> {
+        private StoreProductDao storeProductDao;
+        private CompleteAllCallback completeAllCallback;
+        InsertStoreProductAsyncTask(StoreProductDao productDao, CompleteAllCallback completeAllCallback) {
+            this.storeProductDao = productDao;
+            this.completeAllCallback = completeAllCallback;
+        }
+
+        @Override
+        protected Void doInBackground(StoreProductEntity... entities) {
+            if (this.storeProductDao != null) {
+                this.storeProductDao.insert(entities);
             }
             return null;
         }

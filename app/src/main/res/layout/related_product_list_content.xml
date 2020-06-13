@@ -56,8 +56,7 @@
                 android:clickable="true"
                 android:contentDescription="@string/todo"
                 android:focusable="true"
-                android:src="@drawable/heart"
-                android:tint="@color/colorAccent" />
+                android:src="@drawable/heart" />
         </RelativeLayout>
 
         <LinearLayout

@@ -38,11 +38,13 @@ import org.codewrite.teceme.ui.payment.PaymentActivity;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+import org.codewrite.teceme.viewmodel.WishListViewModel;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 
 import static java.lang.Math.log;
+import static java.lang.Math.max;
 import static java.lang.Math.round;
 
 public class WishListActivity extends AppCompatActivity {
@@ -50,10 +52,13 @@ public class WishListActivity extends AppCompatActivity {
     private ProductViewModel productViewModel;
     private CartViewModel cartViewModel;
     private AccountViewModel accountViewModel;
+    private WishListViewModel wishListViewModel;
+
     private RecyclerView mProductWishRv;
     private WishListAdapter wishListAdapter;
     private AccessTokenEntity mAccessTokenEntity;
     private View noWishList;
+    private CustomerEntity loggedInCustomer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,7 @@ public class WishListActivity extends AppCompatActivity {
         productViewModel = ViewModelProviders.of(WishListActivity.this).get(ProductViewModel.class);
         cartViewModel = ViewModelProviders.of(WishListActivity.this).get(CartViewModel.class);
         accountViewModel = ViewModelProviders.of(WishListActivity.this).get(AccountViewModel.class);
+        wishListViewModel = ViewModelProviders.of(WishListActivity.this).get( WishListViewModel.class);
         mProductWishRv = findViewById(R.id.id_rv_wish_list);
         noWishList = findViewById(R.id.no_wish_list);
 
@@ -77,24 +83,27 @@ public class WishListActivity extends AppCompatActivity {
         accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
-                if (accessTokenEntity==null){
+                if (accessTokenEntity == null) {
                     launchLogin();
                     return;
                 }
                 mAccessTokenEntity = accessTokenEntity;
+
+                accountViewModel.getLoggedInCustomer()
+                        .observe(WishListActivity.this, new Observer<CustomerEntity>() {
+                            @Override
+                            public void onChanged(CustomerEntity customerEntity) {
+                                if (customerEntity == null) {
+                                    launchLogin();
+                                    return;
+                                }
+                                loggedInCustomer = customerEntity;
+                                setupWishListRv(customerEntity);
+                            }
+                        });
             }
         });
-        accountViewModel.getLoggedInCustomer()
-                .observe(this, new Observer<CustomerEntity>() {
-            @Override
-            public void onChanged(CustomerEntity customerEntity) {
-                if (customerEntity==null){
-                    launchLogin();
-                    return;
-                }
-                setupWishListRv(customerEntity);
-            }
-        });
+
     }
 
     private void launchLogin() {
@@ -109,31 +118,19 @@ public class WishListActivity extends AppCompatActivity {
         // we set recycler view adapter
         mProductWishRv.setAdapter(wishListAdapter);
 
-
-        accountViewModel.getWishListResult(loggedInCustomer.getCustomer_id())
-                .observe(this, new Observer<List<WishListEntity>>() {
-                    @Override
-                    public void onChanged(List<WishListEntity> cartEntities) {
-                        if (cartEntities == null) {
-                            return;
-                        }
-                        wishListAdapter.submitList(cartEntities);
-                    }
-                });
-
         wishListAdapter.setWishListViewListener(new WishListAdapter.WishListViewListener() {
             @Override
             public void onWishListClicked(View v, Integer product_id) {
                 Intent intent = new Intent(WishListActivity.this, ProductDetailActivity.class);
-                intent.putExtra("PRODUCT_ID",product_id);
+                intent.putExtra("PRODUCT_ID", product_id);
                 startActivity(intent);
             }
 
             @Override
-            public void onDelete(int position, Integer product_id) {
-                accountViewModel.removeWishList(product_id,
-                        loggedInCustomer.getCustomer_id(),
-                        mAccessTokenEntity.getToken());
+            public void onDelete(int position, String id) {
+                if (wishListViewModel != null) {
+                    wishListViewModel.removeWishList(id,mAccessTokenEntity.getToken());
+                }
             }
 
             @Override
@@ -143,9 +140,9 @@ public class WishListActivity extends AppCompatActivity {
 
             @Override
             public void onToggleCart(boolean remove, CartEntity cartEntity, Integer product_id) {
-                if (remove){
+                if (remove) {
                     cartViewModel.removeFromCart(product_id);
-                }else{
+                } else {
                     cartViewModel.addToCart(cartEntity);
                 }
             }
@@ -154,20 +151,22 @@ public class WishListActivity extends AppCompatActivity {
             public LiveData<ProductEntity> onLoadProduct(Integer product_id) {
                 return productViewModel.getProduct(product_id);
             }
-        });
 
-        accountViewModel.getWishListResult(loggedInCustomer.getCustomer_id())
-                .observe(WishListActivity.this, new Observer<List<WishListEntity>>() {
             @Override
-            public void onChanged(List<WishListEntity> wishListEntities) {
-                if (wishListEntities==null){
-                    noWishList.setVisibility(View.VISIBLE);
-                    return;
-                }
-                noWishList.setVisibility(View.VISIBLE);
-                wishListAdapter.submitList(wishListEntities);
+            public void onLoadProductOnline(Integer wishlist_product_id) {
+                productViewModel.loadProduct(wishlist_product_id);
             }
         });
+        wishListViewModel.getWishListResult(loggedInCustomer.getCustomer_id())
+                .observe(this, new Observer<List<WishListEntity>>() {
+                    @Override
+                    public void onChanged(List<WishListEntity> entities) {
+                        if (entities == null) {
+                            return;
+                        }
+                        wishListAdapter.submitList(entities);
+                    }
+                });
     }
 
     @Override

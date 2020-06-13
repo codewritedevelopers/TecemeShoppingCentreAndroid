@@ -14,7 +14,7 @@ public class CategoryEntity extends Result {
     private String category_name;
     private Integer category_level;
     private Integer category_parent_id;
-    private Boolean category_access;
+    private Integer category_access;
     private String category_date_created;
 
     @NonNull
@@ -50,11 +50,11 @@ public class CategoryEntity extends Result {
         this.category_parent_id = category_parent_id;
     }
 
-    public Boolean getCategory_access() {
+    public Integer getCategory_access() {
         return category_access;
     }
 
-    public void setCategory_access(Boolean category_access) {
+    public void setCategory_access(Integer category_access) {
         this.category_access = category_access;
     }
 

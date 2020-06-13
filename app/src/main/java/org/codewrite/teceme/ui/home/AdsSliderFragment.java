@@ -1,6 +1,7 @@
 package org.codewrite.teceme.ui.home;
 
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -53,14 +54,16 @@ public class AdsSliderFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         setupAds();
     }
 
     private void setupAds() {
+        Resources resources = activityContext.getResources();
         try {
             Picasso.get()
-                    .load(imgUrl)
+                    .load(resources.getString(R.string.api_base_url)
+                            +"customers/ads-image/"
+                            + imgUrl)
                     .resize(adsImage.getWidth(),150)
                     .placeholder(R.drawable.loading_image)
                     .into(adsImage);

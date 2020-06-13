@@ -48,8 +48,8 @@ public class SignupActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(savedInstanceState!=null){
-            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")){
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")) {
                 toolbar.setVisibility(View.GONE);
             }
         }
@@ -97,7 +97,7 @@ public class SignupActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.GONE);
                 if (signupResult.isStatus() == null
                         && !signupResult.getCustomer_id().isEmpty()) {
-                   launchConfirmationActivity(signupResult.getCustomer_username());
+                    launchConfirmationActivity(signupResult.getCustomer_username());
                 } else if (!signupResult.isStatus()) {
                     signupErrorAlert(signupResult.getMessage());
                 }
@@ -168,8 +168,8 @@ public class SignupActivity extends AppCompatActivity {
 
     private void launchConfirmationActivity(String email) {
         Intent i = new Intent(SignupActivity.this, ConfirmationActivity.class);
-        i.putExtra(ConfirmationActivity.LAUNCH_KEY,"SIGN_UP_CONFIRMATION");
-        i.putExtra(ConfirmationActivity.LAUNCH_EMAIL,email);
+        i.putExtra(ConfirmationActivity.LAUNCH_KEY, "SIGN_UP_CONFIRMATION");
+        i.putExtra(ConfirmationActivity.LAUNCH_EMAIL, email);
         startActivity(i);
         finish();
     }
@@ -200,38 +200,23 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     @SuppressLint("CheckResult")
-    private  void checkInternetConnection(){
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+    private void checkInternetConnection() {
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet){
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
+                        if (!isConnectedToInternet) {
+                            Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_LONG)
+                                    .setAction("Retry", new View.OnClickListener() {
                                         @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_LONG)
-                                                        .setAction("Retry", new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                checkInternetConnection();
-                                                            }
-                                                        }).show();
-                                            }
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
                                         }
-                                    });
-                        }else{
-                            Snackbar.make(findViewById(R.id.main_container),"No Network Available", Snackbar.LENGTH_LONG).show();
+                                    }).show();
                         }
                     }
                 });
-
-
     }
 }

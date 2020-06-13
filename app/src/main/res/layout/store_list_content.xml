@@ -16,7 +16,8 @@
         <RelativeLayout
             android:id="@+id/linear_layout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/image_height">
+            android:layout_height="@dimen/image_height"
+            android:paddingTop="4dp">
 
             <ImageView
                 android:id="@+id/id_store_image"
@@ -24,14 +25,15 @@
                 android:layout_height="@dimen/image_height"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:src="@color/colorWhiteGrey" />
+                android:src="@color/colorWhiteGrey"
+                android:contentDescription="@string/todo" />
         </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="4dp">
+            android:padding="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,10 +42,10 @@
 
                 <TextView
                     android:id="@+id/id_store_name"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
                     android:gravity="start|center_vertical"
                     android:hint="@string/store_name_hint"
                     android:textColor="@color/colorBlack"
@@ -54,8 +56,8 @@
                     android:id="@+id/id_store_viewed"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_gravity="start"
+                    android:gravity="center"
                     android:hint="@string/viewed_hint_text"
                     android:textColor="@color/colorAccent"
                     android:textColorHint="@color/colorAccent"
@@ -63,21 +65,38 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/id_store_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/store_location_hint"
-                android:textSize="@dimen/text_size_x_small" />
-
-            <TextView
                 android:id="@+id/id_store_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="gravity"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/icons8_categorize_120px"
                 android:hint="@string/store_category_hint"
-                android:visibility="gone"
+                android:textAllCaps="true"
+                android:textColor="@color/colorBlack" />
+
+            <TextView
+                android:id="@+id/id_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/text_size_x_small" />
+                android:textSize="@dimen/text_size_xx_small"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/id_store_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:hint="@string/store_location_hint"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorBlack"
+                android:textSize="@dimen/text_size_xx_small"
+                android:textStyle="italic" />
+
         </LinearLayout>
 
     </LinearLayout>

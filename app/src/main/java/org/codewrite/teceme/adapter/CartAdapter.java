@@ -78,7 +78,6 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
                             + "products/product-image/"
                             + entity.getProduct_img_uri())
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_product_image)
                     .into(holder.productImage);
         } catch (Exception e) {
             holder.productImage.setImageResource(R.drawable.no_product_image);
@@ -106,7 +105,7 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
                 holder.productSize.setVisibility(View.VISIBLE);
                 holder.productSize.setText(entity.getProduct_size());
                 holder.productSize.setBackgroundColor(
-                        activityContext.getResources().getColor(R.color.colorPrimary));
+                        activityContext.getResources().getColor(R.color.colorPrimaryDark));
                 holder.productSize.setTextColor(
                         activityContext.getResources().getColor(R.color.colorWhite));
             } else {

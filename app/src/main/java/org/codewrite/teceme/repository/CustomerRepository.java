@@ -12,11 +12,12 @@ import org.codewrite.teceme.db.dao.AccessTokenDao;
 import org.codewrite.teceme.db.dao.CustomerDao;
 import org.codewrite.teceme.db.dao.WishListDao;
 import org.codewrite.teceme.model.rest.CustomerJson;
+import org.codewrite.teceme.model.rest.Result;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
-import org.codewrite.teceme.model.room.WishListEntity;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 
@@ -26,12 +27,20 @@ public class CustomerRepository {
     private CustomerDao customerDao;
     private WishListDao wishListDao;
     private AccessTokenDao accessTokenDao;
+    private Application application;
     public CustomerRepository(Application application) {
-         resetApi = Service.getResetApi(application);
+        this.application = application;
+         resetApi = Service.getRestApi(application,null);
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
          customerDao = tecemeDataBase.customerDao();
          accessTokenDao = tecemeDataBase.accessTokenDao();
          wishListDao = tecemeDataBase.wishListDao();
+    }
+
+    private void setRestApi(String accessToken) {
+        Map<String,String> headers = new HashMap<>();
+        headers.put("ACCESS_TOKEN","Bearer "+accessToken);
+        this.resetApi = Service.getRestApi(application,headers);
     }
 
     public  Call<CustomerJson> login(String username, String password) {
@@ -108,30 +117,23 @@ public class CustomerRepository {
         customerJson.setCustomer_username(username);
         customerJson.setCustomer_phone(phone);
         customerJson.setCustomer_password(password);
-        return resetApi.updateCustomer(customerJson,id,currentPassword,"Bearer "+accessToken);
+
+        setRestApi(accessToken);
+        return resetApi.updateCustomer(customerJson,currentPassword);
     }
 
-    public Call<CustomerJson> delete(String id, String accessToken) {
-
+    public Call<CustomerJson> delete(String accessToken) {
         CustomerJson customerJson = new CustomerJson();
-       customerJson.setCustomer_access(false);
-        return resetApi.updateCustomer(customerJson,id,accessToken);
+       customerJson.setCustomer_access(0);
+        return resetApi.updateCustomer(customerJson, accessToken);
     }
 
     public void deleteAllAccessToken() {
         new DeleteAllAccessTokenAsyncTask(accessTokenDao,null).execute();
     }
 
-    public LiveData<WishListEntity> getWishList(String owner, int id) {
-        return wishListDao.getWishListByProduct(id);
-    }
-
-    public void addToWishList(WishListEntity wishListEntity) {
-
-    }
-
-    public Call<List<String>> getAdds() {
-       return resetApi.getAds();
+    public Call<Result> resetPassword(String email) {
+        return resetApi.resetPassword(email);
     }
 
     private static class InsertAccessTokenAsyncTask extends AsyncTask<AccessTokenEntity, Void, Void> {

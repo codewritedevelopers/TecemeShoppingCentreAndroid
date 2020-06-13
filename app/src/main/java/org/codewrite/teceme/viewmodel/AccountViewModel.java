@@ -13,12 +13,14 @@ import org.codewrite.teceme.model.form.LoginFormState;
 import org.codewrite.teceme.model.form.ProfileFormState;
 import org.codewrite.teceme.model.form.SignupFormState;
 import org.codewrite.teceme.model.rest.CustomerJson;
+import org.codewrite.teceme.model.rest.Result;
 import org.codewrite.teceme.model.rest.WishListJson;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.WalletEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
+import org.codewrite.teceme.repository.CartRepository;
 import org.codewrite.teceme.repository.CustomerRepository;
 import org.codewrite.teceme.repository.WishListRepository;
 
@@ -42,18 +44,16 @@ public class AccountViewModel extends AndroidViewModel {
     private MutableLiveData<CustomerJson> signupResult = new MutableLiveData<>();
 
     private CustomerRepository customerRepository;
-    private WishListRepository wishListRepository;
     private LiveData<CustomerEntity> loggedInCustomer;
     private LiveData<AccessTokenEntity> accessToken;
     private MutableLiveData<CustomerJson> profileResult = new MutableLiveData<>();
     private MutableLiveData<CustomerJson> deleteResult = new MutableLiveData<>();
-    private MutableLiveData<WishListJson> wishListResult = new MutableLiveData<>();
+    private MutableLiveData<Result> resetPasswordResult =new MutableLiveData<>();
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
         passwordMasked = true;
         customerRepository = new CustomerRepository(application);
-        wishListRepository = new WishListRepository(application);
         loggedInCustomer = customerRepository.getLoggedInCustomer();
         accessToken = customerRepository.getAccessToken();
     }
@@ -221,7 +221,7 @@ public class AccountViewModel extends AndroidViewModel {
                     CustomerJson result = new CustomerJson();
                     result.setStatus(false);
                     result.setMessage(response.message());
-                    loginResult.postValue(result);
+                    signupResult.postValue(result);
                 }
             }
 
@@ -295,8 +295,8 @@ public class AccountViewModel extends AndroidViewModel {
         customerRepository.replaceAccessToken(accessTokenEntity);
     }
 
-    public void deleteAccount(String id,String accessToken) {
-        final Call<CustomerJson> delete = customerRepository.delete(id,accessToken);//*711*7#
+    public void deleteAccount(String id) {
+        final Call<CustomerJson> delete = customerRepository.delete(id);//*711*7#
 
         delete.enqueue(new Callback<CustomerJson>() {
             @Override
@@ -304,7 +304,7 @@ public class AccountViewModel extends AndroidViewModel {
                                    @NonNull Response<CustomerJson> response) {
                 if (response.isSuccessful()) {
                     logoutCustomer();
-                    clearAccessToken();
+                    clearAccessToken();;
                 } else{
                     CustomerJson result = new CustomerJson();
                     result.setStatus(false);
@@ -331,112 +331,43 @@ public class AccountViewModel extends AndroidViewModel {
         customerRepository.deleteAllAccessToken();
     }
 
-    public void addToWishList(Integer product_id, String owner, String accessToken) {
-        final Call<WishListJson> wishList = wishListRepository.addToWishList(product_id,owner,accessToken);//*711*7#
+    public void stopFollowingStore(String store_id, String customer_id, String token) {
 
-        wishList.enqueue(new Callback<WishListJson>() {
-            @Override
-            public void onResponse(@NonNull Call<WishListJson> call,
-                                   @NonNull Response<WishListJson> response) {
-                if (response.isSuccessful()) {
-                    wishListRepository.insert(response.body());
 
-                } else{
-                    WishListJson result = new WishListJson();
-                    result.setStatus(false);
-                    result.setMessage(response.message());
-                    wishListResult.postValue(result);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<WishListJson> call, @NonNull Throwable t) {
-                WishListJson result = new WishListJson();
-                result.setStatus(false);
-                if(t.getMessage()!=null) {
-                    result.setMessage(t.getMessage());
-                }else{
-                    result.setMessage("Process timeout! Please, Try again");
-                }
-                wishListResult.postValue(result);
-            }
-        });
     }
 
-    public void removeWishList(final Integer product_id, String owner, String accessToken) {
-        final Call<WishListJson> wishList = wishListRepository.removeWishList(product_id,owner,accessToken);
-        wishList.enqueue(new Callback<WishListJson>() {
+    public void startFollowingStore(String store_id, String customer_id, String token) {
+
+    }
+
+    public void resetPassword(String email) {
+        Call<Result> resultCall = customerRepository.resetPassword(email);
+        resultCall.enqueue(new Callback<Result>() {
             @Override
-            public void onResponse(@NonNull Call<WishListJson> call,
-                                   @NonNull Response<WishListJson> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<Result> call,
+                                   @NonNull Response<Result> response) {
+                if (response.isSuccessful()){
                     assert response.body() != null;
-                    if (response.body().isStatus()){
-                        wishListRepository.delete(product_id);
-                    }
-                } else{
-                    WishListJson result = new WishListJson();
+                    resetPasswordResult.postValue(response.body());
+                }else{
+                    Result result = new Result();
                     result.setStatus(false);
                     result.setMessage(response.message());
-                    wishListResult.postValue(result);
+                    resetPasswordResult.postValue(result);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<WishListJson> call, @NonNull Throwable t) {
-                WishListJson result = new WishListJson();
+            public void onFailure(@NonNull Call<Result> call, @NonNull Throwable t) {
+                Result result = new Result();
                 result.setStatus(false);
-                if(t.getMessage()!=null) {
-                    result.setMessage(t.getMessage());
-                }else{
-                    result.setMessage("Process timeout! Please, Try again");
-                }
-                wishListResult.postValue(result);
+                result.setMessage(t.getMessage());
+                resetPasswordResult.postValue(result);
             }
         });
     }
 
-    public void getWisLists() {
-        final Call<List<WishListJson>> wishList = wishListRepository.getWishLists();
-        wishList.enqueue(new Callback<List<WishListJson>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<WishListJson>> call,
-                                   @NonNull Response<List<WishListJson>> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-                    int i=0;
-                    WishListEntity [] wishListEntities =new WishListEntity[response.body().size()];
-                    for (WishListJson wishListJson : response.body()) {
-                        wishListEntities[i++] = wishListJson;
-                    }
-                    wishListRepository.insert(wishListEntities);
-                } else{
-                    WishListJson result = new WishListJson();
-                    result.setStatus(false);
-                    result.setMessage(response.message());
-                    wishListResult.postValue(result);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<WishListJson>> call, @NonNull Throwable t) {
-                WishListJson result = new WishListJson();
-                result.setStatus(false);
-                if(t.getMessage()!=null) {
-                    result.setMessage(t.getMessage());
-                }else{
-                    result.setMessage("Process timeout! Please, Try again");
-                }
-                wishListResult.postValue(result);
-            }
-        });
-    }
-
-    public LiveData<List<WishListEntity>> getWishListResult(String customer_id){
-        return wishListRepository.getWishLists(customer_id);
-    }
-
-    public LiveData<WishListEntity> isWishList(Integer product_id) {
-        return wishListRepository.getWishList(product_id);
+    public LiveData<Result> getResetPasswordResult() {
+        return resetPasswordResult;
     }
 }

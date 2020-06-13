@@ -2,7 +2,6 @@ package org.codewrite.teceme.model.room;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.codewrite.teceme.model.rest.Result;
@@ -20,7 +19,7 @@ public class CustomerEntity extends Result {
     private String customer_phone;
     private String customer_referral_id;
     private String customer_referred_by;
-    private Boolean customer_access;
+    private Integer customer_access;
     private String customer_date_created;
 
     @NonNull
@@ -81,11 +80,11 @@ public class CustomerEntity extends Result {
         this.customer_referred_by = customer_referred_by;
     }
 
-    public Boolean getCustomer_access() {
+    public Integer getCustomer_access() {
         return customer_access;
     }
 
-    public void setCustomer_access(Boolean customer_access) {
+    public void setCustomer_access(Integer customer_access) {
         this.customer_access = customer_access;
     }
 

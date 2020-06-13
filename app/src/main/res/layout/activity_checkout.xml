@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@drawable/background_with_drop_shadow"
+        app:navigationIcon="@drawable/arrow_back"
+        app:title="@string/checkout_text" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
         android:background="@color/colorWhite">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingBottom="100dp">
 
             <ImageView
                 android:id="@+id/id_payment_method_image"
-                android:layout_width="match_parent"
+                android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="36dp"
                 android:src="@drawable/mtn_momo" />
 
             <LinearLayout
@@ -53,11 +62,13 @@
                         android:textAlignment="textEnd"
                         android:textSize="16sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:weightSum="1">
 
                     <TextView
@@ -97,6 +108,7 @@
                         android:layout_gravity="start"
                         android:layout_weight="0.5"
                         android:text="@string/total_text"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
 
                     <TextView
@@ -105,18 +117,234 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="0.00"
+                        android:textColor="@color/colorBlack"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/colorAccent" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/edit_payment"
+                android:text="@string/edit_payment_information"
+                android:layout_width="300dp"
+                android:drawableEnd="@drawable/icons8_edit_image"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/payment_info"
+                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/mobile_method_info"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/edit_payment"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="158dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/issuer"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/mobile_issuer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/mtn_mobile_text"
+                        android:textColor="@color/colorBlack"
                         android:textAlignment="textEnd"
                         android:textSize="16sp" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="4dp"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/account_number"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/account_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/phone_number"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/card_method_info"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mobile_method_info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/issuer"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/card_issuer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/bank_card_text"
+                        android:textColor="@color/colorBlack"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/card_holder"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/card_holder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/name_hint"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/card_number"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/card_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/phone_number"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/cvv"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/cvv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/cvv"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_weight="0.5"
+                        android:text="@string/expire"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/expire_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/expire_date"
+                        android:textAlignment="textEnd"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
             <Button
                 android:id="@+id/id_checkout"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/payment_info"
+                android:layout_below="@id/card_method_info"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="48dp"
                 android:background="@drawable/ripple_effect_with_border"
@@ -126,5 +354,10 @@
                 android:textSize="16sp" />
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
-
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+</RelativeLayout>
