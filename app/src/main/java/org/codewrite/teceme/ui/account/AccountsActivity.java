@@ -7,30 +7,24 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.DialogCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
-import org.codewrite.teceme.model.room.WishListEntity;
-import org.codewrite.teceme.ui.notification.NotificationActivity;
 import org.codewrite.teceme.ui.orders.OrderActivity;
 import org.codewrite.teceme.ui.others.HelpActivity;
 import org.codewrite.teceme.ui.product.WishListActivity;
 import org.codewrite.teceme.ui.wallet.WalletActivity;
-import org.codewrite.teceme.utils.ContentLoadingDialog;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 
 import io.reactivex.Single;
@@ -42,7 +36,6 @@ public class AccountsActivity extends AppCompatActivity {
     private AccountViewModel accountViewModel;
     private TextView nameView;
     private TextView walletIdView;
-    private CustomerEntity loggedInCustomer;
     private AccessTokenEntity accessToken;
 
     @Override
@@ -73,7 +66,6 @@ public class AccountsActivity extends AppCompatActivity {
                     launchLogin();
                     return;
                 }
-                loggedInCustomer = customerEntity;
                 setupProfile(customerEntity);
             }
         });
@@ -89,14 +81,6 @@ public class AccountsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 launchWalletActivity();
-            }
-        });
-
-
-        findViewById(R.id.notifications).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchNotification();
             }
         });
 
@@ -151,10 +135,6 @@ public class AccountsActivity extends AppCompatActivity {
         startActivity(new Intent(AccountsActivity.this, WalletActivity.class));
     }
 
-    private void launchNotification() {
-        startActivity(new Intent(AccountsActivity.this, NotificationActivity.class));
-    }
-
     private void launchWishListActivity() {
         startActivity(new Intent(AccountsActivity.this, WishListActivity.class));
     }
@@ -194,7 +174,7 @@ public class AccountsActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                accountViewModel.deleteAccount(loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                accountViewModel.deleteAccount(accessToken.getToken());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
@@ -34,6 +35,7 @@ import org.codewrite.teceme.ui.product.ProductDetailActivity;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartFragment extends Fragment {
@@ -48,6 +50,8 @@ public class CartFragment extends Fragment {
     private Button buyNow;
     private View noCart;
     private SearchBox searchBox;
+    private TextView totalCart;
+    private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +78,15 @@ public class CartFragment extends Fragment {
         mCartRv = root.findViewById(R.id.id_rv_cart_list);
         buyNow = root.findViewById(R.id.buy_now);
         noCart = root.findViewById(R.id.no_cart);
+        totalCart = root.findViewById(R.id.id_sub_total);
+
+        Toolbar toolbar = root.findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mActivity.onBackPressed();
+            }
+        });
 
         accountViewModel.getAccessToken()
                 .observe(this.getViewLifecycleOwner(), new Observer<AccessTokenEntity>() {
@@ -114,7 +127,6 @@ public class CartFragment extends Fragment {
         // we set recycler view adapter
         recyclerView.setAdapter(cartAdapter);
 
-
         cartViewModel.getCartsEntity(loggedInCustomer.getCustomer_id())
                 .observe(mActivity, new Observer<List<CartEntity>>() {
                     @Override
@@ -132,6 +144,18 @@ public class CartFragment extends Fragment {
                         }
                     }
                 });
+
+        cartViewModel.getCartsTotal(loggedInCustomer.getCustomer_id())
+                .observe(mActivity, new Observer<Long>() {
+            @Override
+            public void onChanged(Long total) {
+                if (total==null){
+                    return;
+                }
+                String cedis = "Total GH₵ ", subTotal = String.valueOf(total);
+                totalCart.setText(cedis.concat(subTotal));
+            }
+        });
 
         cartAdapter.setProductViewListener(new CartAdapter.ProductViewListener() {
             @Override
@@ -184,71 +208,5 @@ public class CartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupSearchView(view);
     }
-
-    private void setupSearchView(View view) {
-        // we find search view
-        searchBox = view.findViewById(R.id.id_search_box);
-        searchBox.setDrawerLogo(R.drawable.arrow_back_with_bg);
-        searchBox.setLogoTextColor(R.color.colorAccent);
-        searchBox.setLogoText(getResources().getString(R.string.search_your_cart_text));
-        ImageView drawLogo = searchBox.findViewById(R.id.drawer_logo);
-        drawLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mActivity.onBackPressed();
-            }
-        });
-
-        // we set voice search
-        searchBox.enableVoiceRecognition(this);
-
-        searchBox.setSearchListener(new SearchBox.SearchListener() {
-
-            @Override
-            public void onSearchOpened() {
-                //Use this to tint the screen
-                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
-                    SearchResult result = new SearchResult(s);
-                    // add suggestions
-                    searchBox.addSearchable(result);
-                }
-            }
-
-            @Override
-            public void onSearchClosed() {
-                //Use this to un-tint the screen
-                searchBox.clearResults();
-            }
-
-            @Override
-            public void onSearchTermChanged(String s) {
-            }
-
-            @Override
-            public void onSearch(String searchTerm) {
-                Toast.makeText(mActivity, searchTerm + " Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", searchTerm);
-                startActivity(i);
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to a result being clicked
-                Intent i = new Intent(mActivity, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", result.title);
-                startActivity(i);
-            }
-
-            @Override
-            public void onSearchCleared() {
-            }
-
-        });
-    }
-
 }

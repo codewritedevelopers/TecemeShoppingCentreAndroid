@@ -16,7 +16,7 @@ public class WalletEntity extends Result {
     private String wallet_pin_code;
     private String wallet_secret_question;
     private String wallet_secret_answer;
-    private Boolean wallet_access;
+    private Integer wallet_access;
     private String wallet_date_created;
 
     @NonNull
@@ -60,11 +60,11 @@ public class WalletEntity extends Result {
         this.wallet_secret_answer = wallet_secret_answer;
     }
 
-    public Boolean getWallet_access() {
+    public Integer getWallet_access() {
         return wallet_access;
     }
 
-    public void setWallet_access(Boolean wallet_access) {
+    public void setWallet_access(Integer wallet_access) {
         this.wallet_access = wallet_access;
     }
 

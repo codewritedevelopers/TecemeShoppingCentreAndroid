@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,6 +31,7 @@ import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.others.ConfirmationActivity;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.WalletViewModel;
 
 import java.util.Objects;
@@ -37,6 +39,7 @@ import java.util.Objects;
 public class CreateWalletActivity extends AppCompatActivity {
 
    private WalletViewModel walletViewModel;
+   private AccountViewModel accountViewModel;
     private CustomerEntity loggedInCustomer;
     private AccessTokenEntity mAccessTokenEntity;
     private String secretQuestion;
@@ -47,8 +50,8 @@ public class CreateWalletActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        accountViewModel = ViewModelProviders.of(CreateWalletActivity.this).get(AccountViewModel.class);
         walletViewModel = ViewModelProviders.of(CreateWalletActivity.this).get(WalletViewModel.class);
-
         //avoid null exception
         secretQuestion = "";
         final EditText phoneEditText = findViewById(R.id.phone);
@@ -82,7 +85,7 @@ public class CreateWalletActivity extends AppCompatActivity {
             }
         });
 
-        walletViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
+        accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
                 if (accessTokenEntity == null) {
@@ -93,7 +96,7 @@ public class CreateWalletActivity extends AppCompatActivity {
             }
         });
 
-        walletViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
+        accountViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
             @Override
             public void onChanged(CustomerEntity customerEntity) {
                 if (customerEntity == null) {
@@ -177,8 +180,7 @@ public class CreateWalletActivity extends AppCompatActivity {
                     walletViewModel.create(loggedInCustomer.getCustomer_id(),
                             secretQuestion,
                             secretAnswerEditText.getText().toString(),
-                            pinCodeEditText.getText().toString(),
-                            mAccessTokenEntity.getToken());
+                            pinCodeEditText.getText().toString(),mAccessTokenEntity.getToken());
                 }
                 return false;
             }
@@ -191,8 +193,7 @@ public class CreateWalletActivity extends AppCompatActivity {
                 walletViewModel.create(loggedInCustomer.getCustomer_id(),
                         secretQuestion,
                         secretAnswerEditText.getText().toString(),
-                        pinCodeEditText.getText().toString(),
-                        mAccessTokenEntity.getToken());
+                        pinCodeEditText.getText().toString(),mAccessTokenEntity.getToken());
             }
         });
     }

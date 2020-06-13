@@ -116,49 +116,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/notifications"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:background="@drawable/ripple_background_with_border_grey"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="horizontal"
-                android:padding="8dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:contentDescription="@string/todo"
-                    android:padding="2dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/icons8_bell_120px"
-                    android:tint="@color/colorPrimaryDark" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="@string/notifications_text"
-                        android:textColor="@color/colorBlack"
-                        android:textSize="@dimen/text_size_small" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/check_notification_text"
-                        android:textSize="@dimen/text_size_x_small" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/wish_list"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"

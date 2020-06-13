@@ -15,7 +15,9 @@ import androidx.paging.PagedList;
 import com.paginate.Paginate;
 
 import org.codewrite.teceme.model.rest.ProductJson;
+import org.codewrite.teceme.model.rest.StoreProductJson;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.StoreProductEntity;
 import org.codewrite.teceme.repository.ProductRepository;
 
 import java.util.List;
@@ -27,13 +29,10 @@ import retrofit2.Response;
 
 public class ProductViewModel extends AndroidViewModel {
     private ProductRepository productRepository;
-    private final int loadSize = 4;
+    private final int loadSize = 50;
     private int page;
     private boolean moreItem;
     private boolean isLoading;
-    private PagedList.BoundaryCallback<ProductEntity> boundaryCallback;
-
-    private Paginate.Callbacks callbacks;
     private MutableLiveData<List<ProductEntity>> productListResult = new MutableLiveData<>();
 
     public ProductViewModel(@NonNull Application application) {
@@ -143,6 +142,51 @@ public class ProductViewModel extends AndroidViewModel {
             }
         });
         isLoading = true;
+    }
+
+    public void loadProduct(Integer product_id) {
+        Call<ProductJson> productList = productRepository.loadProduct(product_id);
+        productList.enqueue(new Callback<ProductJson>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductJson> call,
+                                   @NonNull final Response<ProductJson> response) {
+
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    productRepository.insert(null,response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductJson> call, @NonNull Throwable t) {
+                Log.d("ProductViewModel", "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    public void loadStoreProduct(Integer store_id) {
+        Call<List<StoreProductJson>> storeProductList = productRepository.loadStoreProduct(store_id);
+        storeProductList.enqueue(new Callback<List<StoreProductJson>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoreProductJson>> call,
+                                   @NonNull final Response<List<StoreProductJson>> response) {
+
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    StoreProductEntity[] entities = new StoreProductEntity[response.body().size()];
+                    int i = 0;
+                    for (StoreProductJson productJson : response.body()) {
+                        entities[i++] = productJson;
+                    }
+                    productRepository.insert(null,entities);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoreProductJson>> call, @NonNull Throwable t) {
+                Log.d("ProductViewModel", "onFailure: " + t.getMessage());
+            }
+        });
     }
 
     public LiveData<ProductEntity> getProduct(Integer product_id) {

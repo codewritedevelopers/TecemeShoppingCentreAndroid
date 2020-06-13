@@ -11,14 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 
 import org.codewrite.teceme.R;
-import org.codewrite.teceme.adapter.OrderPagerAdapter;
 import org.codewrite.teceme.adapter.OrderProductAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
-import org.codewrite.teceme.model.room.OrderEntity;
+import org.codewrite.teceme.model.room.CustomerOrderEntity;
 import org.codewrite.teceme.utils.AutoFitGridRecyclerView;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CheckOutViewModel;
@@ -94,9 +92,9 @@ public class PendingOrderFragment extends Fragment {
         pendingOrderRv.setAdapter(orderProductAdapter);
 
         checkOutViewModel.getPendingOrders(loggedInCustomer.getCustomer_id())
-                .observe(mActivity, new Observer<List<OrderEntity>>() {
+                .observe(mActivity, new Observer<List<CustomerOrderEntity>>() {
             @Override
-            public void onChanged(List<OrderEntity> orderEntities) {
+            public void onChanged(List<CustomerOrderEntity> orderEntities) {
                 if (orderEntities==null){
                     return;
                 }

@@ -15,19 +15,19 @@ import java.util.List;
 
 @Dao
 public interface CategoryDao {
-    @Query("SELECT * FROM category_table")
+    @Query("SELECT * FROM category_table WHERE category_access=1")
     LiveData<List<CategoryEntity>> getCategory();
 
-    @Query("SELECT * FROM category_table WHERE category_id =:id limit 1")
+    @Query("SELECT * FROM category_table WHERE category_id =:id AND category_access=1 limit 1")
     LiveData<CategoryEntity> getCategory(Integer id);
 
-    @Query("SELECT * FROM category_table WHERE category_parent_id =:parent_id")
+    @Query("SELECT * FROM category_table WHERE category_parent_id=:parent_id AND category_access=1")
     LiveData<List<CategoryEntity>> getCategoryByParent(Integer parent_id);
 
-    @Query("SELECT * FROM category_table WHERE category_level=0")
+    @Query("SELECT * FROM category_table WHERE category_level=0 AND category_access=1")
     LiveData<List<CategoryEntity>> getCategoryForHome();
 
-    @Query("SELECT * FROM category_table WHERE category_name LIKE :query")
+    @Query("SELECT * FROM category_table WHERE category_access=1 AND category_name LIKE :query")
     LiveData<List<CategoryEntity>> searchCategories(String query);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -42,6 +42,6 @@ public interface CategoryDao {
     @Query("DELETE FROM category_table WHERE 1")
     void deleteAll();
 
-    @Query("SELECT * FROM category_table WHERE category_level>0 AND category_name LIKE :query LIMIT 1 ")
+    @Query("SELECT * FROM category_table WHERE category_access=1 AND category_level>0 AND category_name LIKE :query LIMIT 1 ")
     LiveData<CategoryEntity> searchCategory(String query);
 }

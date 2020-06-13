@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.ProductEntity;
+import org.codewrite.teceme.model.room.WishListEntity;
 
 public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.ProductViewHolder> {
 
@@ -64,7 +65,7 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
     @Override
     public void onBindViewHolder(@NonNull final ProductViewHolder holder, final int position) {
         // get a category product from list
-        ProductEntity entity = getItem(position);
+        final ProductEntity entity = getItem(position);
         if (entity == null) {
             return;
         }
@@ -90,30 +91,44 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
                     productViewListener.onProductClicked(v, position);
                 }
             });
+            final boolean[] wishListed = {false};
+
             // set wish list indicator
             productViewListener.isInWishList(entity.getProduct_id())
-                    .observeForever(new Observer<Boolean>() {
+                    .observeForever(new Observer<WishListEntity>() {
                         @Override
-                        public void onChanged(Boolean isInWishList) {
-                            if (isInWishList == null)
-                                return;
-                            if (isInWishList) {
-                                holder.wishListProduct.setColorFilter(R.color.colorPrimaryDark,
-                                        android.graphics.PorterDuff.Mode.MULTIPLY);
-                            } else {
+                        public void onChanged(final WishListEntity isInWishList) {
+                            if (isInWishList == null) {
                                 holder.wishListProduct.setColorFilter(R.color.colorAccent,
                                         android.graphics.PorterDuff.Mode.MULTIPLY);
+
+                                holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (productViewListener != null) {
+                                            holder.wishListProduct.clearColorFilter();
+                                            productViewListener.onToggleWishList(v, entity.getProduct_id(),
+                                                    null, false);
+                                        }
+                                    }
+                                });
+                                return;
                             }
+                            holder.wishListProduct.clearColorFilter();
+
+                            holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (productViewListener != null) {
+                                        holder.wishListProduct.setColorFilter(R.color.colorAccent,
+                                                android.graphics.PorterDuff.Mode.MULTIPLY);
+                                        productViewListener.onToggleWishList(v, entity.getProduct_id(),
+                                                isInWishList.getWishlist_id(), true);
+                                    }
+                                }
+                            });
                         }
                     });
-            holder.wishListProduct.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (productViewListener != null) {
-                        productViewListener.onToggleWishList(v, position);
-                    }
-                }
-            });
         }
         // set group product name
         if (holder.productName != null)
@@ -149,6 +164,9 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
         if (holder.productOrdered != null) {
             String ordered = entity.getProduct_ordered() + " ordered";
             holder.productOrdered.setText(ordered);
+            if (entity.getProduct_ordered()==0){
+                holder.productOrdered.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -179,9 +197,7 @@ public class ProductAdapter extends ListAdapter<ProductEntity, ProductAdapter.Pr
 
     public interface ProductViewListener {
         void onProductClicked(View v, int position);
-
-        LiveData<Boolean> isInWishList(int id);
-
-        void onToggleWishList(View v, int position);
+        LiveData<WishListEntity> isInWishList(Integer id);
+        void onToggleWishList(View v, Integer product_id,String id, boolean added);
     }
 }

@@ -10,18 +10,18 @@ import org.codewrite.teceme.model.rest.Result;
 public class WishListEntity extends Result {
     @NonNull
     @PrimaryKey
-    private Integer wishlist_id;
+    private String wishlist_id;
     private Integer wishlist_product_id;
     private String wishlist_customer_id;
     private String wishlist_date_created;
-    private Boolean wishlist_access;
+    private Integer wishlist_access;
 
     @NonNull
-    public Integer getWishlist_id() {
+    public String getWishlist_id() {
         return wishlist_id;
     }
 
-    public void setWishlist_id(@NonNull Integer wishlist_id) {
+    public void setWishlist_id(@NonNull String wishlist_id) {
         this.wishlist_id = wishlist_id;
     }
 
@@ -49,11 +49,11 @@ public class WishListEntity extends Result {
         this.wishlist_date_created = wishlist_date_created;
     }
 
-    public Boolean getWishlist_access() {
+    public Integer getWishlist_access() {
         return wishlist_access;
     }
 
-    public void setWishlist_access(Boolean wishlist_access) {
+    public void setWishlist_access(Integer wishlist_access) {
         this.wishlist_access = wishlist_access;
     }
 }

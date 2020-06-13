@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -20,7 +21,7 @@ import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
 
-public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.StoreViewHolder> {
+public class StoreAdapter extends ListAdapter<StoreEntity, StoreAdapter.StoreViewHolder> {
 
     private static final DiffUtil.ItemCallback<StoreEntity>
             DIFF_CALLBACK = new DiffUtil.ItemCallback<StoreEntity>() {
@@ -36,6 +37,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             return oldItem.getStore_name().equals(newItem.getStore_name())
                     && oldItem.getStore_img_uri().equals(newItem.getStore_img_uri())
                     && oldItem.getStore_location().equals(newItem.getStore_location())
+                    && oldItem.getStore_phone().equals(newItem.getStore_phone())
                     && oldItem.getStore_category_id().equals(newItem.getStore_category_id());
         }
     };
@@ -71,10 +73,8 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
                             +"stores/store-image/"
-                            + entity.getStore_img_uri())
-                    .resize(60, 60)
+                            + entity.getStore_img_uri().split(",")[0])
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_store_image)
                     .into(holder.storeImage);
         } catch (Exception e) {
             holder.storeImage.setImageResource(R.drawable.no_store_image);
@@ -85,8 +85,15 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             holder.storeName.setText(entity.getStore_name());
 
         // set group store location
-        if (holder.storeLocation != null)
-            holder.storeLocation.setText(entity.getStore_location());
+        if (holder.storeLocation != null) {
+            String location = "Location: ".concat(entity.getStore_location());
+            holder.storeLocation.setText(location);
+        }
+
+        if (holder.storePhone != null) {
+            String phone = "Contact: ".concat(entity.getStore_phone());
+            holder.storePhone.setText(phone);
+        }
 
         // set group store view
         if (holder.storeFollowing != null) {
@@ -105,6 +112,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
                         @Override
                         public void onChanged(CategoryEntity categoryEntity) {
                             if (categoryEntity == null) {
+                                holder.storeCategory.setVisibility(View.GONE);
                                 return;
                             }
                             if (holder.storeCategory != null) {
@@ -117,7 +125,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    storeViewListener.onViewClicked(v, entity.getStore_category_id());
+                    storeViewListener.onViewClicked(v, entity.getStore_id());
                 }
             });
         }
@@ -133,6 +141,7 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
         private ImageView storeImage;
         private TextView storeCategory;
         private TextView storeLocation;
+        private TextView storePhone;
         private TextView storeFollowing;
 
         StoreViewHolder(@NonNull View itemView) {
@@ -140,13 +149,14 @@ public class StoreAdapter extends PagedListAdapter<StoreEntity, StoreAdapter.Sto
             storeName = itemView.findViewById(R.id.id_store_name);
             storeImage = itemView.findViewById(R.id.id_store_image);
             storeLocation = itemView.findViewById(R.id.id_store_location);
+            storePhone = itemView.findViewById(R.id.id_phone);
             storeCategory = itemView.findViewById(R.id.id_store_category);
             storeFollowing = itemView.findViewById(R.id.id_store_viewed);
         }
     }
 
     public interface StoreViewListener {
-        void onViewClicked(View v, Integer store_id);
+        void onViewClicked(View v, String store_id);
 
         LiveData<CategoryEntity> onLoadCategory(Integer category_id);
     }

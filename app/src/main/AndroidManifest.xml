@@ -118,6 +118,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:name=".ui.product.ProductActivity" />
         <activity android:name=".ui.orders.OrderActivity" />
+        <activity android:name=".ui.account.ForgottenPasswordActivity" />
     </application>
 
 </manifest>

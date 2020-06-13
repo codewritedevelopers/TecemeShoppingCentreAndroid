@@ -35,9 +35,6 @@ public class WalletViewModel extends AndroidViewModel {
     private MutableLiveData<WalletFormState> walletFormState = new MutableLiveData<>();
 
     private WalletRepository walletRepository;
-    private CustomerRepository customerRepository;
-    private LiveData<CustomerEntity> loggedInCustomer;
-    private LiveData<AccessTokenEntity> accessToken;
     private MutableLiveData<WalletLogJson> walletLogResult =new MutableLiveData<>();
     private MutableLiveData<WalletJson> walletResult = new MutableLiveData<>();
 
@@ -45,9 +42,6 @@ public class WalletViewModel extends AndroidViewModel {
         super(application);
         passwordMasked = true;
         walletRepository = new WalletRepository(application);
-        customerRepository = new CustomerRepository(application);
-        loggedInCustomer = customerRepository.getLoggedInCustomer();
-        accessToken = customerRepository.getAccessToken();
     }
 
     public LiveData<WalletFormState> getWalletFormState() {
@@ -56,10 +50,6 @@ public class WalletViewModel extends AndroidViewModel {
 
     public LiveData<WalletJson> getWalletResult() {
         return walletResult;
-    }
-
-    private void replaceWithAccessToken(AccessTokenEntity accessToken) {
-        customerRepository.replaceAccessToken(accessToken);
     }
 
     public void walletFormDataChanged( String pinCode, String confirmPinCode, String secretAnswer) {
@@ -90,17 +80,8 @@ public class WalletViewModel extends AndroidViewModel {
     private boolean isPhoneValid(String phone) {
         return phone != null && Patterns.PHONE.matcher(phone).matches();
     }
-
-    public LiveData<AccessTokenEntity> getAccessToken() {
-        return accessToken;
-    }
-
-    public void replaceWIthLoggedInCustomer(CustomerEntity customer) {
-        customerRepository.replaceLoggedInCustomer(customer);
-    }
-
-    public void create(String owner, String secretQuestion, String secretAnswer, String pinCode, String accessToken) {
-        Call<WalletJson> wallet = walletRepository.create(owner,secretQuestion, secretAnswer, pinCode, accessToken);
+    public void create(String owner, String secretQuestion, String secretAnswer, String pinCode,String accessToken) {
+        Call<WalletJson> wallet = walletRepository.create(owner,secretQuestion, secretAnswer, pinCode,accessToken);
         wallet.enqueue(new Callback<WalletJson>() {
             @Override
             public void onResponse(@NonNull Call<WalletJson> call,
@@ -125,19 +106,15 @@ public class WalletViewModel extends AndroidViewModel {
         });
     }
 
-    public void update(String owner, String pinCode, String accessToken, String walletId) {
+    public void update(String owner, String pinCode, String accessToken) {
         Call<WalletJson> wallet
-                = walletRepository.update(owner, pinCode, accessToken, walletId);
+                = walletRepository.update(owner, pinCode, accessToken);
         wallet.enqueue(new Callback<WalletJson>() {
             @Override
             public void onResponse(@NonNull Call<WalletJson> call,
                                    @NonNull Response<WalletJson> response) {
                 if (response.isSuccessful()) {
                     walletResult.postValue(response.body());
-                    String token = response.headers().get("Token");
-                    if (token !=null) {
-                        updateWithAccessToken(new AccessTokenEntity(token));
-                    }
                 } else {
                     WalletJson walletJson = new WalletJson();
                     walletJson.setStatus(false);
@@ -160,19 +137,11 @@ public class WalletViewModel extends AndroidViewModel {
         });
     }
 
-    private void updateWithAccessToken(AccessTokenEntity accessTokenEntity) {
-        customerRepository.replaceAccessToken(accessTokenEntity);
-    }
-
-    public LiveData<CustomerEntity> getLoggedInCustomer() {
-        return loggedInCustomer;
-    }
-
-    public void submitTransaction(String customer_id, String token,
-                                  long amount, String transType, String transactionTo) {
+    public void submitTransaction(String customer_id, long amount, String transType, String transactionTo,
+                                  String accessToken) {
 
         Call<WalletJson> wallet
-                = walletRepository.addWalletLog(customer_id, token, amount, transType,transactionTo);
+                = walletRepository.addWalletLog(customer_id,amount, transType,transactionTo,accessToken);
         wallet.enqueue(new Callback<WalletJson>() {
             @Override
             public void onResponse(@NonNull Call<WalletJson> call,
@@ -180,9 +149,6 @@ public class WalletViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     walletResult.postValue(response.body());
                     String token = response.headers().get("Token");
-                    if (token !=null) {
-                        updateWithAccessToken(new AccessTokenEntity(token));
-                    }
                 } else {
                     WalletJson walletJson = new WalletJson();
                     walletJson.setStatus(false);

@@ -11,6 +11,7 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import org.codewrite.teceme.model.rest.StoreJson;
+import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.repository.StoreRepository;
 
@@ -22,79 +23,27 @@ import retrofit2.Response;
 
 public class StoreViewModel extends AndroidViewModel {
     private StoreRepository storeRepository;
-    private final int loadSize = 20;
-    private int page;
-    private boolean isLoading;
-    private boolean moreItem;
 
     public StoreViewModel(@NonNull Application application) {
         super(application);
         storeRepository = new StoreRepository(application);
     }
 
-    public LiveData<PagedList<StoreEntity>> getStores(final Integer category_id) {
-        page = 0;
-        moreItem = true;
-        isLoading = false;
-        PagedList.BoundaryCallback<StoreEntity> boundaryCallback;
-
-        boundaryCallback = new PagedList.BoundaryCallback<StoreEntity>() {
-            @Override
-            public void onZeroItemsLoaded() {
-
-                if (moreItem && !isLoading) {
-                    loadStores(category_id);
-                }
-            }
-
-            @Override
-            public void onItemAtFrontLoaded(@NonNull StoreEntity itemAtFront) {
-
-                Log.d("StoreViewModel", "onItemAtFrontLoaded: ");
-            }
-
-            @Override
-            public void onItemAtEndLoaded(@NonNull StoreEntity itemAtEnd) {
-
-                if (moreItem && !isLoading) {
-                    loadStores(category_id);
-                }
-                Log.d("StoreViewModel", "onItemAtEndLoaded: ");
-            }
-        };
-
-        return new LivePagedListBuilder<>(storeRepository.getStores(), loadSize)
-                .setBoundaryCallback(boundaryCallback)
-                .build();
-    }
-
-    private void loadStores(@Nullable Integer category_id) {
-        isLoading = true;
-        Call<List<StoreJson>> storeList = storeRepository.getStoreList(category_id,loadSize, page);
+    public LiveData<List<StoreEntity>> getStoresByCategory(final Integer category_id) {
+        Call<List<StoreJson>> storeList = storeRepository.getStoreListByCategory(category_id);
         storeList.enqueue(new Callback<List<StoreJson>>() {
             @Override
             public void onResponse(@NonNull Call<List<StoreJson>> call,
                                    @NonNull Response<List<StoreJson>> response) {
 
                 if (response.isSuccessful()) {
-                    if (response.headers().get("MoreItem") != null) {
-                        moreItem = true;
-                        page++;
-                    }else{
-                        moreItem = false;
-                    }
                     assert response.body() != null;
                     StoreEntity[] storeEntities = new StoreEntity[response.body().size()];
                     int i = 0;
                     for (StoreJson storeJson : response.body()) {
                         storeEntities[i++] = storeJson;
                     }
-                    storeRepository.insert(new StoreRepository.CompletedCallback() {
-                        @Override
-                        public void finish() {
-                            isLoading = false;
-                        }
-                    }, storeEntities);
+                    storeRepository.insert(null, storeEntities);
                 }
             }
 
@@ -103,9 +52,47 @@ public class StoreViewModel extends AndroidViewModel {
                 Log.d("StoreDataSource", "onFailure: " + t.getMessage());
             }
         });
+
+        return storeRepository.getStoresByCategoryId(category_id);
     }
 
-    public LiveData<StoreEntity> getStore(int store_id) {
+
+    public LiveData<List<StoreEntity>> getStores() {
+        Call<List<StoreJson>> storeList = storeRepository.getStoreList();
+        storeList.enqueue(new Callback<List<StoreJson>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoreJson>> call,
+                                   @NonNull Response<List<StoreJson>> response) {
+
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    StoreEntity[] storeEntities = new StoreEntity[response.body().size()];
+                    int i = 0;
+                    for (StoreJson storeJson : response.body()) {
+                        storeEntities[i++] = storeJson;
+                    }
+                    storeRepository.insert(null, storeEntities);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoreJson>> call, @NonNull Throwable t) {
+                Log.d("StoreDataSource", "onFailure: " + t.getMessage());
+            }
+        });
+
+        return storeRepository.getStores();
+    }
+
+    public LiveData<StoreEntity> getStore(String store_id) {
         return storeRepository.getStore(store_id);
+    }
+
+    public LiveData<List<StoreEntity>> searchStores(String s) {
+        return storeRepository.searchStores(s);
+    }
+
+    public LiveData<StoreEntity> searchStore(String title) {
+        return storeRepository.searchStore(title);
     }
 }

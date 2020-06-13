@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.action_login);
         TextView toSignup = findViewById(R.id.id_sign_up_from_login);
+        TextView resetPassword = findViewById(R.id.id_forgot_password);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
         // logout
@@ -171,7 +172,6 @@ public class LoginActivity extends AppCompatActivity {
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     accountViewModel.login(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString());
-                    checkInternetConnection();
                 }
                 return false;
             }
@@ -195,6 +195,14 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+       resetPassword.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent = new Intent(LoginActivity.this, ForgottenPasswordActivity.class);
+               startActivity(intent);
+           }
+       });
     }
 
     private void lunchMainActivity() {
@@ -230,45 +238,24 @@ public class LoginActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container),
-                                                        "No Internet Connection!", Snackbar.LENGTH_LONG)
-                                                        .setAction("Retry", new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                checkInternetConnection();
-                                                            }
-                                                        }).show();
-                                            }
-                                        }
-                                    });
-                        } else {
+                        if (!isConnectedToInternet) {
                             Snackbar.make(findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    "No Internet Connection!", Snackbar.LENGTH_LONG)
                                     .setAction("Retry", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            checkInternetConnection();
+
                                         }
                                     }).show();
                         }
                     }
                 });
-
-
     }
 }

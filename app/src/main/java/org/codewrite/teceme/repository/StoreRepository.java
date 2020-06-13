@@ -25,27 +25,39 @@ public class StoreRepository {
     public StoreRepository(Application application) {
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
         storeDao = tecemeDataBase.storeDao();
-        restApi = Service.getResetApi(application);
+        restApi = Service.getRestApi(application,null);
     }
 
     public void insert(CompletedCallback completeCallBack, StoreEntity... storeEntities){
         new InsertStoreAsyncTask(storeDao,completeCallBack ).execute(storeEntities);
     }
 
-    public DataSource.Factory<Integer, StoreEntity> getStoresByCategoryId(Integer category_id) {
+    public LiveData<List<StoreEntity>> getStoresByCategoryId(Integer category_id) {
         return storeDao.getStoresByCategoryId(category_id);
     }
 
-    public Call<List<StoreJson>> getStoreList(Integer categoryId, int loadSize, Integer page) {
-        return restApi.getStoreList(categoryId,loadSize,page);
+    public Call<List<StoreJson>> getStoreList() {
+        return restApi.getStoreList();
     }
 
-    public DataSource.Factory<Integer, StoreEntity> getStores() {
+    public LiveData<List<StoreEntity>> getStores() {
         return storeDao.getStores();
     }
 
-    public LiveData<StoreEntity> getStore(int store_id) {
+    public LiveData<StoreEntity> getStore(String store_id) {
         return storeDao.getStore(store_id);
+    }
+
+    public LiveData<List<StoreEntity>> searchStores(String s) {
+        return storeDao.searchStores("%"+s+"%");
+    }
+
+    public LiveData<StoreEntity> searchStore(String s) {
+        return storeDao.searchStore("%"+s+"%");
+    }
+
+    public Call<List<StoreJson>> getStoreListByCategory(Integer category_id) {
+        return restApi.getStoreListByCategory(category_id);
     }
 
     private static class DeleteAllStoreAsyncTask extends AsyncTask<Void, Void, Void> {

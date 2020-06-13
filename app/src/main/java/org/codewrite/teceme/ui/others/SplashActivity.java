@@ -12,8 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
+import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+
+import java.util.Date;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -22,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
     private Animation animFadeIn;
     private RelativeLayout splashContainer;
     private CategoryViewModel categoryViewModel;
+    private CartViewModel cartViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         // get category view model
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
-
+        cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
         View decorView = getWindow().getDecorView();
 
         // Hide the status bar.
@@ -47,8 +51,9 @@ public class SplashActivity extends AppCompatActivity {
         splashContainer.setVisibility(View.VISIBLE);
         splashContainer.startAnimation(animFadeIn);
 
+        cartViewModel.clearOldCart(java.text.DateFormat.getDateInstance().format(new Date()));
         // get data from network
-        categoryViewModel.getCategoryList();;
+        categoryViewModel.getCategoryList();
     }
 
     @Override

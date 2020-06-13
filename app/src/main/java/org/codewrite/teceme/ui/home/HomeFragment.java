@@ -2,14 +2,11 @@ package org.codewrite.teceme.ui.home;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,11 +17,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
@@ -36,18 +31,16 @@ import com.paginate.recycler.LoadingListItemSpanLookup;
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
 
-import org.codewrite.teceme.MainActivity;
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.AdsSliderAdapter;
 import org.codewrite.teceme.adapter.CategoryProductAdapter;
 import org.codewrite.teceme.adapter.HomeCategoryAdapter;
 import org.codewrite.teceme.adapter.HomeProductAdapter;
-import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
-import org.codewrite.teceme.repository.ProductRepository;
+import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.product.ProductActivity;
 import org.codewrite.teceme.ui.product.ProductDetailActivity;
@@ -57,9 +50,10 @@ import org.codewrite.teceme.utils.SliderTimer;
 import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.utils.ZoomOutPageTransformer;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
+import org.codewrite.teceme.viewmodel.AdsViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
-import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
+import org.codewrite.teceme.viewmodel.WishListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,8 +86,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     // view models
     private CategoryViewModel categoryViewModel;
     private ProductViewModel productViewModel;
-    private CustomerViewModel customerViewModel;
     private AccountViewModel accountViewModel;
+    private AdsViewModel adsViewModel;
+    private WishListViewModel wishListViewModel;
 
     // reference to main activity
     private FragmentActivity mActivity;
@@ -126,13 +121,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         setupSearchView(root);
 
         // get category view model
-        categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
+        categoryViewModel = ViewModelProviders.of(mActivity).get(CategoryViewModel.class);
         // get product view model
-        productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
-        // get customer view model
-        customerViewModel = ViewModelProviders.of(this).get(CustomerViewModel.class);
+        productViewModel = ViewModelProviders.of(mActivity).get(ProductViewModel.class);
         // get account view model
-        accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        accountViewModel = ViewModelProviders.of(mActivity).get(AccountViewModel.class);
+        // get ads view model
+        adsViewModel = ViewModelProviders.of(mActivity).get(AdsViewModel.class);
 
         // find recycler view for all product by their group
         mGroupProductRv = root.findViewById(R.id.id_rv_category_product_list);
@@ -146,8 +141,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         setupCategoryRv(mCategoryRv);
 
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = root.findViewById(R.id.ads_view_flipper);
+        mPager = root.findViewById(R.id.image_view_flipper);
         mSliderIndicator = root.findViewById(R.id.indicator);
+
+        wishListViewModel = ViewModelProviders.of(mActivity).get(WishListViewModel.class);
 
         accountViewModel.getAccessToken().observe(mActivity, new Observer<AccessTokenEntity>() {
             @Override
@@ -173,41 +170,29 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void loadAdsSlider() {
-        if (mSliderPagerAdapter==null) {
-            mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
 
+            mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
             mPager.setPageTransformer(true, new ZoomOutPageTransformer());
             mPager.setAdapter(mSliderPagerAdapter);
+        mSliderIndicator.setupWithViewPager(mPager, true);
 
-            mSliderIndicator.setupWithViewPager(mPager, true);
-        }
-
-        customerViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
+        adsViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> list) {
                 if (sliderTimer != null) {
                     sliderTimer.cancel();
                 }
                 if (list == null) {
-                    List<String> noAds = new ArrayList<>();
-                    noAds.add("https://doofindermedia.s3.amazonaws.com/blog/2018/08/06/083002-facebook-ads-ecommerce.jpg");
-                    noAds.add("https://beta.adspire.de/wp-content/uploads/2018/06/ecommerce-shopfiy-facebook-ads-1-1.jpg");
-                    noAds.add("https://kreativeonlinedesigns.com.au/wp-content/uploads/2016/02/e-commerce-850x390.jpg");
-                    mSliderPagerAdapter.subList(noAds);
-
-                    Timer timer = new Timer();
-                    sliderTimer = new SliderTimer(mActivity, mPager, noAds.size());
-                    timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
                     return;
                 }
                 mSliderPagerAdapter.subList(list);
                 // slider timing
                 Timer timer = new Timer();
                 sliderTimer = new SliderTimer(mActivity, mPager, list.size());
-                timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
+                timer.scheduleAtFixedRate(sliderTimer, 4000, 4000);
             }
         });
-        customerViewModel.getAds();
+        adsViewModel.getAds();
     }
 
     private void setupNestedScrollView(View view) {
@@ -263,22 +248,26 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     }
 
                     @Override
-                    public LiveData<Boolean> isInWishList(int id) {
-                        if (loggedInCustomer == null) {
-                            return new MutableLiveData<>();
+                    public LiveData<WishListEntity> isInWishList(Integer id) {
+                        if (loggedInCustomer == null || accessToken==null) {
+                           MutableLiveData<WishListEntity> data= new MutableLiveData<>();
+                           data.setValue(null);
+                           return data;
                         }
-                        return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                        return wishListViewModel.isWishList(id, loggedInCustomer.getCustomer_id());
                     }
 
                     @Override
-                    public void onToggleWishList(View v, int position) {
-                        if (loggedInCustomer == null) {
+                    public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
+                        if (loggedInCustomer == null || accessToken==null) {
                             startActivity(new Intent(mActivity, LoginActivity.class));
                             return;
                         }
-//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                        if (added) {
+                            wishListViewModel.removeWishList(id,accessToken.getToken());
+                        } else {
+                            wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
+                        }
                     }
                 });
                 // set adapter for recycler view
@@ -341,22 +330,25 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
 
             @Override
-            public LiveData<Boolean> isInWishList(int id) {
-                if (loggedInCustomer == null) {
-                    return new MutableLiveData<>();
+            public LiveData<WishListEntity> isInWishList(Integer id) {
+                if (loggedInCustomer == null||accessToken==null) {
+                    MutableLiveData<WishListEntity> data= new MutableLiveData<>();
+                    data.setValue(null);
+                    return data;
                 }
-                return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                return wishListViewModel.isWishList(id, loggedInCustomer.getCustomer_id());
             }
-
             @Override
-            public void onToggleWishList(View v, int position) {
-                if (loggedInCustomer == null) {
+            public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
+                if (loggedInCustomer == null||accessToken==null) {
                     startActivity(new Intent(mActivity, LoginActivity.class));
                     return;
                 }
-//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                if (added) {
+                    wishListViewModel.removeWishList(id,accessToken.getToken());
+                } else {
+                    wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
+                }
             }
         });
 
@@ -461,7 +453,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         }
                         CategoryEntity allCategoryEntity = new CategoryEntity();
                         allCategoryEntity.setCategory_id(-1);
-                        allCategoryEntity.setCategory_access(true);
+                        allCategoryEntity.setCategory_access(1);
                         allCategoryEntity.setCategory_level(0);
                         allCategoryEntity.setCategory_name("All Categories");
                         categoryEntities.add(0, allCategoryEntity);
@@ -593,7 +585,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         }
                         for (ProductEntity entity : entities) {
                             searchResults.add(new SearchResult(entity.getProduct_name(),
-                                    getResources().getDrawable(R.drawable.icons8_time_machine)));
+                                    mActivity.getResources().getDrawable(R.drawable.icons8_time_machine)));
                         }
                         searchBox.clearSearchable();
                         searchBox.addAllSearchables(searchResults);
@@ -625,11 +617,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         checkInternetConnection();
         productViewModel.invalidate();
         categoryViewModel.getCategoryList();
+        if (accessToken != null) {
+            wishListViewModel.getWisLists(accessToken.getToken());
+        }
         loadAdsSlider();
     }
 
     @Override
     public void onResume() {
+        checkInternetConnection();
+        productViewModel.invalidate();
+        categoryViewModel.getCategoryList();
+        if (accessToken != null) {
+            wishListViewModel.getWisLists(accessToken.getToken());
+        }
         loadAdsSlider();
         super.onResume();
     }
@@ -637,12 +638,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
         Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-          Disposable retry = single.subscribeOn(Schedulers.io())
+        Disposable retry = single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
                         if (!isConnectedToInternet) {
+                            swipeLayout.setRefreshing(false);
                             Snackbar.make(mActivity.findViewById(R.id.main_container),
                                     "No Internet Connection!", Snackbar.LENGTH_SHORT)
                                     .setAction("Retry", new View.OnClickListener() {

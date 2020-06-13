@@ -19,14 +19,18 @@ public class SliderTimer extends TimerTask {
 
     @Override
     public void run() {
+
         Slider.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (viewPager.getCurrentItem() < size - 1) {
-
-                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                    if (viewPager!=null) {
+                        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                    }
                 } else {
-                    viewPager.setCurrentItem(0,true);
+                    if (viewPager!=null) {
+                        viewPager.setCurrentItem(0,true);
+                    }
                 }
             }
         });

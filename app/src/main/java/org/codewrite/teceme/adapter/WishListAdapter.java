@@ -126,7 +126,7 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
             holder.deleteWishList.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    wishListViewListener.onDelete(position,wishListEntity.getWishlist_product_id());
+                    wishListViewListener.onDelete(position,wishListEntity.getWishlist_id());
                 }
             });
         }
@@ -136,6 +136,7 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
                     @Override
                     public void onChanged(ProductEntity entity) {
                         if (entity==null){
+                            wishListViewListener.onLoadProductOnline(wishListEntity.getWishlist_product_id());
                             return;
                         }
                         // set image
@@ -229,9 +230,10 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
 
     public interface WishListViewListener {
         void onWishListClicked(View v, Integer product_id);
-        void onDelete(int position, Integer product_id);
+        void onDelete(int position, String id);
         LiveData<CartEntity> isInCart(Integer product_id);
         void onToggleCart(boolean remove, CartEntity cartEntity, Integer product_id);
         LiveData<ProductEntity> onLoadProduct(Integer product_id);
+        void onLoadProductOnline(Integer wishlist_product_id);
     }
 }

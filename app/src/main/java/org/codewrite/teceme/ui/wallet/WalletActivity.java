@@ -31,6 +31,7 @@ import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.others.ConfirmationActivity;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.WalletViewModel;
 
 import java.util.Objects;
@@ -38,6 +39,7 @@ import java.util.Objects;
 public class WalletActivity extends AppCompatActivity {
 
    private WalletViewModel walletViewModel;
+   private AccountViewModel accountViewModel;
     private CustomerEntity loggedInCustomer;
     private AccessTokenEntity mAccessTokenEntity;
     private String mTransType;
@@ -52,8 +54,9 @@ public class WalletActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        walletViewModel = ViewModelProviders.of(WalletActivity.this).get(WalletViewModel.class);
-        walletViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
+        accountViewModel = ViewModelProviders.of(WalletActivity.this).get(AccountViewModel.class);
+
+        accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
             @Override
             public void onChanged(AccessTokenEntity accessTokenEntity) {
                 if (accessTokenEntity == null) {
@@ -61,10 +64,11 @@ public class WalletActivity extends AppCompatActivity {
                     return;
                 }
                 mAccessTokenEntity = accessTokenEntity;
+                walletViewModel = ViewModelProviders.of(WalletActivity.this).get(WalletViewModel.class);
             }
         });
 
-        walletViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
+        accountViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
             @Override
             public void onChanged(CustomerEntity customerEntity) {
                 if (customerEntity == null) {
@@ -131,8 +135,8 @@ public class WalletActivity extends AppCompatActivity {
                     return;
                 }
                 walletViewModel.submitTransaction(loggedInCustomer.getCustomer_id(),
-                        mAccessTokenEntity.getToken(), Long.parseLong(mAmount.getText().toString()),
-                        mTransType,mTransactionToTextView.getText().toString());
+                        Long.parseLong(mAmount.getText().toString()),
+                        mTransType,mTransactionToTextView.getText().toString(),mAccessTokenEntity.getToken());
             }
         });
         walletViewModel.getWalletLogResult()

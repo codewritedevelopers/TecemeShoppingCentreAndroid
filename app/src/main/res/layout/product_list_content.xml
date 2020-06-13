@@ -86,8 +86,7 @@
                     android:contentDescription="@string/todo"
                     android:focusable="true"
                     android:soundEffectsEnabled="true"
-                    android:src="@drawable/heart"
-                    android:tint="@color/colorAccent" />
+                    android:src="@drawable/heart"/>
             </LinearLayout>
 
             <TextView
@@ -113,7 +112,7 @@
                     android:layout_height="match_parent"
                     android:drawableStart="@drawable/icons8_categorize_120px"
                     android:gravity="center"
-                    android:hint="@string/color_text"
+                    android:hint="@string/category_item_text"
                     android:textAlignment="gravity"
                     android:textColor="@color/colorBlack"
                     android:textColorHint="@color/colorBlack"

@@ -36,11 +36,19 @@ public class CartViewModel extends AndroidViewModel {
         return cartRepository.getCart(product_id);
     }
 
+    public LiveData<Long> getCartsTotal(String owner) {
+        return cartRepository.getCartsTotal(owner);
+    }
+
     public void removeFromCart(Integer product_id) {
         cartRepository.deleteCart(product_id);
     }
 
     public void updateCart(CartEntity cartEntity) {
         cartRepository.update(cartEntity);
+    }
+
+    public void clearOldCart(String today) {
+        cartRepository.deleteOldCarts(today);
     }
 }

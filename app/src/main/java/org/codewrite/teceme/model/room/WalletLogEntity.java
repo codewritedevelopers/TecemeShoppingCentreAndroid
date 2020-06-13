@@ -15,7 +15,7 @@ public class WalletLogEntity  extends Result {
     private String wallet_log_transaction_type;
     private Long wallet_log_amount;
     private String wallet_log_transaction_to;
-    private Boolean wallet_log_access;
+    private Integer wallet_log_access;
     private String wallet_log_date_created;
 
     @NonNull
@@ -59,11 +59,11 @@ public class WalletLogEntity  extends Result {
         this.wallet_log_transaction_to = wallet_log_transaction_to;
     }
 
-    public Boolean getWallet_log_access() {
+    public Integer getWallet_log_access() {
         return wallet_log_access;
     }
 
-    public void setWallet_log_access(Boolean wallet_log_access) {
+    public void setWallet_log_access(Integer wallet_log_access) {
         this.wallet_log_access = wallet_log_access;
     }
 

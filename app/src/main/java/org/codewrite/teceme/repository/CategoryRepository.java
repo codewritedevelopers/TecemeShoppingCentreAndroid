@@ -9,10 +9,8 @@ import org.codewrite.teceme.api.RestApi;
 import org.codewrite.teceme.api.Service;
 import org.codewrite.teceme.db.TecemeDataBase;
 import org.codewrite.teceme.db.dao.CategoryDao;
-import org.codewrite.teceme.db.dao.ProductDao;
 import org.codewrite.teceme.model.rest.CategoryJson;
 import org.codewrite.teceme.model.room.CategoryEntity;
-import org.codewrite.teceme.model.room.ProductEntity;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ public class CategoryRepository {
     private RestApi restApi;
     private CategoryDao categoryDao;
     public CategoryRepository(Application application){
-        restApi = Service.getResetApi(application);
+        restApi = Service.getRestApi(application,null);
         TecemeDataBase tecemeDataBase = TecemeDataBase.getInstance(application);
         categoryDao = tecemeDataBase.categoryDao();
     }

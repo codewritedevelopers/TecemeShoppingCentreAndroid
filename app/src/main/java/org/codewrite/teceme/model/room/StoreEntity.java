@@ -14,9 +14,12 @@ public class StoreEntity extends Result {
     private String store_id;
     private String store_name;
     private String store_location;
+    private String store_longitude;
+    private String store_latitude;
+    private String store_hours;
     private String store_desc;
     private String store_date_created;
-    private Boolean store_access;
+    private Integer store_access;
     private String store_img_uri;
     private Integer store_category_id;
     private String store_email;
@@ -56,11 +59,11 @@ public class StoreEntity extends Result {
         this.store_date_created = store_date_created;
     }
 
-    public Boolean getStore_access() {
+    public Integer getStore_access() {
         return store_access;
     }
 
-    public void setStore_access(Boolean store_access) {
+    public void setStore_access(Integer store_access) {
         this.store_access = store_access;
     }
 
@@ -111,5 +114,29 @@ public class StoreEntity extends Result {
 
     public void setStore_id(@NonNull String store_id) {
         this.store_id = store_id;
+    }
+
+    public String getStore_longitude() {
+        return store_longitude;
+    }
+
+    public void setStore_longitude(String store_longitude) {
+        this.store_longitude = store_longitude;
+    }
+
+    public String getStore_latitude() {
+        return store_latitude;
+    }
+
+    public void setStore_latitude(String store_latitude) {
+        this.store_latitude = store_latitude;
+    }
+
+    public String getStore_hours() {
+        return store_hours;
+    }
+
+    public void setStore_hours(String store_hours) {
+        this.store_hours = store_hours;
     }
 }

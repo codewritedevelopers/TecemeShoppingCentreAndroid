@@ -32,7 +32,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.HomeProductAdapter;
-import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.adapter.ProductSizeAdapter;
 import org.codewrite.teceme.adapter.ProductSliderAdapter;
 import org.codewrite.teceme.adapter.StoreAdapter;
@@ -53,12 +52,13 @@ import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
-import org.codewrite.teceme.viewmodel.CustomerViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
 import org.codewrite.teceme.viewmodel.StoreViewModel;
+import org.codewrite.teceme.viewmodel.WishListViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -81,7 +81,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
     private CartViewModel cartViewModel;
-    private CustomerViewModel customerViewModel;
+    private WishListViewModel wishListViewModel;
 
     private AccessTokenEntity accessToken;
     private CustomerEntity loggedInCustomer;
@@ -116,6 +116,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private StoreViewModel storeViewModel;
     private View productSizeContainer;
     private View productColorContainer;
+    private WishListEntity mWishListEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +127,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         storeViewModel = ViewModelProviders.of(this).get(StoreViewModel.class);
         // get account view model
         accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
-        customerViewModel = ViewModelProviders.of(this).get(CustomerViewModel.class);
+        wishListViewModel = ViewModelProviders.of(this).get(WishListViewModel.class);
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
 
@@ -143,7 +144,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         productQuantity = findViewById(R.id.id_num_ordered);
         fabMore = findViewById(R.id.id_fab_more);
         fabLocateStores = findViewById(R.id.id_fab_locate_stores);
-        fabWishList =findViewById(R.id.id_toggle_wish_list);
+        fabWishList = findViewById(R.id.id_toggle_wish_list);
         addToCart = findViewById(R.id.add_to_cart);
         buyNow = findViewById(R.id.buy_now);
         addProductView = findViewById(R.id.id_add_product);
@@ -169,7 +170,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = findViewById(R.id.ads_view_flipper);
+        mPager = findViewById(R.id.image_view_flipper);
         TabLayout mSliderIndicator = findViewById(R.id.indicator);
 
         mSliderPagerAdapter = new ProductSliderAdapter(getSupportFragmentManager());
@@ -186,25 +187,29 @@ public class ProductDetailActivity extends AppCompatActivity {
                 accessToken = accessTokenEntity;
             }
         });
-
         accountViewModel.getLoggedInCustomer().observe(this, new Observer<CustomerEntity>() {
             @Override
             public void onChanged(CustomerEntity customerEntity) {
+                int product_id = getIntent().getIntExtra("PRODUCT_ID", -1);
                 if (customerEntity == null) {
+                    if (product_id == -1) {
+                        Toast.makeText(ProductDetailActivity.this.getApplicationContext(), "Invalid Product Selected!", Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        setupProductDetail(product_id);
+                    }
                     return;
                 }
                 loggedInCustomer = customerEntity;
+
+                if (product_id == -1) {
+                    Toast.makeText(ProductDetailActivity.this.getApplicationContext(), "Invalid Product Selected!", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    setupProductDetail(product_id);
+                }
             }
         });
-
-
-        int product_id = getIntent().getIntExtra("PRODUCT_ID", -1);
-        if (product_id == -1) {
-            Toast.makeText(this.getApplicationContext(), "Invalid Product Selected!", Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            setupProductDetail(product_id);
-        }
     }
 
     private void setupProductDetail(final int product_id) {
@@ -215,130 +220,134 @@ public class ProductDetailActivity extends AppCompatActivity {
         productSizeRv.setAdapter(productSizeAdapter);
 
         final LiveData<ProductEntity> productLive = productViewModel.getProduct(product_id);
-                productLive.observe(this, new Observer<ProductEntity>() {
+        productLive.observe(this, new Observer<ProductEntity>() {
+            @Override
+            public void onChanged(ProductEntity productEntity) {
+                if (productEntity == null)
+                    return;
+                // Show the Up button in the action bar.
+                ActionBar actionBar = getSupportActionBar();
+                if (actionBar != null) {
+                    actionBar.setTitle(productEntity.getProduct_name());
+                }
+                // set default quantity
+                mCartEntity.setCart_quantity(1);
+
+                productName.setText(productEntity.getProduct_name());
+
+                String cedis = "GH₵ ";
+                productPrice.setText(cedis.concat(productEntity.getProduct_price()));
+                productOrdered.setText(String.valueOf(productEntity.getProduct_ordered()));
+                if (!productEntity.getProduct_discount().isEmpty()) {
+                    productDiscount.setText(productEntity.getProduct_discount());
+                } else {
+                    productDiscount.setVisibility(View.GONE);
+                }
+                if (!productEntity.getProduct_weight().isEmpty()) {
+                    productWeight.setText(productEntity.getProduct_weight());
+                } else {
+                    productWeight.setVisibility(View.GONE);
+                }
+                if (!productEntity.getProduct_desc().trim().isEmpty()) {
+                    productDesc.setText(Html.fromHtml(productEntity.getProduct_desc()));
+                } else {
+                    productDesc.setVisibility(View.GONE);
+                }
+                colors = productEntity.getProduct_color().trim().split(",");
+                //set default color
+                if (!colors[0].isEmpty()) {
+                    productColorContainer.setVisibility(View.VISIBLE);
+                    mCartEntity.setProduct_color(colors[0]);
+                } else {
+                    productColorContainer.setVisibility(View.GONE);
+                }
+                // Creating an ArrayAdapter using the string array and a default spinner layout
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        ProductDetailActivity.this, android.R.layout.simple_spinner_dropdown_item, colors);
+
+                //setting adapter for spinner
+                spinnerProductColor.setAdapter(adapter);
+                spinnerProductColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onChanged(ProductEntity productEntity) {
-                        if (productEntity == null)
-                            return;
-
-                        productLive.removeObserver(this);
-                        // Show the Up button in the action bar.
-                        ActionBar actionBar = getSupportActionBar();
-                        if (actionBar != null) {
-                            actionBar.setTitle(productEntity.getProduct_name());
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (position < colors.length) {
+                            mCartEntity.setProduct_color(colors[position]);
                         }
-                        // set default quantity
-                        mCartEntity.setCart_quantity(1);
 
-                        productName.setText(productEntity.getProduct_name());
-
-                        String cedis = "GH₵ ";
-                        productPrice.setText(cedis.concat(productEntity.getProduct_price()));
-                        productOrdered.setText(String.valueOf(productEntity.getProduct_ordered()));
-                        if (!productEntity.getProduct_discount().isEmpty()) {
-                            productDiscount.setText(productEntity.getProduct_discount());
-                        } else {
-                            productDiscount.setVisibility(View.GONE);
+                        if (position < imgUris.length) {
+                            mCartEntity.setProduct_img_uri(imgUris[position]);
                         }
-                        if (!productEntity.getProduct_weight().isEmpty()) {
-                            productWeight.setText(productEntity.getProduct_weight());
-                        } else {
-                            productWeight.setVisibility(View.GONE);
-                        }
-                        if (!productEntity.getProduct_desc().trim().isEmpty()) {
-                            productDesc.setText(Html.fromHtml(productEntity.getProduct_desc()));
-                        } else {
-                            productDesc.setVisibility(View.GONE);
-                        }
-                        colors = productEntity.getProduct_color().trim().split(",");
-                        //set default color
-                        if (!colors[0].isEmpty()) {
-                            productColorContainer.setVisibility(View.VISIBLE);
-                            mCartEntity.setProduct_color(colors[0]);
-                        } else {
-                            productColorContainer.setVisibility(View.GONE);
-                        }
-                        // Creating an ArrayAdapter using the string array and a default spinner layout
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                                ProductDetailActivity.this, android.R.layout.simple_spinner_dropdown_item, colors);
+                    }
 
-                        //setting adapter for spinner
-                        spinnerProductColor.setAdapter(adapter);
-                        spinnerProductColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                mCartEntity.setProduct_color(colors[position]);
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
-                                //ignore
-                            }
-                        });
-
-                        String[] sizes = productEntity.getProduct_size().trim().split(",");
-                        // new size list
-                        sizeList = new ArrayList<>();
-                        // iterate through sizes and add to sizeList
-                        for (String size : sizes) {
-                            if (!size.isEmpty()) {
-                                sizeList.add(new ProductSize(size));
-                            }
-                        }
-                        // set default
-                        if (sizeList.size() > 0) {
-                            productSizeContainer.setVisibility(View.VISIBLE);
-                            sizeList.get(0).setSelected(true);
-                            mCartEntity.setProduct_size(sizeList.get(0).getSize());
-                        } else {
-                            productSizeContainer.setVisibility(View.GONE);
-                        }
-                        // set default to zero
-                        productQuantity.setText("1");
-
-                        productSizeAdapter.setProductViewListener(new ProductSizeAdapter.ProductViewListener() {
-                            @Override
-                            public void onChangeSize(View v, int from, int to) {
-                                mCartEntity.setProduct_size(sizeList.get(to).getSize());
-                            }
-                        });
-                        productSizeAdapter.submitList(sizeList);
-
-                        categoryViewModel.getCategory(productEntity.getProduct_category_id())
-                                .observe(ProductDetailActivity.this, new Observer<CategoryEntity>() {
-                                    @Override
-                                    public void onChanged(CategoryEntity categoryEntity) {
-                                        if (categoryEntity == null) {
-                                            return;
-                                        }
-                                        productCategory.setText(categoryEntity.getCategory_name());
-                                    }
-                                });
-
-                       imgUris = productEntity.getProduct_img_uri().trim().split(",");
-                        if (imgUris.length > 0) {
-                            mCartEntity.setProduct_img_uri(imgUris[0]);
-                        }
-                        // setup action later
-                        setupActions(productEntity);
-
-                        // new size list
-                        // iterate through sizes and add to imgUriList
-                        mSliderPagerAdapter.subList(new ArrayList<>(Arrays.asList(imgUris)));
-
-                        // slider timing
-                        Timer timer = new Timer();
-                        sliderTimer = new SliderTimer(ProductDetailActivity.this, mPager, imgUris.length);
-                        timer.scheduleAtFixedRate(sliderTimer, 3000, 4000);
-
-                        setupRelateItems(productEntity);
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        //ignore
                     }
                 });
+
+                String[] sizes = productEntity.getProduct_size().trim().split(",");
+                // new size list
+                sizeList = new ArrayList<>();
+                // iterate through sizes and add to sizeList
+                for (String size : sizes) {
+                    if (!size.isEmpty()) {
+                        sizeList.add(new ProductSize(size));
+                    }
+                }
+                // set default
+                if (sizeList.size() > 0) {
+                    productSizeContainer.setVisibility(View.VISIBLE);
+                    sizeList.get(0).setSelected(true);
+                    mCartEntity.setProduct_size(sizeList.get(0).getSize());
+                } else {
+                    productSizeContainer.setVisibility(View.GONE);
+                }
+                // set default to zero
+                productQuantity.setText("1");
+
+                productSizeAdapter.setProductViewListener(new ProductSizeAdapter.ProductViewListener() {
+                    @Override
+                    public void onChangeSize(View v, int from, int to) {
+                        mCartEntity.setProduct_size(sizeList.get(to).getSize());
+                    }
+                });
+                productSizeAdapter.submitList(sizeList);
+
+                categoryViewModel.getCategory(productEntity.getProduct_category_id())
+                        .observe(ProductDetailActivity.this, new Observer<CategoryEntity>() {
+                            @Override
+                            public void onChanged(CategoryEntity categoryEntity) {
+                                if (categoryEntity == null) {
+                                    return;
+                                }
+                                productCategory.setText(categoryEntity.getCategory_name());
+                            }
+                        });
+
+                imgUris = productEntity.getProduct_img_uri().trim().split(",");
+                if (imgUris.length > 0) {
+                    mCartEntity.setProduct_img_uri(imgUris[0]);
+                }
+                // setup action later
+                setupActions(productEntity);
+
+                // new size list
+                // iterate through sizes and add to imgUriList
+                mSliderPagerAdapter.subList(new ArrayList<>(Arrays.asList(imgUris)));
+
+                // slider timing
+                Timer timer = new Timer();
+                sliderTimer = new SliderTimer(ProductDetailActivity.this, mPager, imgUris.length);
+                timer.scheduleAtFixedRate(sliderTimer, 4000, 6000);
+
+                setupRelateItems(productEntity);
+            }
+        });
     }
 
     private void setupRelateItems(ProductEntity productEntity) {
         // create product list adapter
-        relatedProductAdapter = new HomeProductAdapter(ProductDetailActivity.this,HomeProductAdapter.ALL_PRODUCT_VIEW);
+        relatedProductAdapter = new HomeProductAdapter(ProductDetailActivity.this, HomeProductAdapter.ALL_PRODUCT_VIEW);
 
         // create store list adapter
         relatedStoreAdapter = new StoreAdapter(ProductDetailActivity.this);
@@ -358,29 +367,32 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public LiveData<Boolean> isInWishList(int id) {
-                if (loggedInCustomer == null) {
-                    return new MutableLiveData<>();
+            public LiveData<WishListEntity> isInWishList(Integer id) {
+                if (loggedInCustomer == null || accessToken == null) {
+                    MutableLiveData<WishListEntity> data = new MutableLiveData<>();
+                    data.setValue(null);
+                    return data;
                 }
-                return customerViewModel.isInWishList(loggedInCustomer.getCustomer_id(), id);
+                return wishListViewModel.isWishList(id, loggedInCustomer.getCustomer_id());
             }
 
             @Override
-            public void onToggleWishList(View v, int position) {
-                if (loggedInCustomer == null) {
+            public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
+                if (loggedInCustomer == null || accessToken == null) {
                     startActivity(new Intent(ProductDetailActivity.this, LoginActivity.class));
                     return;
                 }
-
-//                        accountViewModel.addToWishList(Objects.requireNonNull(Objects.requireNonNull(
-//                                productAdapter.getCurrentList()).get(position)).getProduct_id(),
-//                                loggedInCustomer.getCustomer_id(), accessToken.getToken());
+                if (added) {
+                    wishListViewModel.removeWishList(id,accessToken.getToken());
+                } else {
+                    wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
+                }
             }
         });
 
         relatedStoreAdapter.setStoreViewListener(new StoreAdapter.StoreViewListener() {
             @Override
-            public void onViewClicked(View v, Integer store_id) {
+            public void onViewClicked(View v, String store_id) {
                 Intent intent = new Intent(ProductDetailActivity.this, StoreDetailActivity.class);
                 intent.putExtra("STORE_ID", store_id);
                 startActivity(intent);
@@ -396,18 +408,18 @@ public class ProductDetailActivity extends AppCompatActivity {
                 .observe(ProductDetailActivity.this, new Observer<List<ProductEntity>>() {
                     @Override
                     public void onChanged(List<ProductEntity> productEntities) {
-                        if (productEntities==null){
+                        if (productEntities == null) {
                             return;
                         }
                         relatedProductAdapter.submitList(productEntities);
                     }
                 });
 
-        storeViewModel.getStores(productEntity.getProduct_category_id())
-                .observe(ProductDetailActivity.this, new Observer<PagedList<StoreEntity>>() {
+        storeViewModel.getStoresByCategory(productEntity.getProduct_category_id())
+                .observe(ProductDetailActivity.this, new Observer<List<StoreEntity>>() {
                     @Override
-                    public void onChanged(PagedList<StoreEntity> storeEntities) {
-                        if (storeEntities==null){
+                    public void onChanged(List<StoreEntity> storeEntities) {
+                        if (storeEntities == null) {
                             return;
                         }
                         relatedStoreAdapter.submitList(storeEntities);
@@ -418,17 +430,17 @@ public class ProductDetailActivity extends AppCompatActivity {
     void setupActions(final ProductEntity productEntity) {
 
         isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
-            ViewAnimation.showIn(fabLocateStores);
-            ViewAnimation.showIn(fabWishList);
+        ViewAnimation.showIn(fabLocateStores);
+        ViewAnimation.showIn(fabWishList);
 
         fabMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isRotate = ViewAnimation.rotateFab(v, !isRotate);
-                if(isRotate){
+                if (isRotate) {
                     ViewAnimation.showIn(fabLocateStores);
                     ViewAnimation.showIn(fabWishList);
-                }else{
+                } else {
                     ViewAnimation.showOut(fabLocateStores);
                     ViewAnimation.showOut(fabWishList);
                 }
@@ -472,10 +484,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     mCartEntity.setCart_owner(loggedInCustomer.getCustomer_id());
                     mCartEntity.setProduct_desc(productEntity.getProduct_desc());
                     mCartEntity.setProduct_code(productEntity.getProduct_code());
-                    mCartEntity.setCart_date_created(productEntity.getProduct_date_created());
+                    String currentDate = java.text.DateFormat.getDateInstance().format(new Date());
+                    mCartEntity.setCart_date_created(currentDate);
                     mCartEntity.setProduct_ordered(productEntity.getProduct_ordered());
                     mCartEntity.setProduct_name(productEntity.getProduct_name());
-                    mCartEntity.setProduct_img_uri(productEntity.getProduct_img_uri());
                     mCartEntity.setProduct_discount(productEntity.getProduct_discount());
                     cartViewModel.addToCart(mCartEntity);
 
@@ -487,74 +499,76 @@ public class ProductDetailActivity extends AppCompatActivity {
         fabWishList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (loggedInCustomer == null) {
+                if (loggedInCustomer == null || accessToken == null) {
                     launchLogin();
                     return;
                 }
-                checkInternetConnection();
-
                 if (isInWishList) {
-                    accountViewModel.removeWishList(productEntity.getProduct_id(),
-                            loggedInCustomer.getCustomer_id(),
-                            accessToken.getToken());
+                    fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
+                    wishListViewModel.removeWishList(mWishListEntity.getWishlist_id(),accessToken.getToken());
                 } else {
-                    accountViewModel.addToWishList(productEntity.getProduct_id(),
-                            loggedInCustomer.getCustomer_id(),
-                            accessToken.getToken());
+                    fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
+                    wishListViewModel.addWishList(productEntity.getProduct_id(),
+                            loggedInCustomer.getCustomer_id(),accessToken.getToken());
                 }
             }
         });
-        accountViewModel.isWishList(productEntity.getProduct_id())
-                .observe(ProductDetailActivity.this, new Observer<WishListEntity>() {
-                    @Override
-                    public void onChanged(WishListEntity wishListEntity) {
-                        if (wishListEntity == null) {
-                            fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
-                            return;
+        if (wishListViewModel != null && loggedInCustomer!=null) {
+            wishListViewModel.isWishList(productEntity.getProduct_id(), loggedInCustomer.getCustomer_id())
+                    .observe(ProductDetailActivity.this, new Observer<WishListEntity>() {
+                        @Override
+                        public void onChanged(WishListEntity wishListEntity) {
+                            if (wishListEntity == null) {
+                                isInWishList = false;
+                                fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
+                                return;
+                            }
+                            isInWishList = true;
+                            mWishListEntity = wishListEntity;
+                            fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
                         }
-                        fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
-                    }
-                });
+                    });
+        }
 
         final LiveData<CartEntity> inCart = cartViewModel.isInCart(productEntity.getProduct_id());
         inCart.observe(ProductDetailActivity.this, new Observer<CartEntity>() {
-                            @Override
-                            public void onChanged(CartEntity cartEntity) {
-                                if (cartEntity == null) {
-                                    isInCart = false;
-                                    addToCart.setText(getString(R.string.add_to_cart_text));
+                    @Override
+                    public void onChanged(CartEntity cartEntity) {
+                        if (cartEntity == null) {
+                            isInCart = false;
+                            addToCart.setText(getString(R.string.add_to_cart_text));
+                        } else {
+                            isInCart = true;
+
+                            addToCart.setText(getString(R.string.remove_from_cart_text));
+                            Integer quantity = cartEntity.getCart_quantity();
+                            productQuantity.setText(String.valueOf(quantity == null ? 0 : quantity));
+
+                            // create an new list for changes
+                            List<ProductSize> sizeList2 = new ArrayList<>();
+                            // check if any size selected
+                            for (ProductSize productSize : sizeList) {
+                                if (productSize.getSize().equals(cartEntity.getProduct_size())) {
+                                    productSize.setSelected(true);
                                 } else {
-                                    isInCart = true;
+                                    productSize.setSelected(false);
+                                }
+                                sizeList2.add(productSize);
+                            }
+                            productSizeAdapter.submitList(sizeList2);
+                            productSizeAdapter.notifyDataSetChanged();
 
-                                    addToCart.setText(getString(R.string.remove_from_cart_text));
-                                    Integer quantity = cartEntity.getCart_quantity();
-                                    productQuantity.setText(String.valueOf(quantity == null ? 0 : quantity));
-
-                                    // create an new list for changes
-                                    List<ProductSize> sizeList2 = new ArrayList<>();
-                                    // check if any size selected
-                                    for (ProductSize productSize : sizeList) {
-                                        if (productSize.getSize().equals(cartEntity.getProduct_size())) {
-                                            productSize.setSelected(true);
-                                        } else {
-                                            productSize.setSelected(false);
-                                        }
-                                        sizeList2.add(productSize);
-                                    }
-                                    productSizeAdapter.submitList(sizeList2);
-                                    productSizeAdapter.notifyDataSetChanged();
-
-                                    for (int i = 0; i < colors.length; i++) {
-                                        if (colors[i].equals(cartEntity.getProduct_color())) {
-                                            spinnerProductColor.setSelection(i, true);
-                                        }
-                                    }
-
-                                    mCartEntity = cartEntity;
+                            for (int i = 0; i < colors.length; i++) {
+                                if (colors[i].equals(cartEntity.getProduct_color())) {
+                                    spinnerProductColor.setSelection(i, true);
                                 }
                             }
+                            inCart.removeObserver(this);
+                            mCartEntity = cartEntity;
                         }
-                );
+                    }
+                }
+        );
 
         buyNow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -564,9 +578,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (productQuantity.getText().toString().equals("0")){
+                if (productQuantity.getText().toString().equals("0")) {
                     Toast.makeText(ProductDetailActivity.this, "Please, choose quantity!", Toast.LENGTH_LONG).show();
-                return;
+                    return;
                 }
                 mCartEntity.setCart_product_id(productEntity.getProduct_id());
                 mCartEntity.setProduct_category_id(productEntity.getProduct_category_id());
@@ -577,10 +591,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 mCartEntity.setCart_owner(loggedInCustomer.getCustomer_id());
                 mCartEntity.setProduct_desc(productEntity.getProduct_desc());
                 mCartEntity.setProduct_code(productEntity.getProduct_code());
-                mCartEntity.setCart_date_created(productEntity.getProduct_date_created());
+                String currentDate = java.text.DateFormat.getDateInstance().format(new Date());
+                mCartEntity.setCart_date_created(currentDate);
                 mCartEntity.setProduct_ordered(productEntity.getProduct_ordered());
                 mCartEntity.setProduct_name(productEntity.getProduct_name());
-                mCartEntity.setProduct_img_uri(productEntity.getProduct_img_uri());
                 mCartEntity.setProduct_discount(productEntity.getProduct_discount());
                 inCart.removeObservers(ProductDetailActivity.this);
 
@@ -622,36 +636,17 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
-                                            }
-                                        }
-                                    });
-                        } else {
-                            Snackbar.make(findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("Retry", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            checkInternetConnection();
-                                        }
-                                    }).show();
+                        if (!isConnectedToInternet) {
+                            Snackbar.make(findViewById(R.id.main_container), "No Internet Connection!", Snackbar.LENGTH_INDEFINITE).show();
                         }
                     }
                 });
+
     }
 }

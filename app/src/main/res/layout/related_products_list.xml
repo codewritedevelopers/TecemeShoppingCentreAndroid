@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorAccent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/related_products_text"
+        android:textColor="@color/colorBlack" />
+
+    <org.codewrite.teceme.utils.AutoFitGridRecyclerView
+        android:id="@+id/id_rv_related_products"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="154dp"
+        android:numColumns="auto_fit"
+        android:paddingTop="15dp"
+        tools:listitem="@layout/related_product_list_content" />
+
+</LinearLayout>

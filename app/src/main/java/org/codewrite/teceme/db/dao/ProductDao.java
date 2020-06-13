@@ -18,10 +18,10 @@ import java.util.List;
 @Dao
 public interface ProductDao {
 
-    @Query("SELECT * FROM product_table WHERE product_id =:id limit 1")
+    @Query("SELECT * FROM product_table WHERE product_id =:id AND product_access=1 limit 1")
     LiveData<ProductEntity> getProduct(Integer id);
 
-    @Query("SELECT * FROM product_table WHERE product_category_id =:categoryId")
+    @Query("SELECT * FROM product_table WHERE product_category_id =:categoryId AND product_access=1")
     LiveData<List<ProductEntity>> getProductsByCategoryId(Integer categoryId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -36,12 +36,12 @@ public interface ProductDao {
     @Query("DELETE FROM product_table WHERE 1")
     void deleteAll();
 
-    @Query("SELECT * FROM product_table LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM product_table WHERE product_access=1 LIMIT :limit OFFSET :offset")
     LiveData<List<ProductEntity>> getAllProducts(int limit, int offset);
 
-    @Query("SELECT * FROM product_table WHERE product_name LIKE :query OR product_desc LIKE :query")
+    @Query("SELECT * FROM product_table WHERE product_access=1 AND product_name LIKE :query OR product_desc LIKE :query")
     LiveData<List<ProductEntity>> searchProducts(String query);
 
-    @Query("SELECT * FROM product_table WHERE product_name LIKE :query OR product_desc LIKE :query LIMIT 1")
+    @Query("SELECT * FROM product_table WHERE product_access=1 AND product_name LIKE :query OR product_desc LIKE :query LIMIT 1")
     LiveData<ProductEntity> searchProduct(String query);
 }

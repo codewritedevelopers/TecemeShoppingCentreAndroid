@@ -9,7 +9,7 @@
     android:background="@color/colorWhite2">
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/ads_view_flipper"
+        android:id="@+id/image_view_flipper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp"
