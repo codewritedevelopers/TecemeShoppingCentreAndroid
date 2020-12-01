@@ -10,7 +10,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >3 characters</string>
+    <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="copy_right_teceme">© 2020 Teceme Technology Limited</string>
     <string name="action_login">Login</string>
@@ -304,4 +304,12 @@
     <string name="forgotten_password">Forgotten Password</string>
     <string name="send">Send</string>
     <string name="send_you_link">Enter your registered email or username,  we will send you  a reset link.</string>
+    <string name="order_code">Order Code</string>
+    <string name="redeemed">Redeemed</string>
+    <string name="order_detail">Order Detail</string>
+    <string name="hours">00:00 AM - 00:00 PM</string>
+    <string name="store_hours">Store Hours</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_address_city_or_zip_code">Enter Address, City or Zip Code</string>
+    <string name="voucher_code">Voucher code</string>
 </resources>

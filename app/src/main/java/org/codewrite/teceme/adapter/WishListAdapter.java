@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.squareup.picasso.Picasso;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.model.room.CartEntity;
+import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
@@ -87,40 +89,6 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
                 }
             });
         }
-        wishListViewListener.isInCart(wishListEntity.getWishlist_product_id())
-                .observe(activityContext, new Observer<CartEntity>() {
-            @Override
-            public void onChanged(final CartEntity cartEntity) {
-                String s;
-                if (cartEntity==null) {
-                     s = "Add To Cart";
-                    if (holder.productCart!=null){
-                        holder.productCart.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                wishListViewListener.onToggleCart(false,null,
-                                        wishListEntity.getWishlist_product_id());
-                            }
-                        });
-                    }
-                }else {
-                    s = "Remove From Cart";
-                    if (holder.productCart!=null){
-                        holder.productCart.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                wishListViewListener.onToggleCart(true,cartEntity,
-                                        wishListEntity.getWishlist_product_id());
-                            }
-                        });
-                    }
-                }
-                if (holder.productCart != null) {
-                    holder.productCart.setText(s);
-                }
-
-            }
-        });
 
         if (holder.deleteWishList!=null){
             holder.deleteWishList.setOnClickListener(new View.OnClickListener() {
@@ -192,9 +160,29 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
                             holder.productDiscount.setVisibility(View.GONE);
                         }
 
+                        if (holder.productCategory != null) {
+                           wishListViewListener.onLoadCategory(entity.getProduct_category_id())
+                                   .observe(activityContext, new Observer<CategoryEntity>() {
+                                       @Override
+                                       public void onChanged(CategoryEntity categoryEntity) {
+                                           if (categoryEntity==null){
+                                               holder.productCategory.setVisibility(View.GONE);
+                                               return;
+                                           }
+                                           holder.productCategory.setVisibility(View.VISIBLE);
+                                           holder.productCategory.setText(categoryEntity.getCategory_name());
+                                       }
+                                   });
+                        }
+
                         if (holder.productOrdered != null) {
                             String ordered = entity.getProduct_ordered() + " ordered";
                             holder.productOrdered.setText(ordered);
+                            if (entity.getProduct_ordered()==0){
+                                holder.productOrdered.setVisibility(View.GONE);
+                            }else{
+                                holder.productOrdered.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 });
@@ -205,11 +193,10 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
     }
 
     static class WishListViewHolder extends RecyclerView.ViewHolder {
+        private final TextView productCategory;
         private TextView productName;
         private TextView productPrice;
         private TextView productWeight;
-        private TextView productCart;
-        private TextView buyNow;
         private TextView productDiscount;
         private ImageView productImage;
         private TextView productOrdered;
@@ -220,9 +207,9 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
             productName = itemView.findViewById(R.id.id_product_name);
             productPrice = itemView.findViewById(R.id.id_price);
             productOrdered = itemView.findViewById(R.id.id_orders);
+            productCategory = itemView.findViewById(R.id.id_category_name);
             productDiscount = itemView.findViewById(R.id.id_discount);
             productWeight = itemView.findViewById(R.id.id_weight);
-            productCart = itemView.findViewById(R.id.id_toggle_cart);
             productImage = itemView.findViewById(R.id.id_product_image);
             deleteWishList = itemView.findViewById(R.id.id_delete);
         }
@@ -231,9 +218,8 @@ public class WishListAdapter extends ListAdapter<WishListEntity, WishListAdapter
     public interface WishListViewListener {
         void onWishListClicked(View v, Integer product_id);
         void onDelete(int position, String id);
-        LiveData<CartEntity> isInCart(Integer product_id);
-        void onToggleCart(boolean remove, CartEntity cartEntity, Integer product_id);
         LiveData<ProductEntity> onLoadProduct(Integer product_id);
+        LiveData<CategoryEntity> onLoadCategory(Integer category_id);
         void onLoadProductOnline(Integer wishlist_product_id);
     }
 }

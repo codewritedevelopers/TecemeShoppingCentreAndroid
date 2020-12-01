@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -64,6 +65,7 @@ public class Service {
                             return chain.proceed(newRequest);
                         }
                     })
+                     .readTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(interceptor).build();
         }
         return new Retrofit.Builder().baseUrl(application.getResources().getString(R.string.api_base_url))

@@ -13,6 +13,7 @@ import org.codewrite.teceme.model.rest.WalletLogJson;
 import org.codewrite.teceme.model.rest.WishListJson;
 import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.model.room.CustomerOrderEntity;
+import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 
 import java.util.List;
@@ -47,9 +48,9 @@ public interface RestApi {
     /*
      * PATCH Customer
      */
-    @PATCH("customer/account/current_password/{current_password}")
+    @PATCH("customers/account")
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson,
-                                      @Path("current_password") String currentPassword);
+                                      @Query("current_password") String currentPassword);
 
     @PATCH("customers/account")
     Call<CustomerJson> updateCustomer(@Body CustomerJson customerJson);
@@ -148,6 +149,20 @@ public interface RestApi {
     Call<Result> checkoutCustomer(@Body Map<String, Object> order,
                                   @Path("method") String method);
 
-    @POST("customers/send-reset-link/username/{email}")
-    Call<Result> resetPassword(@Path("email") String email);
+    @FormUrlEncoded
+    @POST("customers/send-reset-link")
+    Call<Result> resetPassword(@Field("username") String email);
+
+    @GET("customers/orders/status/{status}")
+    Call<List<CustomerOrderEntity>> getOrders(@Path("status") Integer status);
+
+    @GET("customers/orders/id/{order_id}")
+    Call<CustomerOrderEntity> getOrder(@Path("order_id") int order_id);
+
+
+    @GET("stores/store-by-product/product_code/{product_code}")
+    Call<List<StoreEntity>> getStoreListByProduct(@Path("product_code") String product_code);
+
+    @GET("store-users/refresh-access-token")
+    Call<Result> refreshAccessToken();
 }

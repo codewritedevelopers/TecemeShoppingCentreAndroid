@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
@@ -32,6 +33,8 @@ import org.codewrite.teceme.model.room.ProductEntity;
 import org.codewrite.teceme.model.room.StoreEntity;
 import org.codewrite.teceme.ui.product.ProductActivity;
 import org.codewrite.teceme.ui.product.ProductDetailActivity;
+import org.codewrite.teceme.utils.BackToTopFabBehavior;
+import org.codewrite.teceme.utils.HideOnScrollBehavior;
 import org.codewrite.teceme.utils.ViewAnimation;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
 import org.codewrite.teceme.viewmodel.StoreViewModel;
@@ -52,6 +55,8 @@ public class StoresFragment extends Fragment {
     // adapters
     private HomeCategoryAdapter homeCategoryAdapter;
     private CategoryProductAdapter categoryProductAdapter;
+    private FloatingActionButton fab;
+    private NestedScrollView nestedScrollView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,6 +125,30 @@ public class StoresFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupSearchView(view);
+        setupNestedScrollView(view);
+    }
+
+    private void setupNestedScrollView(View view) {
+        nestedScrollView = view.findViewById(R.id.nestedScroll);
+        fab = mActivity.findViewById(R.id.id_fab_locate_stores);
+        if (nestedScrollView != null) {
+            nestedScrollView.setSmoothScrollingEnabled(true);
+
+            // set fab for back to top
+            if (fab != null) {
+                fab.setVisibility(View.VISIBLE);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent =new Intent(mActivity,StoresMapActivity.class);
+                        intent.putExtra(StoresMapActivity.KEY,"ALL_CLOSE_BY_STORES");
+                        startActivity(intent);
+                    }
+                });
+                // add scroll listener for back to top behavior in nested scroll
+                nestedScrollView.setOnScrollChangeListener(new HideOnScrollBehavior(fab));
+            }
+        }
     }
 
     private void setupSearchView(View view) {
@@ -127,7 +156,7 @@ public class StoresFragment extends Fragment {
         searchBox = view.findViewById(R.id.id_search_box);
         searchBox.setDrawerLogo(R.drawable.icons8_search);
         searchBox.setLogoTextColor(R.color.colorAccent);
-        searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));
+        searchBox.setLogoText(getResources().getString(R.string.search_your_store_text));
         // we set voice search
         searchBox.enableVoiceRecognition(this);
         searchBox.setSearchListener(new SearchBox.SearchListener() {

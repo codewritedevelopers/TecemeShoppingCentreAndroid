@@ -47,7 +47,7 @@ private String imgUrl;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.fragment_screen_slide_page, container, false);
+                R.layout.fragment_product_slide, container, false);
         final ImageView productImage = rootView.findViewById(R.id.image);
         // set image
         Resources resources = activityContext.getResources();

@@ -27,7 +27,7 @@
             <ImageView
                 android:id="@+id/id_product_image"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/image_height_2"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/product1" />
@@ -55,8 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_weight="6"
-            android:padding="8dp">
+            android:layout_weight="6">
 
             <TextView
                 android:id="@+id/id_product_name"
@@ -69,7 +68,7 @@
                 android:hint="@string/product_name_hint"
                 android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorBlack"
-                android:textSize="@dimen/product_name_text_size" />
+                android:textSize="@dimen/text_size_x_small" />
 
             <ImageView
                 android:id="@+id/id_delete"
@@ -93,7 +92,7 @@
                 android:maxHeight="18dp"
                 android:textColor="@color/colorPrimaryDark"
                 android:textColorHint="@color/colorPrimaryDark"
-                android:textSize="@dimen/product_name_text_size" />
+                android:textSize="@dimen/text_size_small" />
 
             <TextView
                 android:id="@+id/id_category_name"
@@ -105,14 +104,12 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
                 android:hint="@string/category_item_text"
-                android:maxHeight="18dp"
                 android:textColor="@color/colorBlack"
-                android:textColorHint="@color/colorAccent"
-                android:textSize="@dimen/store_name_text_size" />
+                android:textColorHint="@color/colorAccent" />
 
 
             <TextView
-                android:id="@+id/id_orders_text"
+                android:id="@+id/id_orders"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/id_category_name"
@@ -124,46 +121,6 @@
                 android:textColorHint="@color/colorAccent"
                 android:textSize="@dimen/order_text_size" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/add_to_cart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/id_orders_text"
-                android:layout_centerVertical="true"
-                android:elevation="@dimen/card_elevation"
-                card_view:cardCornerRadius="@dimen/group_product_card_radius">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="24dp"
-                    android:background="@color/colorWhiteGrey"
-                    android:orientation="horizontal"
-                    android:padding="4dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:src="@drawable/icons8_shopping_cart_120px"
-                        android:contentDescription="@string/todo" />
-
-                    <TextView
-                        android:id="@+id/id_toggle_cart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginEnd="0dp"
-                        android:paddingEnd="@dimen/text_x_padding"
-                        android:text="@string/add_to_cart_text"
-                        android:textColor="@color/colorBlack"
-                        android:textColorHint="@color/colorBlack"
-                        android:textSize="@dimen/text_size_xx_small"
-                        tools:ignore="RtlSymmetry" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
         </RelativeLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

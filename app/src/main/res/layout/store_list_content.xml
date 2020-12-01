@@ -71,6 +71,7 @@
                 android:textAlignment="gravity"
                 android:gravity="center_vertical"
                 android:hint="@string/store_category_hint"
+                android:textSize="@dimen/text_size_xx_small"
                 android:textColor="@color/colorBlack" />
 
             <TextView

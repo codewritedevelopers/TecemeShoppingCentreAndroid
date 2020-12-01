@@ -9,6 +9,7 @@ import org.codewrite.teceme.model.rest.Result;
 @Entity(tableName = "cart_table")
 public class CartEntity extends Result {
 
+    @NonNull
     private String cart_owner;
     @NonNull
     @PrimaryKey

@@ -40,8 +40,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NestedScrollView nestedScrollView;
-    private SearchBox searchBox;
     private NavController navController;
     private BottomNavigationView navView;
     private CartViewModel cartViewModel;
@@ -85,11 +83,12 @@ public class MainActivity extends AppCompatActivity {
                 .observe(this, new Observer<List<CartEntity>>() {
                     @Override
                     public void onChanged(List<CartEntity> cartEntities) {
-                        if (cartEntities == null) {
-                            return;
-                        }
                         BadgeDrawable badge = navView.getOrCreateBadge(R.id.navigation_cart);
                         assert badge != null;
+                        if (cartEntities == null) {
+                            badge.clearNumber();
+                            return;
+                        }
                         badge.setNumber(cartEntities.size());
                     }
                 });
@@ -109,94 +108,18 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void setupSearchView() {
-        // we find search view
-        searchBox = findViewById(R.id.id_search_box);
-        searchBox.setDrawerLogo(R.drawable.icons8_search);
-        searchBox.setLogoTextColor(R.color.colorAccent);
-        searchBox.setLogoText(getResources().getString(R.string.search_your_product_text));
-        // we set voice search
-        searchBox.enableVoiceRecognition(this);
-
-        searchBox.setSearchListener(new SearchBox.SearchListener() {
-
-            @Override
-            public void onSearchOpened() {
-                //Use this to tint the screen
-                for (String s : getResources().getStringArray(R.array.search_suggestions)) {
-                    SearchResult result = new SearchResult(s);
-                    // add suggestions
-                    searchBox.addSearchable(result);
-                }
-            }
-
-            @Override
-            public void onSearchClosed() {
-                //Use this to un-tint the screen
-                searchBox.clearResults();
-            }
-
-            @Override
-            public void onSearchTermChanged(String s) {
-            }
-
-            @Override
-            public void onSearch(String searchTerm) {
-                Toast.makeText(MainActivity.this, searchTerm + " Searched", Toast.LENGTH_LONG).show();
-                Intent i = new Intent(MainActivity.this, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", searchTerm);
-                startActivity(i);
-            }
-
-            @Override
-            public void onResultClick(SearchResult result) {
-                //React to a result being clicked
-                Intent i = new Intent(MainActivity.this, ProductActivity.class);
-                i.setAction(Intent.ACTION_SEARCH);
-                i.putExtra("SEARCH_ITEM", result.title);
-                startActivity(i);
-            }
-
-            @Override
-            public void onSearchCleared() {
-
-            }
-
-        });
-    }
-
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        ReactiveNetwork
-                .observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
+
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-                            Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-                            single.subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean isConnectedToInternet) throws Exception {
-                                            if (!isConnectedToInternet) {
-                                                Snackbar.make(findViewById(R.id.main_container),
-                                                        "No Internet Connection!", Snackbar.LENGTH_SHORT)
-                                                .setAction("Retry", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        checkInternetConnection();
-                                                    }
-                                                }).show();
-                                            }
-                                        }
-                                    });
-                        } else {
+                        if (!isConnectedToInternet) {
                             Snackbar.make(findViewById(R.id.main_container),
-                                    "No Network Available", Snackbar.LENGTH_LONG)
+                                    "No Internet Connection!", Snackbar.LENGTH_SHORT)
                                     .setAction("Retry", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {

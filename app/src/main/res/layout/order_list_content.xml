@@ -9,6 +9,7 @@
     android:background="@color/colorWhite"
     card_view:cardCornerRadius="@dimen/product_card_radius">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -92,71 +93,116 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
                 <TextView
                     android:id="@+id/id_color"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:gravity="center"
                     android:hint="@string/color_text"
                     android:textAlignment="gravity"
                     android:textColor="@color/colorBlack"
-                    android:textColorHint="@color/colorBlack"
-                    android:textSize="@dimen/text_size_small" />
+                    android:textColorHint="@color/colorBlack" />
 
                 <include
                     layout="@layout/product_design_sizes"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:layout_marginStart="8dp" />
 
                 <TextView
                     android:id="@+id/id_weight"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
                     android:gravity="center"
                     android:hint="@string/weight_text"
                     android:textAlignment="gravity"
                     android:textColor="@color/colorBlack"
-                    android:textColorHint="@color/colorBlack"
-                    android:textSize="@dimen/text_size_small" />
+                    android:textColorHint="@color/colorBlack" />
             </LinearLayout>
 
-                <androidx.cardview.widget.CardView
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:elevation="@dimen/card_elevation"
-                    card_view:cardCornerRadius="@dimen/group_product_card_radius">
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:elevation="@dimen/card_elevation"
+                        card_view:cardCornerRadius="@dimen/group_product_card_radius">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorWhiteGrey"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/quantity_text" />
+
+                            <TextView
+                                android:id="@+id/id_num_ordered"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="@dimen/text__x_margin"
+                                android:layout_marginEnd="@dimen/text__x_margin"
+                                android:hint="@string/num_ordered_hint_text"
+                                android:maxLength="6"
+                                android:paddingStart="@dimen/text_x_padding"
+                                android:paddingEnd="@dimen/text_x_padding"
+                                android:textColor="@color/colorBlack"
+                                android:textColorHint="@color/colorBlack" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorWhiteGrey"
-                        android:orientation="horizontal">
+                        android:layout_gravity="end"
+                        android:layout_marginStart="8dp"
+                        android:elevation="@dimen/card_elevation"
+                        card_view:cardCornerRadius="@dimen/group_product_card_radius">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/quantity_text" />
+                            android:background="@drawable/ripple_effect_with_border"
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
-                        <TextView
-                            android:id="@+id/id_num_ordered"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="@dimen/text__x_margin"
-                            android:layout_marginEnd="@dimen/text__x_margin"
-                            android:hint="@string/num_ordered_hint_text"
-                            android:maxLength="6"
-                            android:paddingStart="@dimen/text_x_padding"
-                            android:paddingEnd="@dimen/text_x_padding"
-                            android:textColor="@color/colorBlack"
-                            android:textColorHint="@color/colorBlack" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                            <TextView
+                                android:id="@+id/id_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|end"
+                                android:hint="@string/order_status_hint"
+                                android:textAllCaps="true"
+                                android:textColor="@color/colorWhite"
+                                android:textColorHint="@color/colorWhite" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </HorizontalScrollView>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

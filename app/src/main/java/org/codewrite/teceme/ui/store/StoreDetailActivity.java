@@ -82,6 +82,7 @@ public class StoreDetailActivity extends AppCompatActivity {
     private TextView storeLocation;
     private TextView storeDesc;
     private TextView storePhone;
+    private TextView storeHours;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,16 +103,17 @@ public class StoreDetailActivity extends AppCompatActivity {
         storeLocation = findViewById(R.id.id_store_location);
         storeDesc = findViewById(R.id.id_store_desc);
         storePhone = findViewById(R.id.id_phone);
+        storeHours = findViewById(R.id.id_hours);
         storeCategory = findViewById(R.id.id_store_category);
-        fabMore = findViewById(R.id.id_fab_more);
+      ///  fabMore = findViewById(R.id.id_fab_more);
         fabLocateStores = findViewById(R.id.id_fab_locate_stores);
-        fabFollow = findViewById(R.id.id_follow);
+       // fabFollow = findViewById(R.id.id_follow);
         // recycler views
         relatedProductsRv = findViewById(R.id.id_rv_related_products);
 
         // hide fabLocateStores & fabWishList
-        ViewAnimation.initUp(fabLocateStores);
-        ViewAnimation.initUp(fabFollow);
+//        ViewAnimation.initUp(fabLocateStores);
+//        ViewAnimation.initUp(fabFollow);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -201,6 +203,12 @@ public class StoreDetailActivity extends AppCompatActivity {
                     storeDesc.setVisibility(View.GONE);
                 }
 
+                if (!storeEntity.getStore_hours().trim().isEmpty()) {
+                    storeHours.setText(storeEntity.getStore_hours());
+                } else {
+                    storeHours.setVisibility(View.GONE);
+                }
+
                 if (!storeEntity.getStore_location().trim().isEmpty()) {
                     storeLocation.setText(Html.fromHtml(storeEntity.getStore_location()));
                 } else {
@@ -283,47 +291,47 @@ public class StoreDetailActivity extends AppCompatActivity {
 
     void setupActions(final StoreEntity storeEntity) {
 
-        isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
-        ViewAnimation.showIn(fabLocateStores);
-        ViewAnimation.showIn(fabFollow);
+//        isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
+//        ViewAnimation.showIn(fabLocateStores);
+//        ViewAnimation.showIn(fabFollow);
+//
+//        fabMore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                isRotate = ViewAnimation.rotateFab(v, !isRotate);
+//                if (isRotate) {
+//                    ViewAnimation.showIn(fabLocateStores);
+//                    ViewAnimation.showIn(fabFollow);
+//                } else {
+//                    ViewAnimation.showOut(fabLocateStores);
+//                    ViewAnimation.showOut(fabFollow);
+//                }
+//
+//            }
+//        });
 
-        fabMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isRotate = ViewAnimation.rotateFab(v, !isRotate);
-                if (isRotate) {
-                    ViewAnimation.showIn(fabLocateStores);
-                    ViewAnimation.showIn(fabFollow);
-                } else {
-                    ViewAnimation.showOut(fabLocateStores);
-                    ViewAnimation.showOut(fabFollow);
-                }
-
-            }
-        });
-
-        fabFollow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (loggedInCustomer == null) {
-                    launchLogin();
-                    return;
-                }
-                checkInternetConnection();
-                if (isFollowing) {
-                    accountViewModel.stopFollowingStore(storeEntity.getStore_id(),
-                            loggedInCustomer.getCustomer_id(),
-                            accessToken.getToken());
-                } else {
-                    accountViewModel.startFollowingStore(storeEntity.getStore_id(),
-                            loggedInCustomer.getCustomer_id(),
-                            accessToken.getToken());
-                }
-            }
-        });
+//        fabFollow.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (loggedInCustomer == null) {
+//                    launchLogin();
+//                    return;
+//                }
+//                checkInternetConnection();
+//                if (isFollowing) {
+//                    accountViewModel.stopFollowingStore(storeEntity.getStore_id(),
+//                            loggedInCustomer.getCustomer_id(),
+//                            accessToken.getToken());
+//                } else {
+//                    accountViewModel.startFollowingStore(storeEntity.getStore_id(),
+//                            loggedInCustomer.getCustomer_id(),
+//                            accessToken.getToken());
+//                }
+//            }
+//        });
 
         //hide for now
-        fabFollow.setVisibility(View.GONE);
+//        fabFollow.setVisibility(View.GONE);
     }
 
     private void launchLogin() {

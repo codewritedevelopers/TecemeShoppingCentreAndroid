@@ -31,12 +31,12 @@ public class CartRepository {
         return cartDao.getCarts(owner);
     }
 
-    public LiveData<Long> getCartsTotal(String owner) {
+    public LiveData<Double> getCartsTotal(String owner) {
         return cartDao.getCartsTotal(owner);
     }
 
-    public LiveData<CartEntity> getCart(Integer product_id) {
-        return cartDao.getCart(product_id);
+    public LiveData<CartEntity> getCart(Integer product_id,String owner) {
+        return cartDao.getCart(product_id,owner);
     }
 
     public void deleteCart(Integer product_id) {

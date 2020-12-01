@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -60,6 +62,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -165,15 +168,18 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 loggedInCustomer = customerEntity;
             }
         });
+        checkInternetConnection();
         // return root view
         return root;
     }
 
     private void loadAdsSlider() {
 
+        if (mSliderPagerAdapter==null) {
             mSliderPagerAdapter = new AdsSliderAdapter(mActivity.getSupportFragmentManager());
             mPager.setPageTransformer(true, new ZoomOutPageTransformer());
             mPager.setAdapter(mSliderPagerAdapter);
+        }
         mSliderIndicator.setupWithViewPager(mPager, true);
 
         adsViewModel.getAdsResult().observe(mActivity, new Observer<List<String>>() {
@@ -201,7 +207,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             nestedScrollView.setSmoothScrollingEnabled(true);
 
             // set fab for back to top
-            fab = mActivity.findViewById(R.id.id_fab_back_to_top);
+            fab = view.findViewById(R.id.id_fab_back_to_top);
             if (fab != null) {
                 fab.setVisibility(View.INVISIBLE);
                 fab.setOnClickListener(new View.OnClickListener() {
@@ -260,12 +266,16 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     @Override
                     public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
                         if (loggedInCustomer == null || accessToken==null) {
-                            startActivity(new Intent(mActivity, LoginActivity.class));
+                            Intent intent = new Intent(mActivity, LoginActivity.class);
+                            intent.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER",true);
+                            startActivity(intent);
                             return;
                         }
                         if (added) {
+                            Toast.makeText(mActivity, "Product Removed from WishList", Toast.LENGTH_SHORT).show();
                             wishListViewModel.removeWishList(id,accessToken.getToken());
                         } else {
+                            Toast.makeText(mActivity, "Product Added to WishList", Toast.LENGTH_SHORT).show();
                             wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
                         }
                     }
@@ -341,12 +351,16 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
                 if (loggedInCustomer == null||accessToken==null) {
-                    startActivity(new Intent(mActivity, LoginActivity.class));
+                    Intent intent = new Intent(mActivity, LoginActivity.class);
+                    intent.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER",true);
+                    startActivity(intent);
                     return;
                 }
                 if (added) {
+                    Toast.makeText(mActivity, "Product Removed from WishList", Toast.LENGTH_SHORT).show();
                     wishListViewModel.removeWishList(id,accessToken.getToken());
                 } else {
+                    Toast.makeText(mActivity, "Product Added to WishList", Toast.LENGTH_SHORT).show();
                     wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
                 }
             }
@@ -614,7 +628,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        checkInternetConnection();
         productViewModel.invalidate();
         categoryViewModel.getCategoryList();
         if (accessToken != null) {
@@ -625,7 +638,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onResume() {
-        checkInternetConnection();
         productViewModel.invalidate();
         categoryViewModel.getCategoryList();
         if (accessToken != null) {
@@ -637,24 +649,21 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @SuppressLint("CheckResult")
     private void checkInternetConnection() {
-        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
-        Disposable retry = single.subscribeOn(Schedulers.io())
+        Observable<Connectivity> single = ReactiveNetwork.observeNetworkConnectivity(mActivity);
+        single.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
+                .subscribe(new Consumer<Connectivity>() {
                     @Override
-                    public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (!isConnectedToInternet) {
-                            swipeLayout.setRefreshing(false);
-                            Snackbar.make(mActivity.findViewById(R.id.main_container),
-                                    "No Internet Connection!", Snackbar.LENGTH_SHORT)
-                                    .setAction("Retry", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                        }
-                                    }).show();
+                    public void accept(Connectivity connectivity) {
+                        if(connectivity.available()){
+                            productViewModel.invalidate();
+                            categoryViewModel.getCategoryList();
+                            if (accessToken != null) {
+                                wishListViewModel.getWisLists(accessToken.getToken());
+                            }
+                            loadAdsSlider();
                         }
                     }
                 });
     }
-
 }

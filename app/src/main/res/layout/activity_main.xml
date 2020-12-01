@@ -37,17 +37,4 @@
             android:background="?android:attr/windowBackground"
             app:menu="@menu/bottom_nav_menu" />
     </RelativeLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/id_fab_back_to_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="64dp"
-        android:visibility="visible"
-        app:backgroundTint="@color/colorWhite"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/icons8_up" />
 </RelativeLayout>

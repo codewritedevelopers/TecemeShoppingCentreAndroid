@@ -52,6 +52,16 @@ public class CheckOutRepository {
         new InsertCustomerOrdersAsyncTask(customerOrderDao,callback).execute(customerOrderEntities);
     }
 
+    public Call<List<CustomerOrderEntity>> getOrders(String token,Integer status) {
+        setRestApi(token);
+        return restApi.getOrders(status);
+    }
+
+    public Call<CustomerOrderEntity> getOrder(String token, int order_id) {
+        setRestApi(token);
+        return restApi.getOrder(order_id);
+    }
+
     private static class InsertCustomerOrdersAsyncTask extends AsyncTask<CustomerOrderEntity, Void, Void> {
         private CustomerOrderDao customerOrderDao;
         private ProcessCallback processCallback;

@@ -67,7 +67,7 @@
                         android:textSize="@dimen/text_size_medium" />
 
                     <TextView
-                        android:id="@+id/wallet_id"
+                        android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/wallet_id_hint"

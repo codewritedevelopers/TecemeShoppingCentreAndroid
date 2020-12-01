@@ -32,7 +32,7 @@ import org.codewrite.teceme.model.room.WishListEntity;
 
 @Database(entities = {CustomerEntity.class, CategoryEntity.class, CartEntity.class, CustomerOrderEntity.class,
         ProductEntity.class, StoreEntity.class, WalletEntity.class, WalletLogEntity.class,
-        WishListEntity.class, AccessTokenEntity.class, StoreProductEntity.class},version = 1, exportSchema = false)
+        WishListEntity.class, AccessTokenEntity.class, StoreProductEntity.class},version = 2, exportSchema = false)
 public abstract class TecemeDataBase extends RoomDatabase {
     private static TecemeDataBase instance;
     public static synchronized TecemeDataBase getInstance(Context context){

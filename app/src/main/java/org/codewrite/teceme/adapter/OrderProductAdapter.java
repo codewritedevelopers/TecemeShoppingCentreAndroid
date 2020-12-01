@@ -32,8 +32,12 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
                                           @NonNull CustomerOrderEntity newItem) {
             return oldItem.getCustomer_order_product_name().equals(newItem.getCustomer_order_product_name())
                     && oldItem.getCustomer_order_product_img_uri().equals(newItem.getCustomer_order_product_img_uri())
-                    && oldItem.getCustomer_order_product_category_id().equals(newItem.getCustomer_order_product_category_id())
                     && oldItem.getCustomer_order_quantity().equals(newItem.getCustomer_order_quantity())
+                    && oldItem.getCustomer_order_product_size().equals(newItem.getCustomer_order_product_size())
+                    && oldItem.getCustomer_order_product_weight().equals(newItem.getCustomer_order_product_weight())
+                    && oldItem.getCustomer_order_product_code().equals(newItem.getCustomer_order_product_code())
+                    && oldItem.getCustomer_order_code().equals(newItem.getCustomer_order_product_code())
+                    && oldItem.getCustomer_order_product_color().equals(newItem.getCustomer_order_product_color())
                     && oldItem.getCustomer_order_product_price().equals(newItem.getCustomer_order_product_price());
         }
     };
@@ -41,20 +45,22 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
     // member variable or objects
     private Context activityContext;
     private OrderViewListener productViewListener;
+    private Integer fragme_status;
 
     /**
      * @class: CategoryOrderAdapter
      */
-    public OrderProductAdapter(Context activityContext) {
+    public OrderProductAdapter(Context activityContext,Integer fragme_status) {
         super(DIFF_CALLBACK);
         this.activityContext = activityContext;
+        this.fragme_status = fragme_status;
     }
 
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.product_list_content, parent, false);
+                .inflate(R.layout.order_list_content, parent, false);
         return new OrderViewHolder(view);
     }
 
@@ -70,9 +76,8 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
             Picasso.get()
                     .load(activityContext.getResources().getString(R.string.api_base_url)
                             + "products/product-image/"
-                            + entity.getCustomer_order_product_img_uri().split(",")[0])
+                            + entity.getCustomer_order_product_img_uri())
                     .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.no_product_image)
                     .into(holder.productImage);
         } catch (Exception e) {
             holder.productImage.setImageResource(R.drawable.no_product_image);
@@ -110,7 +115,28 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
         }
 
         if (holder.productQuantity != null) {
-            holder.productQuantity.setText(String.valueOf(entity.getCustomer_order_quantity()));
+                holder.productQuantity.setText(String.valueOf(entity.getCustomer_order_quantity()));
+        }
+
+        if (holder.orderStatus!=null){
+
+            String status="";
+            switch (fragme_status) {
+                case -1:
+                    if (entity.getCustomer_order_status()==0) {
+                        status = entity.getCustomer_order_quantity()-entity.getCustomer_order_redeemed()+ " PENDING";
+                    }else {
+                        status = entity.getCustomer_order_redeemed()+ " REDEEMED";
+                    }
+                break;
+                case 0:
+                    status = entity.getCustomer_order_quantity()-entity.getCustomer_order_redeemed()+ " PENDING";
+                    break;
+                case 1:
+                    status = entity.getCustomer_order_redeemed()+ " REDEEMED";
+                    break;
+            }
+            holder.orderStatus.setText(status);
         }
 
         if (holder.productWeight != null && entity.getCustomer_order_product_weight() != null) {
@@ -149,6 +175,7 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
         private TextView productWeight;
         private TextView productQuantity;
         private ImageView productImage;
+        private TextView orderStatus;
 
         OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -159,6 +186,7 @@ public class OrderProductAdapter extends ListAdapter<CustomerOrderEntity, OrderP
             productColor = itemView.findViewById(R.id.id_color);
             productSize = itemView.findViewById(R.id.product_size);
             productImage = itemView.findViewById(R.id.id_product_image);
+            orderStatus = itemView.findViewById(R.id.id_status);
         }
     }
 

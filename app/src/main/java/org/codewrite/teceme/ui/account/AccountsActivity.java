@@ -1,12 +1,15 @@
 package org.codewrite.teceme.ui.account;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -35,7 +38,7 @@ import io.reactivex.schedulers.Schedulers;
 public class AccountsActivity extends AppCompatActivity {
     private AccountViewModel accountViewModel;
     private TextView nameView;
-    private TextView walletIdView;
+    private TextView usernameView;
     private AccessTokenEntity accessToken;
 
     @Override
@@ -44,7 +47,7 @@ public class AccountsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_accounts);
 
         nameView = findViewById(R.id.name);
-        walletIdView = findViewById(R.id.wallet_id);
+        usernameView = findViewById(R.id.username);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -145,7 +148,14 @@ public class AccountsActivity extends AppCompatActivity {
 
 
     private void launchHelpActivity() {
-        startActivity(new Intent(AccountsActivity.this, HelpActivity.class));
+        try {
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_url)));
+            startActivity(myIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No application can handle this request."
+                    + " Please install a web browser",  Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     private void logout() {
@@ -190,6 +200,7 @@ public class AccountsActivity extends AppCompatActivity {
 
     private void launchLogin() {
         Intent i = new Intent(AccountsActivity.this, LoginActivity.class);
+        i.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER",true);
         startActivity(i);
         finish();
     }
@@ -202,9 +213,10 @@ public class AccountsActivity extends AppCompatActivity {
         nameView.setText(customerEntity.getCustomer_first_name()
                 .concat(" ").concat(customerEntity.getCustomer_middle_name() == null
                         ? "" : customerEntity.getCustomer_middle_name())
+                .trim()
                 .concat(" ").concat(customerEntity.getCustomer_last_name() == null
                         ? "" : customerEntity.getCustomer_last_name()));
-        walletIdView.setText(customerEntity.getCustomer_phone());
+        usernameView.setText(customerEntity.getCustomer_username());
     }
 
     @Override

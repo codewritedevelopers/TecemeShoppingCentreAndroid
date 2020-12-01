@@ -1,6 +1,13 @@
 package org.codewrite.teceme.model.rest;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "card_method_table")
 public class CardMethodJson {
+    @NonNull
+    @PrimaryKey
     private String pan;
     private String cvv;
     private String exp_month;
@@ -9,7 +16,7 @@ public class CardMethodJson {
     private String card_holder;
     private String currency;
 
-    public CardMethodJson(String pan, String cvv, String exp_month, String exp_year, String issuer,
+    public CardMethodJson(@NonNull String pan, String cvv, String exp_month, String exp_year, String issuer,
                           String card_holder, String currency) {
         this.pan = pan;
         this.cvv = cvv;
@@ -20,6 +27,7 @@ public class CardMethodJson {
         this.currency = currency;
     }
 
+    @NonNull
     public String getPan() {
         return pan;
     }

@@ -1,5 +1,8 @@
 package org.codewrite.teceme.ui.orders;
 
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.codewrite.teceme.R;
 import org.codewrite.teceme.adapter.OrderProductAdapter;
@@ -23,23 +30,37 @@ import org.codewrite.teceme.viewmodel.CheckOutViewModel;
 
 import java.util.List;
 
-public class PendingOrderFragment extends Fragment {
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
-    private OrderProductAdapter orderProductAdapter;
-    private AutoFitGridRecyclerView pendingOrderRv;
-    private FragmentActivity mActivity;
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class PendingOrderFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+
     private CheckOutViewModel checkOutViewModel;
     private AccountViewModel accountViewModel;
-    private CustomerEntity loggedInCustomer;
-    private AccessTokenEntity accessToken;
 
-    public PendingOrderFragment(){
+    private FragmentActivity activityContext;
+
+    private OrderProductAdapter orderProductAdapter;
+    private AutoFitGridRecyclerView orderRecyclerView;
+    private AccessTokenEntity tokenEntity;
+    private CustomerEntity loggedInCustomer;
+    private View noOrders;
+    private SwipeRefreshLayout swipeRefresh;
+
+    public PendingOrderFragment() {
+        // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         mActivity = getActivity();
+        activityContext = getActivity();
     }
 
     @Nullable
@@ -53,53 +74,111 @@ public class PendingOrderFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+        checkOutViewModel = ViewModelProviders.of(this).get(CheckOutViewModel.class);
 
-        pendingOrderRv = view.findViewById(R.id.id_rv_order_list);
-            checkOutViewModel = ViewModelProviders.of(mActivity).get(CheckOutViewModel.class);
-
-        // get account view model
-        accountViewModel = ViewModelProviders.of(mActivity).get(AccountViewModel.class);
-
-        accountViewModel.getAccessToken()
-                .observe(this.getViewLifecycleOwner(), new Observer<AccessTokenEntity>() {
-                    @Override
-                    public void onChanged(AccessTokenEntity accessTokenEntity) {
-                        if (accessTokenEntity == null) {
-                         return;
-                        }
-                        accessToken = accessTokenEntity;
-                    }
-                });
-
-        accountViewModel.getLoggedInCustomer().
-                observe(this.getViewLifecycleOwner(), new Observer<CustomerEntity>() {
-                    @Override
-                    public void onChanged(CustomerEntity customerEntity) {
-                        if (customerEntity == null) {
-                            mActivity.onBackPressed();
-                            return;
-                        }
-                        loggedInCustomer = customerEntity;
-                        orderProductAdapter = new OrderProductAdapter(mActivity);
-                        setOrderAdapter(orderProductAdapter,loggedInCustomer);
-                    }
-                });
-
-
+        swipeRefresh = view.findViewById(R.id.swipe_refresh);
+        swipeRefresh.setOnRefreshListener(this);
+        orderRecyclerView = view.findViewById(R.id.id_rv_order_list);
+        noOrders = view.findViewById(R.id.no_orders);
+        orderProductAdapter = new OrderProductAdapter(activityContext, 0);
+        orderRecyclerView.setAdapter(orderProductAdapter);
     }
 
-    private void setOrderAdapter(final OrderProductAdapter orderProductAdapter, CustomerEntity loggedInCustomer) {
-        pendingOrderRv.setAdapter(orderProductAdapter);
-
-        checkOutViewModel.getPendingOrders(loggedInCustomer.getCustomer_id())
-                .observe(mActivity, new Observer<List<CustomerOrderEntity>>() {
+    private void setViewModel(){
+        accountViewModel.getAccessToken().observe(activityContext, new Observer<AccessTokenEntity>() {
             @Override
-            public void onChanged(List<CustomerOrderEntity> orderEntities) {
-                if (orderEntities==null){
+            public void onChanged(AccessTokenEntity accessTokenEntity) {
+
+                if (accessTokenEntity == null) {
                     return;
                 }
-                orderProductAdapter.submitList(orderEntities);
+                tokenEntity = accessTokenEntity;
+                checkOutViewModel.getPendingOrders(tokenEntity.getToken());
+
+                accountViewModel.getLoggedInCustomer()
+                        .observe(activityContext, new Observer<CustomerEntity>() {
+                            @Override
+                            public void onChanged(CustomerEntity customerEntity) {
+                                if (customerEntity == null) {
+                                    return;
+                                }
+                                loggedInCustomer = customerEntity;
+                                setupOrderRv();
+                            }
+                        });
             }
         });
+    }
+
+    private void setupOrderRv() {
+
+        orderProductAdapter.setOrderViewListener(new OrderProductAdapter.OrderViewListener() {
+            @Override
+            public void onOrderClicked(View v, int position) {
+                Intent intent = new Intent(activityContext, OrderDetailActivity.class);
+                intent.putExtra("ORDER_ID",
+                        orderProductAdapter.getCurrentList().get(position).getCustomer_order_id());
+                startActivity(intent);
+            }
+        });
+
+        checkOutViewModel.getOrderPendingResult()
+                .observe(activityContext, new Observer<List<CustomerOrderEntity>>() {
+                    @Override
+                    public void onChanged(List<CustomerOrderEntity> orderEntities) {
+                        swipeRefresh.setRefreshing(false);
+                        if (orderEntities == null) {
+                            noOrders.setVisibility(View.VISIBLE);
+                            return;
+                        }
+
+                        if (orderEntities.isEmpty()) {
+                            noOrders.setVisibility(View.VISIBLE);
+                        } else {
+                            noOrders.setVisibility(View.GONE);
+                            orderProductAdapter.submitList(orderEntities);
+                        }
+                    }
+                });
+      //  checkInternetConnection();
+    }
+
+    @SuppressLint("CheckResult")
+    private void checkInternetConnection() {
+        Single<Boolean> single = ReactiveNetwork.checkInternetConnectivity();
+        single.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (!isConnectedToInternet) {
+                            swipeRefresh.setRefreshing(false);
+                            Snackbar.make(activityContext.findViewById(R.id.main_container),
+                                    "No Internet Connection!", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Retry", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            checkInternetConnection();
+                                        }
+                                    }).show();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        swipeRefresh.setRefreshing(true);
+        setViewModel();
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefresh.setRefreshing(true);
+        if (tokenEntity != null) {
+            checkOutViewModel.getPendingOrders(tokenEntity.getToken());
+        }
     }
 }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +50,17 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText nameEditText;
     private EditText phoneEditText;
     private EditText usernameEditText;
-    private EditText cPasswordEditText;
     private EditText passwordEditText;
+
+    private TextView nameViewText;
+    private TextView phoneViewText;
+    private TextView usernameViewText;
+    private TextView passwordViewText;
+    private ImageView nameEditAction;
+    private ImageView phoneEditAction;
+    private ImageView usernameEditAction;
+    private ImageView passwordEditAction;
+
     private Button updateButton;
     private CustomerEntity loggedInCustomer;
     private AccessTokenEntity mAccessTokenEntity;
@@ -70,8 +80,18 @@ public class ProfileActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phone);
         usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
-        cPasswordEditText = findViewById(R.id.confirm_password);
+
+        nameViewText = findViewById(R.id.name_view);
+        phoneViewText = findViewById(R.id.phone_view);
+        usernameViewText = findViewById(R.id.username_view);
+        passwordViewText = findViewById(R.id.password_view);
         updateButton = findViewById(R.id.action_update);
+
+        nameEditAction= findViewById(R.id.action_edit_name);
+        phoneEditAction = findViewById(R.id.action_edit_phone);
+        usernameEditAction = findViewById(R.id.action_edit_username);
+        passwordEditAction = findViewById(R.id.action_edit_password);
+
         loadingProgressBar = findViewById(R.id.loading);
 
         accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
@@ -115,9 +135,6 @@ public class ProfileActivity extends AppCompatActivity {
                 if (profileFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(profileFormState.getPasswordError()));
                 }
-                if (profileFormState.getConfirmPasswordError() != null) {
-                    cPasswordEditText.setError(getString(profileFormState.getConfirmPasswordError()));
-                }
             }
         });
 
@@ -136,6 +153,8 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        // disable update
+        updateButton.setEnabled(false);
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -149,23 +168,24 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                updateButton.setEnabled(true);
                 accountViewModel.profileFormDataChanged(nameEditText.getText().toString(),
                         phoneEditText.getText().toString(),
                         usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString(),
-                        cPasswordEditText.getText().toString());
+                        passwordEditText.getText().toString().trim().isEmpty()
+                                ?"000000": passwordEditText.getText().toString());
             }
         };
         nameEditText.addTextChangedListener(afterTextChangedListener);
         phoneEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        cPasswordEditText.addTextChangedListener(afterTextChangedListener);
-        cPasswordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    updateButton.setEnabled(false);
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     updateCustomer();
                 }
@@ -173,9 +193,15 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        setOnEditClick(nameEditText,nameViewText,nameEditAction);
+        setOnEditClick(phoneEditText,phoneViewText,phoneEditAction);
+        setOnEditClick(usernameEditText,usernameViewText,usernameEditAction);
+        setOnEditClick(passwordEditText,passwordViewText,passwordEditAction);
+
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                updateButton.setEnabled(false);
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 updateCustomer();
             }
@@ -183,8 +209,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateSuccessAlert(CustomerJson profileResult) {
-        Toast.makeText(this, "Update successful, we're logout you out!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Update was successful", Toast.LENGTH_LONG).show();
         accountViewModel.replaceWIthLoggedInCustomer(profileResult);
+        resetAllEdit();
     }
 
     private void updateCustomer() {
@@ -199,8 +226,9 @@ public class ProfileActivity extends AppCompatActivity {
                 accountViewModel.update(nameEditText.getText().toString(),
                         phoneEditText.getText().toString(),
                         usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString().isEmpty()
-                                ? null : passwordEditText.getText().toString(),
+                        passwordEditText.getText().toString().length()>5
+                                ?passwordEditText.getText().toString()
+                                :currentPassword.getText().toString(),
                         currentPassword.getText().toString(),
                         loggedInCustomer.getCustomer_id(),
                         mAccessTokenEntity.getToken());
@@ -221,16 +249,24 @@ public class ProfileActivity extends AppCompatActivity {
         usernameEditText.setText(customerEntity.getCustomer_username());
         nameEditText.setText(customerEntity.getCustomer_first_name()
                 .concat(" ").concat(customerEntity.getCustomer_middle_name() == null
-                        ? "" : customerEntity.getCustomer_middle_name())
+                        ? "" : customerEntity.getCustomer_middle_name()).trim()
                 .concat(" ").concat(customerEntity.getCustomer_last_name() == null
                         ? "" : customerEntity.getCustomer_last_name()));
         phoneEditText.setText(customerEntity.getCustomer_phone());
 
+        usernameViewText.setText(customerEntity.getCustomer_username());
+        nameViewText.setText(customerEntity.getCustomer_first_name()
+                .concat(" ").concat(customerEntity.getCustomer_middle_name() == null
+                        ? "" : customerEntity.getCustomer_middle_name())
+                .trim()
+                .concat(" ").concat(customerEntity.getCustomer_last_name() == null
+                        ? "" : customerEntity.getCustomer_last_name()));
+        phoneViewText.setText(customerEntity.getCustomer_phone());
+
         accountViewModel.profileFormDataChanged(nameEditText.getText().toString(),
                 phoneEditText.getText().toString(),
                 usernameEditText.getText().toString(),
-                passwordEditText.getText().toString(),
-                cPasswordEditText.getText().toString());
+                passwordEditText.getText().toString());
     }
 
     private void launchLogin() {
@@ -240,7 +276,30 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void updateErrorAlert(String message) {
+        loadingProgressBar.setVisibility(View.GONE);
+        updateButton.setEnabled(true);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    private void setOnEditClick(final EditText editText, final TextView textView, ImageView imageView){
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textView.setVisibility(View.GONE);
+                editText.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void resetAllEdit(){
+        phoneEditText.setVisibility(View.GONE);
+        nameEditText.setVisibility(View.GONE);
+        usernameEditText.setVisibility(View.GONE);
+        passwordEditText.setVisibility(View.GONE);
+
+        phoneViewText.setVisibility(View.VISIBLE);
+        nameViewText.setVisibility(View.VISIBLE);
+        usernameViewText.setVisibility(View.VISIBLE);
+        passwordViewText.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -256,12 +315,6 @@ public class ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkInternetConnection();
     }
 
     @SuppressLint("CheckResult")

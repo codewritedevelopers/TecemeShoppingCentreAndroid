@@ -39,7 +39,6 @@ public class CartAdapter extends ListAdapter<CartEntity, CartAdapter.ProductView
                     && oldItem.getProduct_weight().equals(newItem.getProduct_weight())
                     && oldItem.getProduct_price().equals(newItem.getProduct_price())
                     && oldItem.getProduct_ordered() == newItem.getProduct_ordered()
-                    && oldItem.getCart_product_id().equals(newItem.getCart_product_id())
                     && oldItem.getCart_quantity().equals(newItem.getCart_quantity())
                     && oldItem.getProduct_color().equals(newItem.getProduct_color());
         }

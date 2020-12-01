@@ -30,11 +30,19 @@
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/mtn_momo" />
 
+            <include
+                android:id="@+id/orders"
+                layout="@layout/checkout_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/id_payment_method_image"
+                android:layout_centerHorizontal="true" />
+
             <LinearLayout
                 android:id="@+id/payment_info"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/id_payment_method_image"
+                android:layout_below="@id/orders"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="36dp"
                 android:orientation="vertical">
@@ -117,10 +125,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="0.00"
-                        android:textColor="@color/colorBlack"
                         android:textAlignment="textEnd"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -130,13 +139,14 @@
 
             <TextView
                 android:id="@+id/edit_payment"
-                android:text="@string/edit_payment_information"
                 android:layout_width="300dp"
-                android:drawableEnd="@drawable/icons8_edit_image"
-                android:layout_centerHorizontal="true"
+                android:layout_height="match_parent"
                 android:layout_below="@id/payment_info"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:layout_height="match_parent"/>
+                android:drawableEnd="@drawable/icons8_edit_image"
+                android:text="@string/edit_payment_information" />
+
             <LinearLayout
                 android:id="@+id/mobile_method_info"
                 android:layout_width="300dp"
@@ -144,8 +154,8 @@
                 android:layout_below="@id/edit_payment"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -170,16 +180,16 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="@string/mtn_mobile_text"
-                        android:textColor="@color/colorBlack"
                         android:textAlignment="textEnd"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_marginTop="4dp"
+                    android:orientation="horizontal"
                     android:weightSum="1">
 
                     <TextView
@@ -209,8 +219,8 @@
                 android:layout_below="@id/mobile_method_info"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -234,8 +244,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="@string/bank_card_text"
-                        android:textColor="@color/colorBlack"
                         android:textAlignment="textEnd"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -340,6 +350,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+
             <Button
                 android:id="@+id/id_checkout"
                 android:layout_width="@dimen/button_width"
@@ -354,6 +365,7 @@
                 android:textSize="16sp" />
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
+
     <ProgressBar
         android:id="@+id/loading"
         android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
@@ -94,5 +95,30 @@ public class StoreViewModel extends AndroidViewModel {
 
     public LiveData<StoreEntity> searchStore(String title) {
         return storeRepository.searchStore(title);
+    }
+
+    public LiveData<List<StoreEntity>> getStoresByProduct(String customer_order_product_code) {
+        final MutableLiveData<List<StoreEntity>> liveData = new MutableLiveData<>();
+        Call<List<StoreEntity>> storeList = storeRepository.getStoresByProducts(customer_order_product_code);
+        storeList.enqueue(new Callback<List<StoreEntity>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StoreEntity>> call,
+                                   @NonNull Response<List<StoreEntity>> response) {
+
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    liveData.setValue(response.body());
+                }else{
+                    liveData.setValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StoreEntity>> call, @NonNull Throwable t) {
+                liveData.setValue(null);
+            }
+        });
+
+        return liveData;
     }
 }

@@ -9,9 +9,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.codewrite.teceme.R;
+import org.codewrite.teceme.model.room.AccessTokenEntity;
+import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
 import org.codewrite.teceme.viewmodel.CategoryViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
@@ -26,6 +29,7 @@ public class SplashActivity extends AppCompatActivity {
     private RelativeLayout splashContainer;
     private CategoryViewModel categoryViewModel;
     private CartViewModel cartViewModel;
+    private AccountViewModel accountViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,17 @@ public class SplashActivity extends AppCompatActivity {
         // get category view model
         categoryViewModel = ViewModelProviders.of(this).get(CategoryViewModel.class);
         cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
+        accountViewModel = ViewModelProviders.of(this).get(AccountViewModel.class);
+
+        accountViewModel.getAccessToken().observe(this, new Observer<AccessTokenEntity>() {
+            @Override
+            public void onChanged(AccessTokenEntity accessTokenEntity) {
+                if (accessTokenEntity!=null){
+                    accountViewModel.refreshAccessToken(accessTokenEntity);
+                }
+            }
+        });
+
         View decorView = getWindow().getDecorView();
 
         // Hide the status bar.

@@ -80,8 +80,6 @@ public class OutgoingFragment extends Fragment {
                             return;
                         }
                         loggedInCustomer = customerEntity;
-                        orderProductAdapter = new OrderProductAdapter(mActivity);
-                        setOrderAdapter(orderProductAdapter,loggedInCustomer);
                     }
                 });
 
@@ -91,15 +89,5 @@ public class OutgoingFragment extends Fragment {
     private void setOrderAdapter(final OrderProductAdapter orderProductAdapter, CustomerEntity loggedInCustomer) {
         pendingOrderRv.setAdapter(orderProductAdapter);
 
-        checkOutViewModel.getPendingOrders(loggedInCustomer.getCustomer_id())
-                .observe(mActivity, new Observer<List<CustomerOrderEntity>>() {
-            @Override
-            public void onChanged(List<CustomerOrderEntity> orderEntities) {
-                if (orderEntities==null){
-                    return;
-                }
-                orderProductAdapter.submitList(orderEntities);
-            }
-        });
     }
 }

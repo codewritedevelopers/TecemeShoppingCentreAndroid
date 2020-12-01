@@ -128,34 +128,28 @@ public class CartFragment extends Fragment {
         recyclerView.setAdapter(cartAdapter);
 
         cartViewModel.getCartsEntity(loggedInCustomer.getCustomer_id())
-                .observe(mActivity, new Observer<List<CartEntity>>() {
-                    @Override
-                    public void onChanged(List<CartEntity> cartEntities) {
-                        if (cartEntities == null) {
-                            return;
-                        }
-                        cartAdapter.submitList(cartEntities);
-                        if (cartEntities.size() > 0) {
-                            buyNow.setVisibility(View.VISIBLE);
-                            noCart.setVisibility(View.GONE);
-                        } else {
-                            buyNow.setVisibility(View.GONE);
-                            noCart.setVisibility(View.VISIBLE);
-                        }
+                .observe(mActivity, cartEntities -> {
+                    if (cartEntities == null) {
+                        return;
+                    }
+                    cartAdapter.submitList(cartEntities);
+                    if (cartEntities.size() > 0) {
+                        buyNow.setVisibility(View.VISIBLE);
+                        noCart.setVisibility(View.GONE);
+                    } else {
+                        buyNow.setVisibility(View.GONE);
+                        noCart.setVisibility(View.VISIBLE);
                     }
                 });
 
         cartViewModel.getCartsTotal(loggedInCustomer.getCustomer_id())
-                .observe(mActivity, new Observer<Long>() {
-            @Override
-            public void onChanged(Long total) {
-                if (total==null){
-                    return;
-                }
-                String cedis = "Total GH₵ ", subTotal = String.valueOf(total);
-                totalCart.setText(cedis.concat(subTotal));
-            }
-        });
+                .observe(mActivity, total -> {
+                    if (total==null){
+                        return;
+                    }
+                    String cedis = "Total GH₵ ", subTotal = String.valueOf(total);
+                    totalCart.setText(cedis.concat(subTotal));
+                });
 
         cartAdapter.setProductViewListener(new CartAdapter.ProductViewListener() {
             @Override
@@ -179,11 +173,13 @@ public class CartFragment extends Fragment {
             public void onSubtract(View v, int position) {
                 TextView productQuantity = v.findViewById(R.id.id_num_ordered);
                 int count = Integer.parseInt(productQuantity.getText().toString());
-                if (count != 0) {
+                if (count >1) {
                     productQuantity.setText(String.valueOf(count - 1));
                     CartEntity cartEntity = cartAdapter.getCurrentList().get(position);
                     cartEntity.setCart_quantity(count - 1);
                     cartViewModel.updateCart(cartEntity);
+                }else{
+                    Toast.makeText(mActivity, "Quantity can't be zero!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -195,13 +191,7 @@ public class CartFragment extends Fragment {
 
         });
 
-        buyNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(mActivity, PaymentActivity.class));
-
-            }
-        });
+        buyNow.setOnClickListener(v -> startActivity(new Intent(mActivity, PaymentActivity.class)));
     }
 
 

@@ -1,7 +1,6 @@
 package org.codewrite.teceme.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,10 +10,6 @@ import org.codewrite.teceme.model.room.CartEntity;
 import org.codewrite.teceme.repository.CartRepository;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CartViewModel extends AndroidViewModel {
 
@@ -32,11 +27,11 @@ public class CartViewModel extends AndroidViewModel {
         cartRepository.insert(cartEntity);
     }
 
-    public LiveData<CartEntity> isInCart(Integer product_id) {
-        return cartRepository.getCart(product_id);
+    public LiveData<CartEntity> isInCart(Integer product_id, String customer_id) {
+        return cartRepository.getCart(product_id,customer_id);
     }
 
-    public LiveData<Long> getCartsTotal(String owner) {
+    public LiveData<Double> getCartsTotal(String owner) {
         return cartRepository.getCartsTotal(owner);
     }
 

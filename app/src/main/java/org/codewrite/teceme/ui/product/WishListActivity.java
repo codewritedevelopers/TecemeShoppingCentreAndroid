@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.quinny898.library.persistentsearch.SearchBox;
 import com.quinny898.library.persistentsearch.SearchResult;
@@ -30,6 +31,7 @@ import org.codewrite.teceme.adapter.WishListAdapter;
 import org.codewrite.teceme.adapter.ProductAdapter;
 import org.codewrite.teceme.model.room.AccessTokenEntity;
 import org.codewrite.teceme.model.room.CartEntity;
+import org.codewrite.teceme.model.room.CategoryEntity;
 import org.codewrite.teceme.model.room.WishListEntity;
 import org.codewrite.teceme.model.room.CustomerEntity;
 import org.codewrite.teceme.model.room.ProductEntity;
@@ -37,6 +39,7 @@ import org.codewrite.teceme.ui.account.LoginActivity;
 import org.codewrite.teceme.ui.payment.PaymentActivity;
 import org.codewrite.teceme.viewmodel.AccountViewModel;
 import org.codewrite.teceme.viewmodel.CartViewModel;
+import org.codewrite.teceme.viewmodel.CategoryViewModel;
 import org.codewrite.teceme.viewmodel.ProductViewModel;
 import org.codewrite.teceme.viewmodel.WishListViewModel;
 
@@ -47,17 +50,19 @@ import static java.lang.Math.log;
 import static java.lang.Math.max;
 import static java.lang.Math.round;
 
-public class WishListActivity extends AppCompatActivity {
+public class WishListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private ProductViewModel productViewModel;
     private CartViewModel cartViewModel;
     private AccountViewModel accountViewModel;
+    private CategoryViewModel categoryViewModel;
     private WishListViewModel wishListViewModel;
 
     private RecyclerView mProductWishRv;
     private WishListAdapter wishListAdapter;
     private AccessTokenEntity mAccessTokenEntity;
     private View noWishList;
+    private SwipeRefreshLayout swipeRefresh;
     private CustomerEntity loggedInCustomer;
 
     @Override
@@ -68,8 +73,14 @@ public class WishListActivity extends AppCompatActivity {
         productViewModel = ViewModelProviders.of(WishListActivity.this).get(ProductViewModel.class);
         cartViewModel = ViewModelProviders.of(WishListActivity.this).get(CartViewModel.class);
         accountViewModel = ViewModelProviders.of(WishListActivity.this).get(AccountViewModel.class);
+        categoryViewModel = ViewModelProviders.of(WishListActivity.this).get(CategoryViewModel.class);
         wishListViewModel = ViewModelProviders.of(WishListActivity.this).get( WishListViewModel.class);
         mProductWishRv = findViewById(R.id.id_rv_wish_list);
+         swipeRefresh = findViewById(R.id.swipe_refresh);
+        swipeRefresh.setProgressViewOffset(false, 0, 60);
+         swipeRefresh.setOnRefreshListener(this);
+         swipeRefresh.setRefreshing(true);
+
         noWishList = findViewById(R.id.no_wish_list);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -129,22 +140,15 @@ public class WishListActivity extends AppCompatActivity {
             @Override
             public void onDelete(int position, String id) {
                 if (wishListViewModel != null) {
+                    swipeRefresh.setRefreshing(true);
                     wishListViewModel.removeWishList(id,mAccessTokenEntity.getToken());
+                    Toast.makeText(WishListActivity.this, "Removing product from WishList", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public LiveData<CartEntity> isInCart(Integer product_id) {
-                return cartViewModel.isInCart(product_id);
-            }
-
-            @Override
-            public void onToggleCart(boolean remove, CartEntity cartEntity, Integer product_id) {
-                if (remove) {
-                    cartViewModel.removeFromCart(product_id);
-                } else {
-                    cartViewModel.addToCart(cartEntity);
-                }
+            public LiveData<CategoryEntity> onLoadCategory(Integer category_id) {
+                return categoryViewModel.getCategory(category_id);
             }
 
             @Override
@@ -161,8 +165,15 @@ public class WishListActivity extends AppCompatActivity {
                 .observe(this, new Observer<List<WishListEntity>>() {
                     @Override
                     public void onChanged(List<WishListEntity> entities) {
+                        swipeRefresh.setRefreshing(false);
                         if (entities == null) {
+                            noWishList.setVisibility(View.VISIBLE);
                             return;
+                        }
+                        if (entities.isEmpty()) {
+                            noWishList.setVisibility(View.VISIBLE);
+                        }else {
+                            noWishList.setVisibility(View.GONE);
                         }
                         wishListAdapter.submitList(entities);
                     }
@@ -183,5 +194,12 @@ public class WishListActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onRefresh() {
+        if (loggedInCustomer!=null){
+            setupWishListRv(loggedInCustomer);
+        }
     }
 }

@@ -26,46 +26,46 @@
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp" />
 
-    <LinearLayout
-        android:layout_gravity="end|bottom"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_height="wrap_content">
+<!--    <LinearLayout-->
+<!--        android:layout_gravity="end|bottom"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_margin="@dimen/fab_margin"-->
+<!--        android:layout_height="wrap_content">-->
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/id_follow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:tint="@color/colorAccent"
-            android:visibility="gone"
-            app:backgroundTint="@color/colorWhite"
-            app:fabSize="mini"
-            app:srcCompat="@drawable/heart"
-            tools:ignore="RelativeOverlap" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/id_follow"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginBottom="8dp"-->
+<!--            android:tint="@color/colorAccent"-->
+<!--            android:visibility="gone"-->
+<!--            app:backgroundTint="@color/colorWhite"-->
+<!--            app:fabSize="mini"-->
+<!--            app:srcCompat="@drawable/heart"-->
+<!--            tools:ignore="RelativeOverlap" />-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/id_fab_locate_stores"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_gravity="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_gravity="end|bottom"
             android:tint="@color/colorAccent"
             app:backgroundTint="@color/colorWhite"
             app:fabSize="mini"
             app:srcCompat="@drawable/icons8_location_filled"
             tools:ignore="RelativeOverlap" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/id_fab_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:tint="@color/colorWhite"
-            app:fabSize="normal"
-            android:layout_margin="2dp"
-            app:srcCompat="@drawable/icons8_plus_math" />
-    </LinearLayout>
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/id_fab_more"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:tint="@color/colorWhite"-->
+<!--            app:fabSize="normal"-->
+<!--            android:layout_margin="2dp"-->
+<!--            app:srcCompat="@drawable/icons8_plus_math" />-->
+<!--    </LinearLayout>-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

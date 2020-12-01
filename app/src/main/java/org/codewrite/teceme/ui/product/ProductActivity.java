@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -136,12 +137,16 @@ public class ProductActivity extends AppCompatActivity {
                 @Override
                 public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
                     if (loggedInCustomer == null||accessToken==null) {
-                        startActivity(new Intent(ProductActivity.this, LoginActivity.class));
+                        Intent intent = new Intent(ProductActivity.this, LoginActivity.class);
+                        intent.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER",true);
+                        startActivity(intent);
                         return;
                     }
                     if (added) {
+                        Toast.makeText(ProductActivity.this, "Product Removed from WishList", Toast.LENGTH_SHORT).show();
                         wishListViewModel.removeWishList(id,accessToken.getToken());
                     } else {
+                        Toast.makeText(ProductActivity.this, "Product Added from WishList", Toast.LENGTH_SHORT).show();
                         wishListViewModel.addWishList(product_id, loggedInCustomer.getCustomer_id(),accessToken.getToken());
                     }
                 }
@@ -162,6 +167,6 @@ public class ProductActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        finishAndRemoveTask();
     }
 }

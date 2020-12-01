@@ -41,52 +41,41 @@ public class PaymentActivity extends AppCompatActivity {
         toPayment = findViewById(R.id.to_payment);
         toCreateWallet = findViewById(R.id.create_wallet);
         paymentMethods = findViewById(R.id.payment_methods);
-        paymentMethods.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (group==null)
-                    return;
-               switch (checkedId){
+        paymentMethods.setOnCheckedChangeListener((group, checkedId) -> {
+            if (group==null)
+                return;
+           switch (checkedId){
 
-                   case R.id.teceme_pay:
-                       method = "teceme_pay";
-                       break;
-                   case R.id.mtn_momo:
-                       method="mtn_momo";
-                       break;
-                   case R.id.airtel_tigo_cash:
-                       method="airtel_tigo_money";
-                       break;
-                   case R.id.vodafone_cash:
-                       method="vodafone_cash";
-                       break;
-                   case R.id.bank_card:
-                       method= "bank_card";
-                       break;
-               }
-               isMethodChecked =true;
-            }
+               case R.id.teceme_pay:
+                   method = "teceme_pay";
+                   break;
+               case R.id.mtn_momo:
+                   method="mtn_momo";
+                   break;
+               case R.id.airtel_tigo_cash:
+                   method="airtel_tigo_money";
+                   break;
+               case R.id.vodafone_cash:
+                   method="vodafone_cash";
+                   break;
+               case R.id.bank_card:
+                   method= "bank_card";
+                   break;
+           }
+           isMethodChecked =true;
         });
-        toPayment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isMethodChecked){
-                    Intent intent = new Intent(PaymentActivity.this, CheckoutActivity.class);
-                    intent.putExtra("METHOD", method);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Toast.makeText(PaymentActivity.this, "Please, choose a method!", Toast.LENGTH_SHORT).show();
-                }
+        toPayment.setOnClickListener(v -> {
+            if (isMethodChecked){
+                Intent intent = new Intent(PaymentActivity.this, CheckoutActivity.class);
+                intent.putExtra("METHOD", method);
+                startActivity(intent);
+                finish();
+            }else{
+                Toast.makeText(PaymentActivity.this, "Please, choose a method!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        toCreateWallet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(PaymentActivity.this, CreateWalletActivity.class));
-            }
-        });
+        toCreateWallet.setOnClickListener(v -> startActivity(new Intent(PaymentActivity.this, CreateWalletActivity.class)));
     }
 
     @Override

@@ -15,7 +15,7 @@ public class CustomerOrderEntity extends Result {
     private String customer_order_product_size;
     private String customer_order_product_weight;
     private String customer_order_code;
-    private String customer_product_code;
+    private String customer_order_product_code;
     private String customer_order_customer_id;
     private int customer_order_status;
     private int customer_order_redeemed;
@@ -75,12 +75,12 @@ public class CustomerOrderEntity extends Result {
         this.customer_order_code = customer_order_code;
     }
 
-    public String getCustomer_product_code() {
-        return customer_product_code;
+    public String getCustomer_order_product_code() {
+        return customer_order_product_code;
     }
 
-    public void setCustomer_product_code(String customer_product_code) {
-        this.customer_product_code = customer_product_code;
+    public void setCustomer_order_product_code(String customer_order_product_code) {
+        this.customer_order_product_code = customer_order_product_code;
     }
 
     public String getCustomer_order_customer_id() {

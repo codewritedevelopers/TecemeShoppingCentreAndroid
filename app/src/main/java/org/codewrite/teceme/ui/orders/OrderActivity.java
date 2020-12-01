@@ -32,6 +32,7 @@ public class OrderActivity extends AppCompatActivity {
         OrderPagerAdapter orderAdapter = new OrderPagerAdapter(getSupportFragmentManager());
         orderAdapter.addFrag(new OrderFragment(),"All Orders");
         orderAdapter.addFrag(new PendingOrderFragment(), "Pending Orders");
+        orderAdapter.addFrag(new RedeemedOrderFragment(), "Redeemed Orders");
         ordersViewPager.setAdapter(orderAdapter);
         // set up tabs indicators
         ordersTitleTab.setupWithViewPager(ordersViewPager);

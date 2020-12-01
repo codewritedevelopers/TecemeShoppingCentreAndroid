@@ -21,7 +21,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -117,6 +116,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private View productSizeContainer;
     private View productColorContainer;
     private WishListEntity mWishListEntity;
+    private LiveData<CartEntity> inCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,8 +142,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         productCategory = findViewById(R.id.id_category_name);
         productDesc = findViewById(R.id.id_product_desc);
         productQuantity = findViewById(R.id.id_num_ordered);
-        fabMore = findViewById(R.id.id_fab_more);
-        fabLocateStores = findViewById(R.id.id_fab_locate_stores);
+//        fabMore = findViewById(R.id.id_fab_more);
+       // fabLocateStores = findViewById(R.id.id_fab_locate_stores);
         fabWishList = findViewById(R.id.id_toggle_wish_list);
         addToCart = findViewById(R.id.add_to_cart);
         buyNow = findViewById(R.id.buy_now);
@@ -160,8 +160,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         relatedStoresRv = findViewById(R.id.id_rv_related_stores);
 
         // hide fabLocateStores & fabWishList
-        ViewAnimation.initUp(fabLocateStores);
-        ViewAnimation.initUp(fabWishList);
+//        ViewAnimation.initUp(fabLocateStores);
+//        ViewAnimation.initUp(fabWishList);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -338,7 +338,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 // slider timing
                 Timer timer = new Timer();
                 sliderTimer = new SliderTimer(ProductDetailActivity.this, mPager, imgUris.length);
-                timer.scheduleAtFixedRate(sliderTimer, 4000, 6000);
+                timer.scheduleAtFixedRate(sliderTimer, 4000, 8000);
 
                 setupRelateItems(productEntity);
             }
@@ -379,7 +379,9 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onToggleWishList(View v, Integer product_id, String id, boolean added) {
                 if (loggedInCustomer == null || accessToken == null) {
-                    startActivity(new Intent(ProductDetailActivity.this, LoginActivity.class));
+                    Intent intent = new Intent(ProductDetailActivity.this, LoginActivity.class);
+                    intent.putExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER",true);
+                    startActivity(intent);
                     return;
                 }
                 if (added) {
@@ -429,24 +431,24 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     void setupActions(final ProductEntity productEntity) {
 
-        isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
-        ViewAnimation.showIn(fabLocateStores);
-        ViewAnimation.showIn(fabWishList);
-
-        fabMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isRotate = ViewAnimation.rotateFab(v, !isRotate);
-                if (isRotate) {
-                    ViewAnimation.showIn(fabLocateStores);
-                    ViewAnimation.showIn(fabWishList);
-                } else {
-                    ViewAnimation.showOut(fabLocateStores);
-                    ViewAnimation.showOut(fabWishList);
-                }
-
-            }
-        });
+//        isRotate = ViewAnimation.rotateFab(fabMore, !isRotate);
+//        ViewAnimation.showIn(fabLocateStores);
+//        ViewAnimation.showIn(fabWishList);
+//
+//        fabMore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                isRotate = ViewAnimation.rotateFab(v, !isRotate);
+//                if (isRotate) {
+//                    ViewAnimation.showIn(fabLocateStores);
+//                    ViewAnimation.showIn(fabWishList);
+//                } else {
+//                    ViewAnimation.showOut(fabLocateStores);
+//                    ViewAnimation.showOut(fabWishList);
+//                }
+//
+//            }
+//        });
         addProductView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -459,7 +461,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int count = Integer.parseInt(productQuantity.getText().toString());
-                if (count != 0) {
+                if (count > 1) {
                     productQuantity.setText(String.valueOf(count - 1));
                 }
             }
@@ -472,6 +474,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 } else {
                     if (loggedInCustomer == null) {
                         launchLogin();
+                        return;
+                    }
+                    if (Integer.parseInt(productQuantity.getText().toString())<1) {
+                        Toast.makeText(ProductDetailActivity.this, "Please, choose quantity!", Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -504,9 +510,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                     return;
                 }
                 if (isInWishList) {
+                    Toast.makeText(ProductDetailActivity.this, "Product Removed from WishList", Toast.LENGTH_SHORT).show();
                     fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorAccent));
                     wishListViewModel.removeWishList(mWishListEntity.getWishlist_id(),accessToken.getToken());
                 } else {
+                    Toast.makeText(ProductDetailActivity.this, "Product Added to WishList", Toast.LENGTH_SHORT).show();
                     fabWishList.getDrawable().mutate().setTint(getResources().getColor(R.color.colorPrimaryDark));
                     wishListViewModel.addWishList(productEntity.getProduct_id(),
                             loggedInCustomer.getCustomer_id(),accessToken.getToken());
@@ -530,77 +538,75 @@ public class ProductDetailActivity extends AppCompatActivity {
                     });
         }
 
-        final LiveData<CartEntity> inCart = cartViewModel.isInCart(productEntity.getProduct_id());
-        inCart.observe(ProductDetailActivity.this, new Observer<CartEntity>() {
-                    @Override
-                    public void onChanged(CartEntity cartEntity) {
-                        if (cartEntity == null) {
-                            isInCart = false;
-                            addToCart.setText(getString(R.string.add_to_cart_text));
-                        } else {
-                            isInCart = true;
+        if(loggedInCustomer!=null) {
+            inCart = cartViewModel.isInCart(productEntity.getProduct_id(), loggedInCustomer.getCustomer_id());
 
-                            addToCart.setText(getString(R.string.remove_from_cart_text));
-                            Integer quantity = cartEntity.getCart_quantity();
-                            productQuantity.setText(String.valueOf(quantity == null ? 0 : quantity));
+            inCart.observe(ProductDetailActivity.this, new Observer<CartEntity>() {
+                        @Override
+                        public void onChanged(CartEntity cartEntity) {
+                            if (cartEntity == null) {
+                                isInCart = false;
+                                addToCart.setText(getString(R.string.add_to_cart_text));
+                            } else {
+                                isInCart = true;
+                                addToCart.setText(getString(R.string.remove_from_cart_text));
+                                Integer quantity = cartEntity.getCart_quantity();
+                                productQuantity.setText(String.valueOf(quantity == null ? 0 : quantity));
 
-                            // create an new list for changes
-                            List<ProductSize> sizeList2 = new ArrayList<>();
-                            // check if any size selected
-                            for (ProductSize productSize : sizeList) {
-                                if (productSize.getSize().equals(cartEntity.getProduct_size())) {
-                                    productSize.setSelected(true);
-                                } else {
-                                    productSize.setSelected(false);
+                                // create an new list for changes
+                                List<ProductSize> sizeList2 = new ArrayList<>();
+                                // check if any size selected
+                                for (ProductSize productSize : sizeList) {
+                                    if (productSize.getSize().equals(cartEntity.getProduct_size())) {
+                                        productSize.setSelected(true);
+                                    } else {
+                                        productSize.setSelected(false);
+                                    }
+                                    sizeList2.add(productSize);
                                 }
-                                sizeList2.add(productSize);
-                            }
-                            productSizeAdapter.submitList(sizeList2);
-                            productSizeAdapter.notifyDataSetChanged();
+                                productSizeAdapter.submitList(sizeList2);
+                                productSizeAdapter.notifyDataSetChanged();
 
-                            for (int i = 0; i < colors.length; i++) {
-                                if (colors[i].equals(cartEntity.getProduct_color())) {
-                                    spinnerProductColor.setSelection(i, true);
+                                for (int i = 0; i < colors.length; i++) {
+                                    if (colors[i].equals(cartEntity.getProduct_color())) {
+                                        spinnerProductColor.setSelection(i, true);
+                                    }
                                 }
+                                inCart.removeObserver(this);
+                                mCartEntity = cartEntity;
                             }
-                            inCart.removeObserver(this);
-                            mCartEntity = cartEntity;
                         }
                     }
-                }
-        );
-
-        buyNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (loggedInCustomer == null) {
-                    launchLogin();
-                    return;
-                }
-
-                if (productQuantity.getText().toString().equals("0")) {
-                    Toast.makeText(ProductDetailActivity.this, "Please, choose quantity!", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                mCartEntity.setCart_product_id(productEntity.getProduct_id());
-                mCartEntity.setProduct_category_id(productEntity.getProduct_category_id());
-                mCartEntity.setProduct_weight(productEntity.getProduct_weight());
-                mCartEntity.setProduct_price(productEntity.getProduct_price());
-                mCartEntity.setCart_access(productEntity.getProduct_access());
-                mCartEntity.setCart_quantity(Integer.valueOf(productQuantity.getText().toString()));
-                mCartEntity.setCart_owner(loggedInCustomer.getCustomer_id());
-                mCartEntity.setProduct_desc(productEntity.getProduct_desc());
-                mCartEntity.setProduct_code(productEntity.getProduct_code());
-                String currentDate = java.text.DateFormat.getDateInstance().format(new Date());
-                mCartEntity.setCart_date_created(currentDate);
-                mCartEntity.setProduct_ordered(productEntity.getProduct_ordered());
-                mCartEntity.setProduct_name(productEntity.getProduct_name());
-                mCartEntity.setProduct_discount(productEntity.getProduct_discount());
-                inCart.removeObservers(ProductDetailActivity.this);
-
-                cartViewModel.addToCart(mCartEntity);
-                launchPayment();
+            );
+        }
+        buyNow.setOnClickListener(v -> {
+            if (loggedInCustomer == null) {
+                launchLogin();
+                return;
             }
+
+            if (Integer.parseInt(productQuantity.getText().toString())<0) {
+                Toast.makeText(ProductDetailActivity.this, "Please, choose quantity!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            mCartEntity.setCart_product_id(productEntity.getProduct_id());
+            mCartEntity.setProduct_category_id(productEntity.getProduct_category_id());
+            mCartEntity.setProduct_weight(productEntity.getProduct_weight());
+            mCartEntity.setProduct_price(productEntity.getProduct_price());
+            mCartEntity.setCart_access(productEntity.getProduct_access());
+            mCartEntity.setCart_quantity(Integer.valueOf(productQuantity.getText().toString()));
+            mCartEntity.setCart_owner(loggedInCustomer.getCustomer_id());
+            mCartEntity.setProduct_desc(productEntity.getProduct_desc());
+            mCartEntity.setProduct_code(productEntity.getProduct_code());
+            String currentDate = java.text.DateFormat.getDateInstance().format(new Date());
+            mCartEntity.setCart_date_created(currentDate);
+            mCartEntity.setProduct_ordered(productEntity.getProduct_ordered());
+            mCartEntity.setProduct_name(productEntity.getProduct_name());
+            mCartEntity.setProduct_discount(productEntity.getProduct_discount());
+            inCart.removeObservers(ProductDetailActivity.this);
+
+            cartViewModel.addToCart(mCartEntity);
+            launchPayment();
         });
     }
 

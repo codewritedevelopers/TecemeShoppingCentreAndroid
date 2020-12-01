@@ -38,6 +38,7 @@ import io.reactivex.schedulers.Schedulers;
 public class SignupActivity extends AppCompatActivity {
 
     private AccountViewModel accountViewModel;
+    private boolean finish_without_launching_another;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,12 +48,6 @@ public class SignupActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")) {
-                toolbar.setVisibility(View.GONE);
-            }
-        }
 
         final EditText nameEditText = findViewById(R.id.name);
         final EditText phoneEditText = findViewById(R.id.phone);
@@ -182,12 +177,6 @@ public class SignupActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
         super.onBackPressed();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkInternetConnection();
     }
 
     @Override

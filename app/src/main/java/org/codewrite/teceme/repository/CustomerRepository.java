@@ -54,6 +54,10 @@ public class CustomerRepository {
     public LiveData<AccessTokenEntity> getAccessToken() {
         return accessTokenDao.getAccessToken();
     }
+    public Call<Result> refreshAccessToken(String accessToken) {
+        setRestApi(accessToken);
+        return resetApi.refreshAccessToken();
+    }
 
     public void replaceAccessToken(final AccessTokenEntity accessTokenEntity){
         new DeleteAllAccessTokenAsyncTask(accessTokenDao, new DeleteAllCallback() {
@@ -62,6 +66,10 @@ public class CustomerRepository {
                 new InsertAccessTokenAsyncTask(accessTokenDao).execute(accessTokenEntity);
             }
         }).execute();
+    }
+
+    public void updateAccessToken(AccessTokenEntity accessTokenEntity) {
+        new InsertAccessTokenAsyncTask(accessTokenDao).execute(accessTokenEntity);
     }
 
     public void replaceLoggedInCustomer(final CustomerEntity customerEntity) {
@@ -100,8 +108,8 @@ public class CustomerRepository {
 
     public Call<CustomerJson> updateCustomer(String name, String phone, String username,
                                String password, String currentPassword, String id, String accessToken) {
-        String firstName, middleName=null, lastName=null;
-        String [] parts = name.trim().split(" ");
+        String firstName, middleName="", lastName="null";
+        String [] parts = name.trim().replace("  "," ").split(" ");
         firstName = parts[0];
         if (parts.length > 2) {
             middleName = parts[1];

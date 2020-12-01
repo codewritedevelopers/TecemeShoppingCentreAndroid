@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="api_key">YLV15py7Tl</string>
-    <string name="api_base_url">https://codewrite.org/teceme/api/</string>
+    <string name="about_url">https://teceme.com/customers/about-us</string>
+    <string name="api_base_url">https://teceme.com/api/</string>
 </resources>

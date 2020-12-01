@@ -60,6 +60,10 @@ public class StoreRepository {
         return restApi.getStoreListByCategory(category_id);
     }
 
+    public Call<List<StoreEntity>> getStoresByProducts(String customer_order_product_code) {
+        return restApi.getStoreListByProduct(customer_order_product_code);
+    }
+
     private static class DeleteAllStoreAsyncTask extends AsyncTask<Void, Void, Void> {
         private StoreDao storeDao;
         private DeleteAllCallback deleteAllCallback;

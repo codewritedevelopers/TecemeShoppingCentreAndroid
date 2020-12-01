@@ -64,7 +64,7 @@
                         android:textSize="@dimen/text_size_medium" />
 
                     <TextView
-                        android:id="@+id/wallet_id"
+                        android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/wallet_id_hint"
@@ -79,6 +79,7 @@
                 android:background="@drawable/ripple_background_with_border_grey"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="gone"
                 android:orientation="horizontal"
                 android:padding="8dp">
 
@@ -89,7 +90,8 @@
                     android:contentDescription="@string/todo"
                     android:padding="2dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icons8_gender_neutral_user_120px"
+                    android:visibility="gone"
+                    android:src="@drawable/icons8_wallet"
                     android:tint="@color/colorPrimaryDark" />
 
                 <LinearLayout
@@ -243,6 +245,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/delete_account"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -330,6 +333,7 @@
 
             <LinearLayout
                 android:id="@+id/referral"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@drawable/ripple_background_with_border_grey"

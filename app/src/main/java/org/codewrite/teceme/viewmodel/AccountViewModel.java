@@ -174,12 +174,12 @@ public class AccountViewModel extends AndroidViewModel {
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.length() > 3;
+        return password != null && password.length() > 5;
     }
 
     private boolean isPasswordValidProfile(String password) {
 
-        return password == null || password.length() > 3;
+        return password == null || password.length() > 5;
     }
 
     private boolean isConfirmPasswordValid2(String password, String confirmPassword) {
@@ -240,7 +240,7 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void profileFormDataChanged(String name, String phone,
-                                       String username, String password, String cPassword) {
+                                       String username, String password) {
         if (!isNameValid(name)) {
             profileFormState.setValue(new ProfileFormState(R.string.invalid_name,
                     null, null, null, null));
@@ -250,10 +250,6 @@ public class AccountViewModel extends AndroidViewModel {
             profileFormState.setValue(new ProfileFormState(null, null, R.string.invalid_username, null, null));
         } else if (!isPasswordValidProfile(password)) {
             profileFormState.setValue(new ProfileFormState(null, null, null, R.string.invalid_password, null));
-        } else if (!isPasswordValidProfile(cPassword)) {
-            profileFormState.setValue(new ProfileFormState(null, null, null, null, R.string.invalid_password));
-        } else if (!isConfirmPasswordValidProfile(password, cPassword)) {
-            profileFormState.setValue(new ProfileFormState(null, null, null, null, R.string.password_miss_match));
         } else {
             profileFormState.setValue(new ProfileFormState(true));
         }
@@ -369,5 +365,27 @@ public class AccountViewModel extends AndroidViewModel {
 
     public LiveData<Result> getResetPasswordResult() {
         return resetPasswordResult;
+    }
+
+    public void refreshAccessToken(final AccessTokenEntity accessToken){
+        Call<Result> resultCall = customerRepository.refreshAccessToken(accessToken.getToken());
+        resultCall.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(@NonNull Call<Result> call,
+                                   @NonNull Response<Result> response) {
+                if (response.isSuccessful()) {
+                    String token = response.headers().get("Token");
+                    if (token != null) {
+                        AccessTokenEntity accessTokenEntity = new AccessTokenEntity(token);
+                        accessTokenEntity.setId(accessToken.getId());
+                        customerRepository.updateAccessToken(accessTokenEntity);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Result> call, @NonNull Throwable t) {
+            }
+        });
     }
 }

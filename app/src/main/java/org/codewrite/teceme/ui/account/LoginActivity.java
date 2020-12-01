@@ -54,14 +54,9 @@ public class LoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         finish_without_launching_another = getIntent()
                 .getBooleanExtra("FINISH_WITHOUT_LAUNCHING_ANOTHER", false);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("LAUNCHED_FIRST_TIME")
-                    && !finish_without_launching_another) {
+        if (!finish_without_launching_another
+                ||getIntent().getBooleanExtra("LAUNCHED_FIRST_TIME", false)) {
                 toolbar.setVisibility(View.GONE);
-            }
-        }
-        if (!finish_without_launching_another) {
-            toolbar.setVisibility(View.GONE);
         }
 
         final EditText usernameEditText = findViewById(R.id.username);

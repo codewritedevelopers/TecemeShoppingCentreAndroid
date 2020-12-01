@@ -117,9 +117,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void launchAccountLogin() {
       prefManager.setFirstTimeLaunch(false);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("LAUNCHED_FIRST_TIME", true);
-        startActivity(new Intent(WelcomeActivity.this, LoginActivity.class), bundle);
+        Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
+        intent.putExtra("LAUNCHED_FIRST_TIME", true);
+        startActivity(intent);
         finish();
     }
 
